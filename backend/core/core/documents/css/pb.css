@@ -1,0 +1,84 @@
+body{
+  font-size: 100%;
+}
+
+table{
+  width: 100%;
+}
+
+table .title{
+  font-weight: bolder;
+}
+
+td, th{
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: inherit;
+  background-color: #4CAF50;
+  color: white;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+
+.container{
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 0.75em;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.title{
+  font-size: 1.4em;
+  text-align: center;
+  color: darkBlue;
+}
+
+.column-1-wide{
+  width: 8.33%;
+}
+.column-2-wide{
+  width: 16.66%;
+}
+.column-3-wide{
+  width: 25%;
+}
+.column-4-wide{
+  width: 33.33%;
+}
+.column-5-wide{
+  width: 41.66%;
+}
+.column-6-wide{
+  width: 50%;
+}
+.column-7-wide{
+  width: 58.33%;
+}
+.column-8-wide{
+  width: 66.66%;
+}
+.column-9-wide{
+  width: 75%;
+}
+.column-10-wide{
+  width: 83.33%;
+}
+.column-11-wide{
+  width: 91.66%;
+}
+.column-12-wide{
+  width: 100%;
+}
+
+.right{
+  float: right;
+}
+
+.left{
+  float: left;
+}

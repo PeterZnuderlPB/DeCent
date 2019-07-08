@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>File PDF</title>
+  </head>
+  <body>
+
+    <div class="container">
+      <table class="column-8-wide left">
+        <caption class="title">List of Files</caption>
+        <tr>
+          <th class="column-6-wide">File Name</th>
+          <th class="column-3-wide">Owner</th>
+          <th class="column-3-wide">Upload Date</th>
+        </tr>
+        {% for file in object_list %}
+            <tr>
+              {% if file.name %}
+                <td>{{ file.name }}</td>
+              {% else %}
+                <td>NA</td>
+              {% endif %}
+              {% if file.owner %}
+                <td>{{ file.owner.first_name }} {{ file.owner.last_name }}</td>
+              {% else %}
+                <td>NA</td>
+              {% endif %}
+              {% if file.upload_date %}
+                <td>{{ file.upload_date}}</td>
+              {% else %}
+                <td>NA</td>
+              {% endif %}
+            {% endfor %}
+            </tr>
+      </table>
+      <div class="column-3-wide right">
+
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sed mattis risus, at rutrum nulla. Nam euismod ultricies rutrum. Ut volutpat efficitur dignissim. Cras enim est, placerat nec tristique eu, pretium vitae sem. Ut semper quam non dui maximus semper. Nulla rutrum, dui ac sagittis tincidunt, metus dui laoreet neque, eu efficitur orci augue et ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac quam sem.
+
+In volutpat interdum dolor vitae convallis. Aenean tincidunt molestie massa, id pharetra mauris cursus eu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Duis eu turpis ut.
+      </div>
+    </div>
+  </body>
+</html>

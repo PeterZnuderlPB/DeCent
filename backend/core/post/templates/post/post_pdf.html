@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Post PDF</title>
+  </head>
+  <body>
+    {% for post in object_list %}
+
+      <div class="post header">
+        {% if post.title %}
+          <h1>{{ post.title }}</h1>
+        {% else %}
+          <h1>Post Title</h1>
+        {% endif %}
+        {% if post.date_published %}
+          <h3>{{ post.date_published }}</h3>
+        {% else %}
+          <h3>Date</h3>
+        {% endif %}
+      </div>
+      <div class="post body">
+        {% if post.content %}
+          <p>{{ post.content }}</p>
+        {% else %}
+          <p>Post Content</p>
+        {% endif %}
+      </div>
+      <div class="post footer">
+        {% if post.author %}
+          <p>{{ post.author.first_name }} {{ post.author.last_name }}</p>
+        {% else %}
+          <h5>Post author</h5>
+        {% endif %}
+      </div>
+      <br>
+    {% endfor %}
+  </body>
+</html>
