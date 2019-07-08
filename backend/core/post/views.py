@@ -4,7 +4,7 @@ from django.views.generic import ListView
 from django.http import QueryDict
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from django_weasyprint import WeasyTemplateResponseMixin
+#from django_weasyprint import WeasyTemplateResponseMixin
 #Redis
 from django.core.cache import cache
 from django.conf import settings
@@ -158,7 +158,7 @@ class PostDetails(generics.RetrieveUpdateDestroyAPIView):
 class PostBaseDetailPrintView(ListView):
     model=Post
     template_name="post/post_pdf.html"
-
+"""
 class PostPdfPrintView(WeasyTemplateResponseMixin, PostBaseDetailPrintView):
     # output of MyModelView rendered as PDF with hardcoded CSS
     pdf_stylesheets = [
@@ -168,3 +168,4 @@ class PostPdfPrintView(WeasyTemplateResponseMixin, PostBaseDetailPrintView):
     pdf_attachment = True
     # suggested filename (is required for attachment!)
     pdf_filename = 'post.pdf'
+    """

@@ -5,7 +5,7 @@ from rest_framework import generics, permissions
 from rest_framework import views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
-from django_weasyprint import WeasyTemplateResponseMixin
+#from django_weasyprint import WeasyTemplateResponseMixin
 
 from .models import File
 from .serializers import FileSerializerBasic, FileSerializerWithFile
@@ -55,12 +55,12 @@ class FileBaseDetailPrintView(ListView):
     model=File
     template_name="file/file_pdf.html"
 
-class FilePdfPrintView(WeasyTemplateResponseMixin, FileBaseDetailPrintView):
-    # output of MyModelView rendered as PDF with hardcoded CSS
-    pdf_stylesheets = [
-        settings.BASE_DIR + '\\core\\documents\\css\\pb.css',
-    ]
-    # show pdf in-line (default: True, show download dialog)
-    pdf_attachment = True
-    # suggested filename (is required for attachment!)
-    pdf_filename = 'file.pdf'
+#class FilePdfPrintView(WeasyTemplateResponseMixin, FileBaseDetailPrintView):
+#    # output of MyModelView rendered as PDF with hardcoded CSS
+#    pdf_stylesheets = [
+#        settings.BASE_DIR + '\\core\\documents\\css\\pb.css',
+#    ]
+#    # show pdf in-line (default: True, show download dialog)
+#    pdf_attachment = True
+#    # suggested filename (is required for attachment!)
+#    pdf_filename = 'file.pdf'
