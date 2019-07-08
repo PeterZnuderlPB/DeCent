@@ -1,10 +1,11 @@
 Django
 django-oauth-toolkit
 social-auth-app-django
-rest-framework-social-auth2
-rest_framework_jwt
+django-rest-framework-social-oauth2
+djangorestframework_jwt
 django-cors-headers
 django-redis
+python-dotnet
 # For pdf -> possible change to django-wkhtmltopdf due to installation requirements
 django_weasyprint
 CairoSVG
