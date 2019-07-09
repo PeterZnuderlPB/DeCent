@@ -7,14 +7,8 @@ import {
 } from './types'
 import { message } from 'antd'
 import {FetchUserStart} from './index'
-export const url = "http://127.0.0.1:8000";
-
-/*These are the django client ID and SECRET
-  from the OauthToolkit Application registered in your django admin
-*/
-export const django_client_id = "t5Atz5P7YfpN0Ul2cDUWbAwMwjQfCfza5GmagZZu";
-export const django_client_secret =
-  "FUTJYMX0xGp22rBHitfcL747Yypg3nf79azyyfITHjqueee6E6sBVeU4bwh8EBSDLPCbMKlTHTBasrvLw7tQxVullWYPY505OYI6qDMXNEM16gBp4GCcrlp5D5vb2T6N";
+import { django_client_id,django_client_secret} from '../apis'
+import url from '../apis'
 
 export const isAuthenticating = () => ({
     type: GOOGLE_IS_AUTHENTICATING

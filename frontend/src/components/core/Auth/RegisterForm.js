@@ -34,7 +34,7 @@ import {
     compareToFirstPassword = (rule, value, callback) => {
       const form = this.props.form;
       if (value && value !== form.getFieldValue('password')) {
-        callback('Two passwords that you enter is inconsistent!');
+        callback('Two passwords that you have entered are inconsistent!');
       } else {
         callback();
       }
@@ -50,7 +50,7 @@ import {
 
     validateAgreement = (rule, value, callback) =>{
         if (!value)
-            callback('You ahave accept the agreement to be bale to compete registration.')
+            callback('You have to accept the agreement to be able to compete registration.')
         callback();
     }
   
