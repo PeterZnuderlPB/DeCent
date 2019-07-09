@@ -84,7 +84,8 @@ class PostList(generics.ListCreateAPIView):
 
         if key in cache:
             cached_val = cache.get(key)
-            cached_val = json.loads(cached_val)
+            if(type(cached_val) == type("")):
+                cached_val = json.loads(cached_val)
         else: 
             cache.set(key, default_val, timeout=None)
             cached_val=default_val
