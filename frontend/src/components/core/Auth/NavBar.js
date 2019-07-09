@@ -81,7 +81,7 @@ class NavBar extends React.Component {
                  </span>
             </li>
             <li className="nav-item">
-                <Button className="nav-link" onClick={this.onLogOut}>Logout</Button>
+                <Button className="nav-link" onClick={this.onLogOut}><FormattedMessage id="nav.logout" defaultMessage="Logout" /></Button>
             </li>
         </>
         )
@@ -91,10 +91,10 @@ class NavBar extends React.Component {
         return(
             <>
             <li className="nav-item">
-                <Button className="nav-link" onClick={() => this.showDrawer("register")}>Register</Button>
+                <Button className="nav-link" onClick={() => this.showDrawer("register")}><FormattedMessage id="nav.register" defaultMessage="Register" /></Button>
             </li>
             <li className="nav-item">
-                <Button className="nav-link" onClick={() => this.showDrawer("login")}>Login</Button>
+                <Button className="nav-link" onClick={() => this.showDrawer("login")}><FormattedMessage id="nav.login" defaultMessage="Login" /></Button>
             </li>
             <li className="nav-item">
                 <GoogleLoginButton />
@@ -114,10 +114,10 @@ class NavBar extends React.Component {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item active">
-                            <Link className="nav-link" to="/"><FormattedMessage id="nav.home" defaultMessage="Home"/></Link>
+                            <Link className="nav-link" to="/"><FormattedMessage id="nav.home" defaultMessage="Home" /></Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="/profile">Profile</Link>
+                            <Link className="nav-link" to="/profile"><FormattedMessage id="nav.profile" defaultMessage="Profile" /></Link>
                         </li>
                         {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
 
@@ -134,7 +134,7 @@ class NavBar extends React.Component {
                 </div>
 
                 <Drawer
-                title="Login Drawer"
+                title={ <FormattedMessage id="auth.drawer" defaultMessage="Login/Register" /> }
                 placement={this.state.placement}
                 closable={true}
                 onClose={this.onClose}

@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import { convertGoogleToken } from "../../../actions/googleAuthActions";
 import { GoogleLogin } from "react-google-login";
 
+import { FormattedMessage } from 'react-intl';
+
 const GoogleLoginButton = props => {
   const onSuccess = response => {
     console.log(response);

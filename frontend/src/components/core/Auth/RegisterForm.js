@@ -6,6 +6,8 @@ import {
     Checkbox,
     Button,
   } from 'antd';
+  import { FormattedMessage } from 'react-intl';
+  import lang from '../../../translations/translations';
   
   import { RegistrationStart } from '../../../actions'
 
@@ -34,7 +36,7 @@ import {
     compareToFirstPassword = (rule, value, callback) => {
       const form = this.props.form;
       if (value && value !== form.getFieldValue('password')) {
-        callback('Two passwords that you enter is inconsistent!');
+        callback(lang[this.props.lang]['auth.confirmPasswordSame']);
       } else {
         callback();
       }
@@ -50,7 +52,7 @@ import {
 
     validateAgreement = (rule, value, callback) =>{
         if (!value)
-            callback('You ahave accept the agreement to be bale to compete registration.')
+            callback(lang[this.props.lang]['auth.agreement']);
         callback();
     }
   
@@ -95,7 +97,7 @@ import {
             <Form.Item
             label={
               <span>
-                Username&nbsp;
+                <FormattedMessage id="auth.username" defaultMessage="Username" />&nbsp;
               </span>
             }
             >
@@ -103,52 +105,52 @@ import {
               rules: [
                     { 
                       required: true,
-                       message: 'Please input your username!'
+                       message: <FormattedMessage id="auth.usernameEmpty" defaultMessage="Please input your username!" />
                     }, 
                     {
                         whitespace: false,
-                        message:"No whitespaces allowed"
+                        message: <FormattedMessage id="auth.noWhitespace" defaultMessage="No whitespaces allowed" />
                     }],
             })(<Input />)}
           </Form.Item>
           
-          <Form.Item label="Email">
+          <Form.Item label={ <FormattedMessage id="auth.email" defaultMessage="Email" /> }>
             {getFieldDecorator('email', {
               rules: [
                 {
                   type: 'email',
-                  message: 'Please input a valid email address!',
+                  message: <FormattedMessage id="auth.emailNotValid" defaultMessage="Please input a valid email address!" />,
                 },
                 {
                   required: true,
-                  message: 'Please input your email!',
+                  message: <FormattedMessage id="auth.emailEmpty" defaultMessage="Please input your email!" />,
                 },
               ],
             })(<Input />)}
           </Form.Item>
-          <Form.Item label="Password" hasFeedback>
+          <Form.Item label={ <FormattedMessage id="auth.password" defaultMessage="Password" /> } hasFeedback>
             {getFieldDecorator('password', {
               rules: [
                 {
                   required: true,
-                  message: 'Please input your password!',
+                  message: <FormattedMessage id="auth.passwordEmpty" defaultMessage="Please input your password!" />,
                 },
                 {
                   validator: this.validateToNextPassword,
                 },
                 {
                     min: 8,
-                    message: "Password needs to be at least 8 characters long."
+                    message: <FormattedMessage id="auth.passwordNotValid" defaultMessage="Password needs to be at least 8 characters long." />
                 }
               ],
             })(<Input.Password />)}
           </Form.Item>
-          <Form.Item label="Confirm Password" hasFeedback>
+          <Form.Item label={ <FormattedMessage id="auth.confirmPassword" defaultMessage="Confirm Password" /> } hasFeedback>
             {getFieldDecorator('confirm', {
               rules: [
                 {
                   required: true,
-                  message: 'Please confirm your password!',
+                  message: <FormattedMessage id="auth.confirmPasswordEmpty" defaultMessage="Please confirm your password!" />,
                 },
                 {
                   validator: this.compareToFirstPassword,
@@ -172,7 +174,7 @@ import {
           </Form.Item>
           <Form.Item {...tailFormItemLayout}>
             <Button type="primary" htmlType="submit">
-              Register
+              <FormattedMessage id="auth.register" defaultMessage="Register" />
             </Button>
           </Form.Item>
         </Form>
@@ -181,7 +183,7 @@ import {
   }
   
   const mapStateToProps = state =>{
-    return { user: state.auth}
+    return { user: state.auth, lang: state.lang }
 }
 
   const WrappedRegisterForm = Form.create({ name: 'register' })(RegisterForm);

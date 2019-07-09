@@ -5,6 +5,8 @@ import { GoogleLogout } from "react-google-login";
 
 import { googleLogoutAction } from "../../../actions/googleAuthActions";
 
+import { FormattedMessage } from 'react-intl';
+
 class GoogleLogoutButton extends Component {
   componentWillMount() {
     gapi.load("auth2", () => {

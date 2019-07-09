@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { Popover,Table, Button, Checkbox, Input} from 'antd';
+import { FormattedMessage } from 'react-intl';
+import lang from '../../translations/translations';
 import axios from 'axios';
 import con from '../../apis';
 import { updateExpression } from '@babel/types';
@@ -57,6 +59,7 @@ class PBTable extends React.Component {
     }
 
     handleHeaderClick = (column, event)=>{
+      console.log("Column clicked", column);
       var filtVarStr = JSON.stringify(this.state.filterValues);
       var dict = JSON.parse(filtVarStr);
       if (dict[column.dataIndex] === undefined)
@@ -115,6 +118,39 @@ class PBTable extends React.Component {
           );
     };
 
+    TranslateColumns() {
+      let translatedColumns = [];
+
+      this.state.availableColumns.map(col => {
+        col = lang[this.props.lang][`table.${col}`];  
+        translatedColumns.push(col);
+      });
+
+      return translatedColumns;
+    }
+
+    TranslateToEnglish(columns) {
+      let translatedColumns = [];
+      let englishKeys = [];
+      let foreignTranslations = lang[this.props.lang];
+      let foreignTranslationsObject = Object.keys(foreignTranslations);
+      
+      for(let i = 0; i<columns.length; i++) {
+        foreignTranslationsObject.forEach(el => {
+          if(foreignTranslations[el] == columns[i]){
+            englishKeys.push(el);
+          }
+        });
+      }
+
+      englishKeys.map(col => {
+        col = lang['en'][col];
+        translatedColumns.push(col);
+      })
+
+      return translatedColumns;
+    }
+
     ActiveColumnsContent =()=>{
       console.log("Active columnsContent", this.state.availableColumns)
       return (
@@ -125,12 +161,12 @@ class PBTable extends React.Component {
               onChange={this.handleActiveColumnsCheckAllClick}
               checked={this.state.SCCheckAll}
             >
-              Check all
+            <FormattedMessage id="table.checkAll" defaultMessage="Check all" />
             </Checkbox>
         </div>
         <br />
         <this.CheckboxGroup
-            options={this.state.availableColumns}
+            options={this.TranslateColumns()}
             value={this.state.SCCheckedList}
             onChange={this.handleActiveColumnsChange}
           />
@@ -144,14 +180,20 @@ class PBTable extends React.Component {
     }
 
     handleActiveColumnsChange = checkedList => {
+      let translatedCheckedList = this.TranslateToEnglish(checkedList);
+      console.log(this.state.availableColumns);
+      console.log(checkedList);
+      console.log(translatedCheckedList);
+
       this.setState({
-          SCCheckedList: checkedList,
-          SCIndeterminate: !!checkedList.length && checkedList.length < this.state.availableColumns.length,
-          SCCheckAll: checkedList.length === this.state.availableColumns.length,
+          SCCheckedList: translatedCheckedList,
+          SCIndeterminate: !!translatedCheckedList.length && translatedCheckedList.length < this.state.availableColumns.length,
+          SCCheckAll: translatedCheckedList.length === this.state.availableColumns.length,
       },() => this.fetch());
     };
 
     handleActiveColumnsCheckAllClick = e => {
+
       this.setState({
         SCCheckedList: e.target.checked ? this.state.availableColumns : [],
         SCIndeterminate: false,
@@ -228,9 +270,9 @@ class PBTable extends React.Component {
                 allKeys.push( {
                     title: (
                       <div style={{ textAlign: 'center' }}>
-                          <div>{element}</div>
+                          <div>{<FormattedMessage id={`table.${element}`} defaultMessage={element} />}</div>
                           <Input.Search 
-                          placeholder='Filter' 
+                          placeholder={lang[this.props.lang]['table.filter']} 
                           onClick={(e) => this.handleFilterClick(e)}  
                           onPressEnter={(e) => this.handleFilterSubmit(null, e)}
                           onSearch={this.handleFilterSubmit}
@@ -261,17 +303,17 @@ class PBTable extends React.Component {
         //console.log("Rerendering", this.state)
         return(
           <>
-          <Button type = "primary" onClick={() => this.fetch()}>Refresh table</Button>
+          <Button type = "primary" onClick={() => this.fetch()}><FormattedMessage id="table.refreshTable" defaultMessage="Refresh table" /></Button>
           <Popover
             content={this.ActiveColumnsContent()}
-            title="Columns"
+            title={ <FormattedMessage id="table.columns" defaultMessage="Columns" /> }
             trigger="click"
             visible={this.state.customColumnsVis}
             onVisibleChange={this.handleActiveColumnsClick}
             >
-            <Button type="primary">Custom Columns</Button>
+            <Button type="primary"><FormattedMessage id="table.customColumns" defaultMessage="Custom columns" /></Button>
           </Popover>
-          <Button type = "primary" onClick={() => this.setState({ filterValues: {}}, this.fetch)}>Clear Filters</Button>
+          <Button type = "primary" onClick={() => this.setState({ filterValues: {}}, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
            <Table 
            dataSource={this.state.data} 
            columns={columns} 
@@ -295,7 +337,8 @@ class PBTable extends React.Component {
 
 const mapStateToProps = (state, ownProps) =>{
     return { settings: state.user.user_settings.tables.find(table => {return table.name === ownProps.name}),
-            user: state.user.auth
+            user: state.user.auth,
+            lang: state.lang
         }
 }
 
