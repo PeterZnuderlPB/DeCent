@@ -44,3 +44,8 @@ export const FETCH_POSTS_FAIL = "FETCH_POSTS_FAIL";
 export const FETCH_TABLE_START = "FETCH_TABLE_START";
 export const FETCH_TABLE_SUCCESS = "FETCH_TABLE_SUCCESS";
 export const FETCH_TABLE_FAIL = "FETCH_TABLE_FAIL";
+
+//-------------------
+//  Language actions
+//-------------------
+export const CHANGE_LANG = "CHANGE_LANG";

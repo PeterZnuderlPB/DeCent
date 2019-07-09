@@ -12,7 +12,7 @@ class Profile extends React.Component {
            <PBTable 
            data_source="/api/posts/"
            name={"testTable"} 
-           title={"Test table"}
+           title={"Test test"}
            />
         );
     }

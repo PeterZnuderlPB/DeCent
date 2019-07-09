@@ -3,12 +3,14 @@ import { connect } from 'react-redux';
 import { Link} from 'react-router-dom';
 
 import { Drawer, Button, Avatar  } from 'antd';
+import { FormattedMessage } from 'react-intl';
 
 import LogInForm from './LogInForm';
 import RegisterForm from './RegisterForm';
-import GoogleLoginButton from './GoogleLoginButton'
+import GoogleLoginButton from './GoogleLoginButton';
 //import GoogleLogoutButton from './GoogleLogoutButton'
-import { LogoutStart, ShowModal, HideModal, FetchUserStart} from '../../../actions'
+import { LogoutStart, ShowModal, HideModal, FetchUserStart} from '../../../actions';
+import { ChangeLangAction } from '../../../actions/langActions';
 
 class NavBar extends React.Component {
     state = { visible: false, placement: 'left', form:"login" };
@@ -112,12 +114,22 @@ class NavBar extends React.Component {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item active">
-                            <Link className="nav-link" to="/">Home</Link>
+                            <Link className="nav-link" to="/"><FormattedMessage id="nav.home" defaultMessage="Home"/></Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="/profile">Profile</Link>
                         </li>
                         {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
+
+                        {/* <!-- Languages --> */}
+                        <li className="nav-item">
+                            <a onClick={() => this.props.ChangeLangAction('en')} className="nav-link">EN</a>
+                        </li>
+
+                        <li className="nav-item">
+                            <a onClick={() => this.props.ChangeLangAction('si')} className="nav-link">SI</a>
+                        </li>
+                        {/* <!-- /Languages --> */}
                     </ul>
                 </div>
 
@@ -141,4 +153,4 @@ const mapStateToProps = state =>{
     return { user: state.user.auth, google_user: state.user.google_auth}
 }
 
-export default connect(mapStateToProps,{LogoutStart, ShowModal, HideModal, FetchUserStart})(NavBar)
+export default connect(mapStateToProps,{LogoutStart, ShowModal, HideModal, FetchUserStart, ChangeLangAction})(NavBar)
