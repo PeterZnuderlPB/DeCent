@@ -14,13 +14,10 @@ import {
     LOGOUT_START,
     LOGOUT_SUCCESS,
     LOGOUT_FAIL,
-    FETCH_POSTS_START,
-    FETCH_POSTS_SUCCESS,
-    FETCH_POSTS_FAIL,
     MODAL_SHOW,
     MODAL_HIDE,
 } from './types'
-import {django_client_id, django_client_secret} from './googleAuthActions'
+import {django_client_id, django_client_secret} from '../apis'
 import{ googleLogoutAction} from './googleAuthActions'
 
 //----------------
@@ -172,39 +169,6 @@ export const LogoutSuccess = () => async dispatch => {
 export const LogoutFail = (err_msg) => {
     message.error("Logout failed. Please try again.", 2);
     return { type: LOGOUT_FAIL, payload: err_msg}
-}
-
-//Actions POSTS
-export const FetchPostsStart = (params={}) => async dispatch =>{
-    dispatch({ type: FETCH_POSTS_START});
-    const response = await con.get({
-        url: 'https://randomuser.me/api',
-          method: 'get',
-          data: {
-            results: 10,
-            ...params,
-          },
-          responseType: 'json',
-        }
-    ).catch(err => { 
-        console.warn(err);
-        dispatch(FetchPostsFail(err));
-    })
-
-    dispatch(FetchPostsSuccess(response.data));
-
-    console.log(response);
-    //dispatch({})
-    history.push('/');
-}
-
-export const FetchPostsSuccess = (data) => {
-    return { type: FETCH_POSTS_SUCCESS, payload: data}
-}
-
-export const FetchPostsFail = (err_msg) => {
-    message.error("Fetchin posts failed. Please try again.", 2);
-    return { type: FETCH_POSTS_FAIL, payload: err_msg}
 }
 
 //Modal action

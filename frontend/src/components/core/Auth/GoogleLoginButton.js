@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 
 import { convertGoogleToken } from "../../../actions/googleAuthActions";
 import { GoogleLogin } from "react-google-login";
+import { google_client_id} from "../../..//apis"
 
 import { FormattedMessage } from 'react-intl';
 
@@ -23,7 +24,7 @@ const GoogleLoginButton = props => {
 
   return (
     <GoogleLogin
-      clientId="254472747355-6umtrkcedqn00tg7ec17l705ftttam0r.apps.googleusercontent.com"
+      clientId = {google_client_id}
       buttonText="Login"
       onSuccess={onSuccess}
       onFailure={onFailure}

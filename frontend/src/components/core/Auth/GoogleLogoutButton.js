@@ -4,6 +4,7 @@ import gapi from "gapi-client";
 import { GoogleLogout } from "react-google-login";
 
 import { googleLogoutAction } from "../../../actions/googleAuthActions";
+import { google_client_id} from "../../..//apis"
 
 import { FormattedMessage } from 'react-intl';
 
@@ -11,8 +12,7 @@ class GoogleLogoutButton extends Component {
   componentWillMount() {
     gapi.load("auth2", () => {
       this.auth2 = gapi.auth2.init({
-        client_id:
-          "254472747355-6umtrkcedqn00tg7ec17l705ftttam0r.apps.googleusercontent.com"
+        client_id: google_client_id
       });
     });
   }
