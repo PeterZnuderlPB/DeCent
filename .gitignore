@@ -97,3 +97,6 @@ celerybeat-schedule
 
 # node_modules
 **/node_modules
+
+# Tokens
+frontend/src/actions/googleAuthActions.js

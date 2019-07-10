@@ -5,6 +5,8 @@ import { LoginStart } from '../../../actions'
 import 'antd/dist/antd.css';
 //import './index.css';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { FormattedMessage } from 'react-intl';
+import lang from '../../../translations/translations';
 
 class LogInForm extends React.Component {
     
@@ -51,22 +53,22 @@ class LogInForm extends React.Component {
       <Form {...formItemLayout} onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
           {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+            rules: [{ required: true, message: <FormattedMessage id="auth.usernameEmpty" defaultMessage="Please input your username!" /> }],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Username"
+              placeholder={lang[this.props.lang]['auth.username']}
             />,
           )}
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Please input your Password!' }],
+            rules: [{ required: true, message: <FormattedMessage id="auth.passwordEmpty" defaultMessage="Please input your password!" /> }],
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
               type="password"
-              placeholder="Password"
+              placeholder={lang[this.props.lang]['auth.password']}
             />,
           )}
         </Form.Item>
@@ -74,14 +76,14 @@ class LogInForm extends React.Component {
           {getFieldDecorator('remember', {
             valuePropName: 'checked',
             initialValue: true,
-          })(<Checkbox>Remember me</Checkbox>)}
+          })(<Checkbox><FormattedMessage id="auth.remember" defaultMessage="Remember me" /></Checkbox>)}
           <a className="login-form-forgot" href="">
-            Forgot password
+            <FormattedMessage id="auth.forgotPassword" defaultMessage="Forgot password" />
           </a>
           <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
+            <FormattedMessage id="auth.login" defaultMessage="Log in" />
           </Button>
-          Or <a href="">register now!</a>
+          <FormattedMessage id="auth.or" defaultMessage="or" /> <a href=""><FormattedMessage id="auth.register" defaultMessage="Register now!" /></a>
         </Form.Item>
       </Form>
     );
@@ -89,7 +91,7 @@ class LogInForm extends React.Component {
 }
 
 const mapStateToProps = state =>{
-    return { user: state.auth}
+    return { user: state.auth, lang: state.lang }
 }
 
 const WrappedLogInForm = Form.create({ name: 'standard_login' })(LogInForm);

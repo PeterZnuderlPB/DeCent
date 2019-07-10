@@ -5,6 +5,8 @@ import { convertGoogleToken } from "../../../actions/googleAuthActions";
 import { GoogleLogin } from "react-google-login";
 import { google_client_id} from "../../..//apis"
 
+import { FormattedMessage } from 'react-intl';
+
 const GoogleLoginButton = props => {
   const onSuccess = response => {
     console.log(response);
