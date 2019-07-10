@@ -118,37 +118,8 @@ class PBTable extends React.Component {
           );
     };
 
-    TranslateColumns() {
-      let translatedColumns = [];
-
-      this.state.availableColumns.map(col => {
-        col = lang[this.props.lang][`table.${col}`];  
-        translatedColumns.push(col);
-      });
-
-      return translatedColumns;
-    }
-
-    TranslateToEnglish(columns) {
-      let translatedColumns = [];
-      let englishKeys = [];
-      let foreignTranslations = lang[this.props.lang];
-      let foreignTranslationsObject = Object.keys(foreignTranslations);
-      
-      for(let i = 0; i<columns.length; i++) {
-        foreignTranslationsObject.forEach(el => {
-          if(foreignTranslations[el] == columns[i]){
-            englishKeys.push(el);
-          }
-        });
-      }
-
-      englishKeys.map(col => {
-        col = lang['en'][col];
-        translatedColumns.push(col);
-      })
-
-      return translatedColumns;
+    TranslateColumn = (col) => {
+      return lang[this.props.lang][`table.${col}`];
     }
 
     ActiveColumnsContent =()=>{
@@ -166,7 +137,7 @@ class PBTable extends React.Component {
         </div>
         <br />
         <this.CheckboxGroup
-            options={this.TranslateColumns()}
+            options={this.state.availableColumns.map(col => ({label: this.TranslateColumn(col), value: col}))}
             value={this.state.SCCheckedList}
             onChange={this.handleActiveColumnsChange}
           />
@@ -180,20 +151,15 @@ class PBTable extends React.Component {
     }
 
     handleActiveColumnsChange = checkedList => {
-      let translatedCheckedList = this.TranslateToEnglish(checkedList);
-      console.log(this.state.availableColumns);
-      console.log(checkedList);
-      console.log(translatedCheckedList);
 
       this.setState({
-          SCCheckedList: translatedCheckedList,
-          SCIndeterminate: !!translatedCheckedList.length && translatedCheckedList.length < this.state.availableColumns.length,
-          SCCheckAll: translatedCheckedList.length === this.state.availableColumns.length,
+          SCCheckedList: checkedList,
+          SCIndeterminate: !!checkedList.length && checkedList.length < this.state.availableColumns.length,
+          SCCheckAll: checkedList.length === this.state.availableColumns.length,
       },() => this.fetch());
     };
 
     handleActiveColumnsCheckAllClick = e => {
-
       this.setState({
         SCCheckedList: e.target.checked ? this.state.availableColumns : [],
         SCIndeterminate: false,

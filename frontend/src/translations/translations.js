@@ -5,6 +5,7 @@ export default {
         'nav.login': 'Login',
         'nav.register': 'Register',
         'nav.logout': 'Logout',
+        'nav.welcome': 'Welcome',
 
         'auth.drawer': 'Login/Register',
         'auth.username': 'Username',
@@ -36,7 +37,12 @@ export default {
         'table.clearFilters': 'Clear filters',
         'table.author_id': 'author_id',
         'table.columns': 'Columns',
-        'table.checkAll': 'Check all'
+        'table.checkAll': 'Check all',
+
+        'modal.open': 'Open Modal',
+        'modal.title': 'Modal',
+        'modal.cancel': 'Cancel',
+        'modal.ok': 'Ok'
     },
     si: {
         'nav.home': 'Domov',
@@ -44,6 +50,7 @@ export default {
         'nav.login': 'Prijava',
         'nav.register': 'Registracija',
         'nav.logout': 'Odjava',
+        'nav.welcome': 'Dobrodosel',
 
         'auth.drawer': 'Prijava/Registracija',
         'auth.username': 'Uporabniško ime',
@@ -75,6 +82,11 @@ export default {
         'table.clearFilters': 'Ponastavi filtre',
         'table.author_id': 'id avtorja',
         'table.columns': 'Stolpci',
-        'table.checkAll': 'Označi vse'
+        'table.checkAll': 'Označi vse',
+
+        'modal.open': 'Odpri modalno okno',
+        'modal.title': 'Modalno okno',
+        'modal.cancel': 'Prekini',
+        'modal.ok': 'Ok'
     }
 };

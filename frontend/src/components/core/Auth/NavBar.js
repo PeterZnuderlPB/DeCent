@@ -77,7 +77,7 @@ class NavBar extends React.Component {
                     null
                  }
                  <span >
-                 Welcome, {this.props.user.userInfo.first_name? this.props.user.userInfo.first_name:this.props.user.userInfo.username}
+                 <FormattedMessage id="nav.welcome" defaultMessage="Welcome" />, {this.props.user.userInfo.first_name? this.props.user.userInfo.first_name:this.props.user.userInfo.username}
                  </span>
             </li>
             <li className="nav-item">
