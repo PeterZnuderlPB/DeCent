@@ -49,3 +49,10 @@ export const FETCH_TABLE_FAIL = "FETCH_TABLE_FAIL";
 //  Language actions
 //-------------------
 export const CHANGE_LANG = "CHANGE_LANG";
+
+//-----------------
+//  Upload actions
+//-----------------
+export const UPLOAD_FILE_START = "UPLOAD_FILE_START";
+export const UPLOAD_FILE_SUCCESS = "UPLOAD_FILE_SUCCESS";
+export const UPLOAD_FILE_FAIL = "UPLOAD_FILE_FAIL";
