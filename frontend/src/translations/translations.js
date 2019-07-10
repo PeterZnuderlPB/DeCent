@@ -42,7 +42,9 @@ export default {
         'modal.open': 'Open Modal',
         'modal.title': 'Modal',
         'modal.cancel': 'Cancel',
-        'modal.ok': 'Ok'
+        'modal.ok': 'Ok',
+
+        'lang.language': 'Language',
     },
     si: {
         'nav.home': 'Domov',
@@ -87,6 +89,8 @@ export default {
         'modal.open': 'Odpri modalno okno',
         'modal.title': 'Modalno okno',
         'modal.cancel': 'Prekini',
-        'modal.ok': 'Ok'
+        'modal.ok': 'Ok',
+
+        'lang.language': 'Jezik',
     }
 };

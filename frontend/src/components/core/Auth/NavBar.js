@@ -8,6 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import LogInForm from './LogInForm';
 import RegisterForm from './RegisterForm';
 import GoogleLoginButton from './GoogleLoginButton';
+import LanguageSelect from '../LanguageSelect'
 //import GoogleLogoutButton from './GoogleLogoutButton'
 import { LogoutStart, ShowModal, HideModal, FetchUserStart} from '../../../actions';
 import { ChangeLangAction } from '../../../actions/langActions';
@@ -121,15 +122,7 @@ class NavBar extends React.Component {
                         </li>
                         {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
 
-                        {/* <!-- Languages --> */}
-                        <li className="nav-item">
-                            <a onClick={() => this.props.ChangeLangAction('en')} className="nav-link">EN</a>
-                        </li>
-
-                        <li className="nav-item">
-                            <a onClick={() => this.props.ChangeLangAction('si')} className="nav-link">SI</a>
-                        </li>
-                        {/* <!-- /Languages --> */}
+                        <LanguageSelect />
                     </ul>
                 </div>
 
