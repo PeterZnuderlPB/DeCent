@@ -30,7 +30,7 @@ class LanguageSelect extends React.Component {
         return(
             <Dropdown overlay={menu}>
                 <Button>
-                    <FormattedMessage id="lang.language" defaultMessage="Language" /> <Icon type="bars" />
+                    <Icon type="menu-unfold" /> <FormattedMessage id="lang.language" defaultMessage="Language" />
                 </Button>
             </Dropdown>
         );

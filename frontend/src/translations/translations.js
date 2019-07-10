@@ -52,7 +52,7 @@ export default {
         'nav.login': 'Prijava',
         'nav.register': 'Registracija',
         'nav.logout': 'Odjava',
-        'nav.welcome': 'Dobrodosel',
+        'nav.welcome': 'Dobrodošel',
 
         'auth.drawer': 'Prijava/Registracija',
         'auth.username': 'Uporabniško ime',

@@ -121,7 +121,6 @@ class NavBar extends React.Component {
                             <Link className="nav-link" to="/profile"><FormattedMessage id="nav.profile" defaultMessage="Profile" /></Link>
                         </li>
                         {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
-
                         <LanguageSelect />
                     </ul>
                 </div>
