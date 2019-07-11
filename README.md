@@ -4,7 +4,7 @@
 * NodeJS (ReactJS) - Frontend
 * Python3, Django - Backend
 
-## Installation
+## Installation & Setup
 ### Frontend
 * Download and install NodeJS https://nodejs.org/en/download/
 * Navigate to frontend folder, run `npm install`, `npm start` in command line
@@ -18,4 +18,7 @@
 * Run `python manage.py runserver` to start the server
 * Open up Chrome, navigate to `http://127.0.0.1:8000/admin` and login with your superuser
 * Add new application to Django Oauth Toolkit, select your user, copy settings from the image below
-![Application settings](https://i.imgur.com/M7frBEh.png)
+<details>
+  <summary>Settings</summary>
+  ![Application settings](https://i.imgur.com/M7frBEh.png)
+</details>
