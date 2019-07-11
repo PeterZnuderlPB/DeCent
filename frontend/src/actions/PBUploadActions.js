@@ -1,6 +1,8 @@
 import { UPLOAD_FILE_START, UPLOAD_FILE_SUCCESS, UPLOAD_FILE_FAIL, UPLOAD_FILE_ADD } from './types';
 import { message } from 'antd';
 
+// TODO: Change fetch to axios
+
 export const UploadFile = (filesToUpload) => (dispatch, getState) => {
     dispatch(UploadFileStart(filesToUpload));
     const { user } = getState();
@@ -37,8 +39,6 @@ export const UploadFile = (filesToUpload) => (dispatch, getState) => {
             });
         });
 }
-
-// Payload - Uploading status
 
 export const UploadFileStart = (filesToUpload) => {
     return {

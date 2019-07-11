@@ -4,6 +4,10 @@ import { connect } from 'react-redux';
 import { UploadFile } from '../../../actions/PBUploadActions';
 import lang from '../../../translations/translations';
 
+//---------------------------
+// Handles all files uploads
+//---------------------------
+
 class UploadButton extends React.Component {
     handleUpload = () => {
         const filesToUpload = this.props.upload.files.slice(-this.props.maxfiles); // Adds files from store - slice by maximum length

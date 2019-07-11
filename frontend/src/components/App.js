@@ -11,6 +11,7 @@ import translations from '../translations/translations';
 import NavBar from './core/Auth/NavBar';
 import PBModal from './core/PBModal';
 import Profile from './core/Profile';
+import PBMail from './core/PBMail';
 
 class App extends React.Component{
     render(){
@@ -32,6 +33,7 @@ class App extends React.Component{
                 </Router>
             </div>
             <BackTop />
+            <PBMail />
             </>
             </IntlProvider>
             
