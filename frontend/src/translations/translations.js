@@ -42,7 +42,11 @@ export default {
         'modal.open': 'Open Modal',
         'modal.title': 'Modal',
         'modal.cancel': 'Cancel',
-        'modal.ok': 'Ok'
+        'modal.ok': 'Ok',
+
+        'upload.selectFile': 'Select File',
+        'upload.loading': 'Uploading',
+        'upload.start': 'Start upload'
     },
     si: {
         'nav.home': 'Domov',
@@ -87,6 +91,10 @@ export default {
         'modal.open': 'Odpri modalno okno',
         'modal.title': 'Modalno okno',
         'modal.cancel': 'Prekini',
-        'modal.ok': 'Ok'
+        'modal.ok': 'Ok',
+
+        'upload.selectFile': 'Izberi datoteko',
+        'upload.loading': 'Nalaganje',
+        'upload.start': 'Zacni nalaganje'
     }
 };

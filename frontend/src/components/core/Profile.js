@@ -13,6 +13,8 @@ class Profile extends React.Component {
             <>
             <PBUpload 
             maxfiles={2}
+            filetype={"image/*"}
+            category={"test123"}
             />
 
            <PBTable 

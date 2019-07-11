@@ -2,11 +2,11 @@ import React from 'react';
 import { Upload, Button, Icon } from 'antd';
 import { connect } from 'react-redux';
 import { UploadFile } from '../../../actions/PBUploadActions';
+import lang from '../../../translations/translations';
 
 class UploadButton extends React.Component {
     handleUpload = () => {
-        console.log(this.props.upload);
-        const filesToUpload = this.props.files; // Add files from store
+        const filesToUpload = this.props.upload.files.slice(-this.props.maxfiles); // Adds files from store - slice by maximum length
         this.props.UploadFile(filesToUpload);
     }
 
@@ -15,18 +15,18 @@ class UploadButton extends React.Component {
             <Button
             type="primary"
             onClick={this.handleUpload}
-            disabled={this.props.length === 0}
+            disabled={this.props.upload.files.length === 0}
             loading={this.props.upload.loading}
             style={{ marginTop: 16 }}
             >
-            {this.props.upload.loading ? 'Uploading' : 'Start Upload'}
+            {this.props.upload.loading ? lang[this.props.lang]['upload.loading'] : lang[this.props.lang]['upload.start']}
             </Button>
         );
     }
 }
 
 const mapStateToProps = state => {
-    return { upload: state.upload }
+    return { upload: state.upload, lang: state.lang }
 }
 
 export default connect(mapStateToProps, { UploadFile })(UploadButton);

@@ -2,49 +2,43 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Upload, Button, Icon } from 'antd';
 import UploadButton from './buttons/UploadButton';
+import { UploadFileAdd } from '../../actions/PBUploadActions';
+import lang from '../../translations/translations';
 
 class PBUpload extends React.Component {
-    state = {
-    fileList: [],
-  };
     render() {
-        let fileList = this.state.fileList.slice(-this.props.maxfiles);
+        let fileList = this.props.upload.files.slice(-this.props.maxfiles);
 
         const props = {
             onRemove: file => {
-                this.setState(state => {
-                const index = state.fileList.indexOf(file);
-                const newFileList = state.fileList.slice();
+                const index = this.props.upload.files.indexOf(file);
+                const newFileList = this.props.upload.files.slice();
                 newFileList.splice(index, 1);
-                return {
-                    fileList: newFileList,
-                };
-                });
+                this.props.UploadFileAdd(newFileList);
             },
             beforeUpload: file => {
-                this.setState(state => ({
-                fileList: [...state.fileList, file],
-                }));
-                return false;
+                this.props.UploadFileAdd([...this.props.upload.files, file])
+                return false
             },
+            accept: this.props.filetype,
             fileList,
         };
 
         return (
             <div style={{ margin: '3%' }}>
                 <Upload {...props}>
-                <Button>
-                    <Icon type="upload" /> Select File
-                </Button>
+                    <Button>
+                        <Icon type="upload" /> {lang[this.props.lang]['upload.selectFile']}
+                    </Button>
                 </Upload>
-                <UploadButton files={this.state.fileList.slice(-this.props.maxfiles)} length={this.state.fileList.length} />
+                <UploadButton maxfiles={this.props.maxfiles} />
             </div>
         );
     }
 }
 
 const mapStateToPros = (state) => {
-    return { upload: state.upload, auth: state.user.auth };
+    return { upload: state.upload, auth: state.user.auth, lang: state.lang };
 }
 
-export default connect(mapStateToPros)(PBUpload);
+export default connect(mapStateToPros, { UploadFileAdd })(PBUpload);
