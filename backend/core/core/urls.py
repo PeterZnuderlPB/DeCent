@@ -23,6 +23,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 #Import API views
 from .views import GroupList, home
+from .mail import SendMail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,6 +39,7 @@ urlpatterns = [
     path('groups/', GroupList.as_view()),
     path('', include('post.urls')),
     path('', include('file.urls')),
+    path('api/mail/', SendMail.as_view())
 ]
 
 if settings.DEBUG:

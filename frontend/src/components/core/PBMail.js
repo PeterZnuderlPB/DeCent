@@ -1,5 +1,7 @@
 import React from 'react';
-import { Modal, Button, Input, Form, Checkbox, Icon } from 'antd';
+import { Modal, Button, Input, Form, Checkbox, Icon, message } from 'antd';
+import { connect } from 'react-redux';
+import con from '../../apis';
 import './styles/contact.css';
 
 const checkBoxData = [
@@ -14,7 +16,7 @@ class PBMail extends React.Component {
         file: null,
         subject: '',
         content: ''
-    };
+        };
 
     showModal = () => {
         this.setState({
@@ -23,14 +25,49 @@ class PBMail extends React.Component {
     };
 
     handleOk = e => {
+        if (this.state.content === '') {
+            message.error("Content is required!", 1);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('userId', this.props.user.userInfo.id);
+        formData.append('subject', this.state.subject);
+        formData.append('content', this.state.content);
+        formData.append('file', this.state.file);
+
+        const axiosConfig = {
+            headers: {
+                'Authorization': 'Bearer ' + this.props.user.token.access_token
+            }
+        }
+
+        con.post('api/mail/', formData, axiosConfig)
+        .then(res => {
+            if (res.status === 204) {
+                message.success("Successfully sent message.");
+            }
+        })
+        .catch(err => {
+            if (err.response.status === 401) {
+                message.error("You need to be logged in in order to send message!");
+            }
+
+            if (err.response.status === 404) {
+                message.error("You need to fill the content!");
+            }
+        });
+
         this.setState({
         visible: false,
         file: null,
-        subject: '',
-        content: ''
         }, () => {
             setTimeout(() => {
-                this.setState({ checked: ['subject'] }) // Delay to sync with fadeout anim
+                this.setState({ 
+                    checked: ['subject'], 
+                    subject: '',
+                    content: '' 
+                }) // Delay to sync with fadeout anim
             }, 100);
         });
     };
@@ -125,4 +162,10 @@ class PBMail extends React.Component {
     }
 }
 
-export default PBMail;
+const mapStateToProps = state => {
+    return {
+        user: state.user.auth
+    }
+}
+
+export default connect(mapStateToProps)(PBMail);
