@@ -156,6 +156,17 @@ class PostDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializerBasic
 
+    # Prevent editing locked posts - Aljaz
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        if instance.is_locked:
+            return Response("Locked posts cannot be edited.", status=403)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
 class PostBaseDetailPrintView(ListView):
     model=Post
     template_name="post/post_pdf.html"
