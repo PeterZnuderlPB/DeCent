@@ -3,11 +3,7 @@ import { Modal, Button, Input, Form, Checkbox, Icon, message } from 'antd';
 import { connect } from 'react-redux';
 import con from '../../apis';
 import './styles/contact.css';
-
-const checkBoxData = [
-    {label: 'Subject', value: 'subject'},
-    {label: 'File', value: 'file'}
-]
+import lang from '../../translations/translations';
 
 class PBMail extends React.Component {
     state = { 
@@ -26,7 +22,7 @@ class PBMail extends React.Component {
 
     handleOk = e => {
         if (this.state.content === '') {
-            message.error("Content is required!", 1);
+            message.error(lang[this.props.lang]['mail.contentError'], 1);
             return;
         }
 
@@ -45,16 +41,16 @@ class PBMail extends React.Component {
         con.post('api/mail/', formData, axiosConfig)
         .then(res => {
             if (res.status === 204) {
-                message.success("Successfully sent message.");
+                message.success(lang[this.props.lang]['mail.success']);
             }
         })
         .catch(err => {
             if (err.response.status === 401) {
-                message.error("You need to be logged in in order to send message!");
+                message.error(lang[this.props.lang]['mail.authError']);
             }
 
             if (err.response.status === 404) {
-                message.error("You need to fill the content!");
+                message.error(lang[this.props.lang]['mail.contentError']);
             }
         });
 
@@ -99,40 +95,45 @@ class PBMail extends React.Component {
     render() {
         const { TextArea } = Input;
 
+        const checkBoxData = [
+            {label: lang[this.props.lang]['mail.subject'], value: 'subject'},
+            {label: lang[this.props.lang]['mail.fileLabel'], value: 'file'}
+        ]
+
         const formItemLayout = {
             labelCol: { span: 4 },
             wrapperCol: { span: 18 },
         }
 
         let renderSubject = this.state.checked.indexOf('subject') != -1
-        ? <Form.Item label="Subject" {...formItemLayout}> <Input name="subject" value={this.state.subject} onChange={this.handleInputChange} placeholder="Subject" {...formItemLayout} /> </Form.Item>
+        ? <Form.Item label={lang[this.props.lang]['mail.subject']} {...formItemLayout}> <Input name="subject" value={this.state.subject} onChange={this.handleInputChange} placeholder={lang[this.props.lang]['mail.subject']} {...formItemLayout} /> </Form.Item>
         : <div className="contact-empty">&nbsp;</div>;
 
         let rendeFile = this.state.checked.indexOf('file') != -1
-        ? <Form.Item label="File" className="contact-file-wrapper" {...formItemLayout}>
-            <Button type="primary"><Icon type="upload" /> Select file</Button>
-            <p style={{ display: 'inline', marginLeft: '2%' }}>{this.state.file === null ? 'Please a select file' : `${this.state.file.name.slice(0, 15)}... ${this.state.file.name.substr(this.state.file.name.lastIndexOf('.') + 1)}`}</p>
+        ? <Form.Item label={lang[this.props.lang]['mail.fileLabel']} className="contact-file-wrapper" {...formItemLayout}>
+            <Button type="primary"><Icon type="upload" /> {lang[this.props.lang]['mail.selectFile']}</Button>
+            <p style={{ display: 'inline', marginLeft: '2%' }}>{this.state.file === null ? lang[this.props.lang]['mail.selectFilePlaceholder'] : `${this.state.file.name.slice(0, 15)}... ${this.state.file.name.substr(this.state.file.name.lastIndexOf('.') + 1)}`}</p>
             <Input onChange={this.handleFileChange} type="file" placeholder="File" {...formItemLayout} /> 
           </Form.Item>
         : <div>&nbsp;</div>;
 
         return (
             <div>
-                <div className="contact-us" onClick={this.showModal}>Contact us</div>
+                <div className="contact-us" onClick={this.showModal}>{lang[this.props.lang]['mail.contactUs']}</div>
                 <Modal
                 centered
                 style={{ userSelect: 'none' }}
-                title="Contact"
+                title={lang[this.props.lang]['mail.contact']}
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
                 footer={[
                     <div className="contact-center">
                     <Button key="back" onClick={this.handleCancel}>
-                      Return
+                        {lang[this.props.lang]['mail.return']}
                     </Button>,
                     <Button key="submit" type="primary" onClick={this.handleOk}>
-                      Submit
+                        {lang[this.props.lang]['mail.submit']}
                     </Button>,
                     </div>
                   ]}
@@ -147,7 +148,7 @@ class PBMail extends React.Component {
 
                     <Form style={{ userSelect: 'none' }} className="contact-transition" layout="horizontal">
                         {renderSubject}
-                        <Form.Item label="Content" {...formItemLayout} >
+                        <Form.Item label={lang[this.props.lang]['mail.content']} {...formItemLayout} >
                             <TextArea 
                             name="content" value={this.state.content} 
                             onChange={this.handleInputChange} 
@@ -164,7 +165,8 @@ class PBMail extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        user: state.user.auth
+        user: state.user.auth,
+        lang: state.lang
     }
 }
 
