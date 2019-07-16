@@ -4,6 +4,12 @@ from django.template import Context
 
 from django.conf import settings
 
+# Email - Aljaz
+from django.http import HttpResponse
+from rest_framework.views import APIView
+from user.models import CustomUser
+from rest_framework import permissions
+
 def send_mail(self,subject = None, from_email = None, to = None, context = None, plain_text_template = None, html_template = None):
     if settings.DEBUG:
         if subject == None:
@@ -29,3 +35,32 @@ def send_mail(self,subject = None, from_email = None, to = None, context = None,
     mail = EmailMultiAlternatives(subject, text_content, from_email, [to])
     mail.attach_alternative(html_content, "text/html")
     mail.send(False)
+
+# Email - Aljaz
+class SendMail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        data = request.POST
+
+        if data['content'] == '':
+            return HttpResponse(status=404)
+
+        user = CustomUser.objects.get(id=data['userId'])
+
+        email = EmailMultiAlternatives()
+        email.from_email = 'ReactAppContact@probit.si' # Change? from user.email
+        email.to = ['djangosmtp554@gmail.com'] # Change
+        email.body = data['content']
+
+        if data['subject'] == '':
+            email.subject = f'No subject - ({user.username})'
+        else:
+            email.subject = data['subject'] + f'- ({user.username})'
+
+        if request.FILES:
+            file = request.FILES['file']
+            email.attach(file.name, file.read(), file.content_type)
+
+        email.send(False)
+        return HttpResponse(status=204)

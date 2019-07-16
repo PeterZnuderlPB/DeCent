@@ -1,8 +1,12 @@
 from django.db import models
 from django.conf import settings
+
+from core.models import PBModel
 # Create your models here.
 
-class Post(models.Model):
+class Post(PBModel):
+    pass
+
     title = models.CharField(max_length = 100)
     content = models.TextField()
     date_published = models.DateField()

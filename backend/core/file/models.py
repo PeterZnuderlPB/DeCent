@@ -3,9 +3,13 @@ from django.conf import settings
 
 # Create your models here.
 
+def setPath(self, filename):
+    url = 'files/%s/%s/%s' % ('category', self.owner.id, filename) # TODO: Add category table => Replace 'category'
+    return url
+
 class File(models.Model):
     name = models.CharField(max_length = 100)
-    file = models.FileField(upload_to='files/general')
+    file = models.FileField(upload_to=setPath)
     upload_date = models.DateField()
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="files", on_delete=models.CASCADE)
 

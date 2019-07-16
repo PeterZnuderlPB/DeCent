@@ -44,7 +44,25 @@ export default {
         'modal.cancel': 'Cancel',
         'modal.ok': 'Ok',
 
+        'upload.selectFile': 'Select File',
+        'upload.loading': 'Uploading',
+        'upload.start': 'Start upload',
+
+        'mail.contentError': 'Content must not be empty!',
+        'mail.authError': 'You need to be logged in in order to send a message!',
+        'mail.success:': 'Successfully sent a message',
+        'mail.subject': 'Subject',
+        'mail.selectFile': 'Select file',
+        'mail.selectFilePlaceholder': 'Please select a file',
+        'mail.fileLabel': 'File',
+        'mail.contactUs': 'Contact us',
+        'mail.return': 'Return',
+        'mail.submit': 'Submit',
+        'mail.content': 'Content',
+        'mail.contact': 'Contact'
+
         'lang.language': 'Language',
+
     },
     si: {
         'nav.home': 'Domov',
@@ -91,6 +109,23 @@ export default {
         'modal.cancel': 'Prekini',
         'modal.ok': 'Ok',
 
+        'upload.selectFile': 'Izberi datoteko',
+        'upload.loading': 'Nalaganje',
+        'upload.start': 'Zacni nalaganje',
+
+        'mail.contentError': 'Vsebina ne sme biti prazna!',
+        'mail.authError': 'Prijavi se da pošlješ sporočilo!',
+        'mail.success:': 'Sporočilo uspešno poslano',
+        'mail.subject': 'Zadeva',
+        'mail.selectFile': 'Izberi datoteko',
+        'mail.selectFilePlaceholder': 'Izberi datoteko',
+        'mail.fileLabel': 'Datoteka',
+        'mail.contactUs': 'Kontaktiraj nas',
+        'mail.return': 'Prekini',
+        'mail.submit': 'Pošlji',
+        'mail.content': 'Vsebina',
+
         'lang.language': 'Jezik',
+
     }
 };

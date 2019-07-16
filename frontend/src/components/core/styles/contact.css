@@ -1,0 +1,38 @@
+.contact-us {
+    text-align: center;
+    user-select: none;
+    transition: 0.2s all;
+}
+
+.contact-us:hover {
+    cursor: pointer;
+    color: #40A9FF;
+}
+
+.contact-empty {
+    width: 427px;
+    height: 47px;
+    margin-bottom: 24px;
+}
+
+.contact-transition {
+    transition: 1s all ease-in-out;
+}
+
+.contact-center {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
+.contact-file-wrapper {
+    overflow: hidden;
+}
+
+.contact-file-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+  }
