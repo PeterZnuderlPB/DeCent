@@ -1,3 +1,4 @@
 {
-    "python.dataScience.notebookFileRoot": "${workspaceFolder}\\\\Scripts"
+    "python.dataScience.notebookFileRoot": "${workspaceFolder}\\\\Scripts",
+    "python.pythonPath": "C:\\Python36\\python.exe"
 }

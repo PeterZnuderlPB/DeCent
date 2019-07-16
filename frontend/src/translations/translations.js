@@ -59,7 +59,7 @@ export default {
         'mail.return': 'Return',
         'mail.submit': 'Submit',
         'mail.content': 'Content',
-        'mail.contact': 'Contact'
+        'mail.contact': 'Contact',
 
         'lang.language': 'Language',
 
