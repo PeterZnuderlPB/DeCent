@@ -61,6 +61,8 @@ export default {
         'mail.content': 'Content',
         'mail.contact': 'Contact'
 
+        'lang.language': 'Language',
+
     },
     si: {
         'nav.home': 'Domov',
@@ -68,7 +70,7 @@ export default {
         'nav.login': 'Prijava',
         'nav.register': 'Registracija',
         'nav.logout': 'Odjava',
-        'nav.welcome': 'Dobrodosel',
+        'nav.welcome': 'Dobrodošel',
 
         'auth.drawer': 'Prijava/Registracija',
         'auth.username': 'Uporabniško ime',
@@ -122,6 +124,8 @@ export default {
         'mail.return': 'Prekini',
         'mail.submit': 'Pošlji',
         'mail.content': 'Vsebina',
-        'mail.contact': 'Kontakt'
+
+        'lang.language': 'Jezik',
+
     }
 };
