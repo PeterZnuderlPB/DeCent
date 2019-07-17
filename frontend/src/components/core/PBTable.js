@@ -257,11 +257,32 @@ class PBTable extends React.Component {
                         }, // click header row
                     };}     
                 })
-            }
+            }    
         });
+        allKeys.push({
+          title: 'Eddit',
+          dataIndex:'',
+          key:'x',
+          render: () => <input type='button' value='Eddit' onClick={this.setRedirect} id={this.nextButtonId()} />   
+        }) 
         //console.log(allKeys)
         return allKeys;
     }
+
+    buttonId=-1
+    nextButtonId = () => {
+      this.buttonId= this.buttonId+1
+      return this.buttonId //this.state.data[this.buttonId]['id']
+    }
+
+    setRedirect = (event) => {
+      console.log(event.target.id);
+      this.setState({
+        redirectUrl: "/EditView/post/" + event.target.id,
+        redirect: true
+      });
+    }
+
 
     render(){
         //console.log(this.props)
@@ -294,6 +315,7 @@ class PBTable extends React.Component {
               onClick: () => {this.setSorting(column)}, // click header row
             };
           }}*/
+          {...this.buttonId=-1}
            />
            </>
         );
