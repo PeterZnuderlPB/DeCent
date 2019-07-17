@@ -12,6 +12,8 @@ import NavBar from './core/Auth/NavBar';
 import PBModal from './core/PBModal';
 import Profile from './core/Profile';
 import PBMail from './core/PBMail';
+import PBEditView from './core/PBEditView'
+
 
 class App extends React.Component{
     render(){
@@ -30,6 +32,7 @@ class App extends React.Component{
                     <Route path="/" component={PBModal}/>
                     <hr/>
                     <Route path="/" exact component={Profile}/>
+                    <Route path="/EditView/:table_name/:id" exact component={PBEditView}/>
                 </Router>
             </div>
             <BackTop />
