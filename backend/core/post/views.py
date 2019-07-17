@@ -2,7 +2,7 @@ import json
 from django.conf import settings
 from django.views.generic import ListView
 from django.http import QueryDict
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 #from django_weasyprint import WeasyTemplateResponseMixin
 #Redis
@@ -153,8 +153,19 @@ class PostDetails(generics.RetrieveUpdateDestroyAPIView):
         'POST':['post.add_post'],
         'PUT':['post.change_post'],
     }
+    model = Post
     queryset = Post.objects.all()
     serializer_class = PostSerializerBasic
+
+    
+    def get(self, request, pk):
+        instance = self.model.objects.filter(id = pk).values_list()
+        att_types = [field.description for field in self.model._meta.get_fields()]
+        att_names = [field.name for field in self.model._meta.get_fields()]
+        fileds = self.model._meta.get_fields()
+        
+
+        return Response({'data': instance[0], 'column_names': att_names, 'column_types':att_types}, status=status.HTTP_200_OK)
 
     # Prevent editing locked posts - Aljaz
     def update(self, request, *args, **kwargs):
