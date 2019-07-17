@@ -275,7 +275,7 @@ class PBTable extends React.Component {
     buttonId=-1
     nextButtonId = () => {
       this.buttonId= this.buttonId+1
-      return this.buttonId //this.state.data[this.buttonId]['id']
+      return this.state.data[this.buttonId]['id']
     }
 
     setRedirect = (event) => {
