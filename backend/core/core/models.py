@@ -12,6 +12,9 @@ class PBModel(models.Model):
     is_active = models.BooleanField()
     is_locked = models.BooleanField()
 
+    class Meta:
+        abstract = True
+
     def delete(self):
         self.is_active=False
         self.save()
