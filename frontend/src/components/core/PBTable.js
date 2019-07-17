@@ -8,6 +8,8 @@ import axios from 'axios';
 import con from '../../apis';
 import { updateExpression } from '@babel/types';
 //import { FetchPostsStart } from '../../actions'
+import {Redirect} from 'react-router-dom';
+
 
 class PBTable extends React.Component {
     qs = require('qs');
@@ -32,7 +34,8 @@ class PBTable extends React.Component {
         SCIndeterminate: true,
         SCCheckAll: false,
         lastClickedHeader: "",
-        filterValues:{}
+        filterValues:{},
+        redirect: false
     };
     CheckboxGroup = Checkbox.Group;
     
@@ -285,6 +288,9 @@ class PBTable extends React.Component {
 
 
     render(){
+      if (this.state.redirect) {
+        return <Redirect to={this.state.redirectUrl} />
+      }
         //console.log(this.props)
         const columns = this.buildColumns();
         //console.log("Rerendering", this.state)
