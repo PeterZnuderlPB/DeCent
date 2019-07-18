@@ -46,17 +46,16 @@ class SendMail(APIView):
         if data['content'] == '':
             return HttpResponse(status=404)
 
-        user = CustomUser.objects.get(id=data['userId'])
-
+        user = request.user
         email = EmailMultiAlternatives()
-        email.from_email = 'ReactAppContact@probit.si' # Change? from user.email
-        email.to = ['djangosmtp554@gmail.com'] # Change
+        email.from_email = 'ReactApp@probit.si' # Change? from user.email
+        email.to = [data['send_to']]
         email.body = data['content']
 
         if data['subject'] == '':
-            email.subject = f'No subject - ({user.username})'
+            email.subject = f'No subject - ({user.username} #{user.email})'
         else:
-            email.subject = data['subject'] + f'- ({user.username})'
+            email.subject = data['subject'] + f' - ({user.username} #{user.email})'
 
         if request.FILES:
             file = request.FILES['file']

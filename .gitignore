@@ -102,3 +102,4 @@ celerybeat-schedule
 frontend/src/actions/googleAuthActions.js
 frontend/src/apis/index.js
 backend/core/testdb.sqlite3
+*.sqlite3
