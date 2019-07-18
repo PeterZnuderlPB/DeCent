@@ -52,7 +52,8 @@ class PostDetails(generics.RetrieveUpdateDestroyAPIView):
         att_names = [field.name for field in self.model._meta.get_fields()]
         fileds = self.model._meta.get_fields()
         
-
+        print("**************************")
+        print(instance[0])
         return Response({'data': instance[0], 'column_names': att_names, 'column_types':att_types}, status=status.HTTP_200_OK)
 
     # Prevent editing locked posts - Aljaz
