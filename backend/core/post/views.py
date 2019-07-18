@@ -53,6 +53,7 @@ class PostDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
         return PostSerializerBasic
 
 
+
 class PostBaseDetailPrintView(ListView):
     model=Post
     template_name="post/post_pdf.html"
