@@ -35,6 +35,7 @@ class DictionaryFilterParser():
     __keyString = ""
 
     def __init__(self, oldDictionaryList):
+        self.__clearData()
         self.__parse(oldDictionaryList)
 
     def __del__(self):
@@ -66,6 +67,11 @@ class DictionaryFilterParser():
             self.__walkThruDictionary(dictionary)
             self.__emptyDictionaryList.append(self.__emptyDictionary)
             self.__emptyDictionary = {}
+
+    def __clearData(self):
+        self.__emptyDictionaryList = []
+        self.__emptyDictionary = {}
+        self.__keyString = ""
 
     def GetParsedDictionary(self):
         return self.__emptyDictionaryList
@@ -181,9 +187,13 @@ class PBListViewMixin(object):
         visibleFields = final_val.get('visibleFields', None)
 
         serializer = serializerclass(queryset, many=True, fields=visibleFields)
-        dparser = DictionaryFilterParser(serializer.data)
         #ser_field = serializer.get_fields();
+        dparser = DictionaryFilterParser(serializer.data)
+        data = dparser.GetParsedDictionary()
+        # keyNames = [key for key in dparser.GetParsedDictionary()[0].keys()]
+
         fieldNames = [field.name for field in self.model._meta.get_fields()]
+
         response = {
             'table_name': 'Posts Browse',
             'available_columns': fieldNames,
