@@ -29,9 +29,12 @@ class GroupList(generics.ListAPIView):
 def home(request):
 	return render(request, 'home.html')
 
+# Dictionary parser - Aljaz
 class DictionaryFilterParser():
-    __emptyDictionaryList = []
-    __emptyDictionary = {}
+    __fullDictionaryList = []
+    __filteredDictionaryList = []
+    __dictionary = {}
+    __filteredDictionary = collections.OrderedDict()
     __keyString = ""
 
     def __init__(self, oldDictionaryList):
@@ -39,8 +42,10 @@ class DictionaryFilterParser():
         self.__parse(oldDictionaryList)
 
     def __del__(self):
-        self.__emptyDictionaryList = []
-        self.__emptyDictionary = {}
+        self.__fullDictionaryList = []
+        self.__filteredDictionaryList = []
+        self.__dictionary = {}
+        self.__filteredDictionary = collections.OrderedDict()
         self.__keyString = ""
 
     def __getDictionaryDepth(self, dictionary):
@@ -58,23 +63,38 @@ class DictionaryFilterParser():
                     self.__keyString = ""
             else:
                 if not self.__keyString == "":
-                    self.__emptyDictionary[f'{self.__keyString}{key}'] = value
+                    self.__dictionary[f'{self.__keyString}{key}'] = value
                 else:
-                    self.__emptyDictionary[f'{key}'] = value
+                    self.__dictionary[f'{key}'] = value
         
     def __parse(self, dictionaryList):
         for dictionary in dictionaryList:
             self.__walkThruDictionary(dictionary)
-            self.__emptyDictionaryList.append(self.__emptyDictionary)
-            self.__emptyDictionary = {}
+            self.__fullDictionaryList.append(self.__dictionary)
+            self.__dictionary = {}
+
+    def __parseFiltered(self, visibleFields):
+        for dictionary in self.__fullDictionaryList:
+            self.__filteredDictionary = collections.OrderedDict()
+            for visibleField in visibleFields:
+                for key, value in dictionary.items():
+                    if visibleField == key:
+                        self.__filteredDictionary[key] = value
+            self.__filteredDictionaryList.append(self.__filteredDictionary)
 
     def __clearData(self):
-        self.__emptyDictionaryList = []
-        self.__emptyDictionary = {}
+        self.__fullDictionaryList = []
+        self.__filteredDictionaryList = []
+        self.__dictionary = {}
+        self.__filteredDictionary = collections.OrderedDict()
         self.__keyString = ""
 
-    def GetParsedDictionary(self):
-        return self.__emptyDictionaryList
+    def GetFullParsedDictionary(self):
+        return self.__fullDictionaryList
+
+    def GetFilteredParsedDictionary(self, visibleFields):
+        self.__parseFiltered(visibleFields)
+        return self.__filteredDictionaryList
 
 # Usage example of DictionaryFilterParse class
 def MergeDictionary(oldDictionary):
@@ -186,18 +206,14 @@ class PBListViewMixin(object):
             final_val = json.loads(final_val)
         visibleFields = final_val.get('visibleFields', None)
 
-        serializer = serializerclass(queryset, many=True, fields=visibleFields)
-        #ser_field = serializer.get_fields();
+        serializer = serializerclass(queryset, many=True)
         dparser = DictionaryFilterParser(serializer.data)
-        data = dparser.GetParsedDictionary()
-        # keyNames = [key for key in dparser.GetParsedDictionary()[0].keys()]
+        keyNames = [key for key in dparser.GetFullParsedDictionary()[0].keys()]
 
-        fieldNames = [field.name for field in self.model._meta.get_fields()]
-
-        response = {
+        response = {    
             'table_name': 'Posts Browse',
-            'available_columns': fieldNames,
-            'data': serializer.data,
+            'available_columns': keyNames,
+            'data': dparser.GetFilteredParsedDictionary(visibleFields),
             'size': size,
             'settings': final_val
         }
