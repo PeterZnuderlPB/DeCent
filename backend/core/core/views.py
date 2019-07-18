@@ -2,6 +2,7 @@ import json
 from rest_framework import generics, permissions
 from django.contrib.auth.models import Group
 from django.core.cache import cache
+import collections
 
 from .serializers import GroupSerializer
 from .permissions import HasGroupPermission
@@ -27,6 +28,52 @@ class GroupList(generics.ListAPIView):
 
 def home(request):
 	return render(request, 'home.html')
+
+class DictionaryFilterParser():
+    __emptyDictionaryList = []
+    __emptyDictionary = {}
+    __keyString = ""
+
+    def __init__(self, oldDictionaryList):
+        self.__parse(oldDictionaryList)
+
+    def __del__(self):
+        self.__emptyDictionaryList = []
+        self.__emptyDictionary = {}
+        self.__keyString = ""
+
+    def __getDictionaryDepth(self, dictionary):
+        if isinstance(dictionary, dict):
+            return 1 + (max(map(self.__getDictionaryDepth, dictionary.values())) if dictionary else 0)
+        return 0
+
+    def __walkThruDictionary(self, dictionary):
+        for key, value in dictionary.items():
+            if isinstance(value, dict):
+                self.__keyString += f"{key}__"
+                self.__walkThruDictionary(value)
+
+                if self.__getDictionaryDepth(value) == 1:
+                    self.__keyString = ""
+            else:
+                if not self.__keyString == "":
+                    self.__emptyDictionary[f'{self.__keyString}{key}'] = value
+                else:
+                    self.__emptyDictionary[f'{key}'] = value
+        
+    def __parse(self, dictionaryList):
+        for dictionary in dictionaryList:
+            self.__walkThruDictionary(dictionary)
+            self.__emptyDictionaryList.append(self.__emptyDictionary)
+            self.__emptyDictionary = {}
+
+    def GetParsedDictionary(self):
+        return self.__emptyDictionaryList
+
+# Usage example of DictionaryFilterParse class
+def MergeDictionary(oldDictionary):
+    dparser = DictionaryFilterParser(oldDictionary)
+    print(f"NEWDICT: {dparser.GetParsedDictionary()}")
 
 class PBListViewMixin(object): 
     #permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
@@ -134,6 +181,7 @@ class PBListViewMixin(object):
         visibleFields = final_val.get('visibleFields', None)
 
         serializer = serializerclass(queryset, many=True, fields=visibleFields)
+        dparser = DictionaryFilterParser(serializer.data)
         #ser_field = serializer.get_fields();
         fieldNames = [field.name for field in self.model._meta.get_fields()]
         response = {

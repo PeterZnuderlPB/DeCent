@@ -44,7 +44,6 @@ class PostDetails(generics.RetrieveUpdateDestroyAPIView):
     model = Post
     queryset = Post.objects.all()
     serializer_class = PostSerializerBasic
-
     
     def get(self, request, pk):
         instance = self.model.objects.filter(id = pk).values_list()
