@@ -2,8 +2,10 @@ import json
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from django.contrib.auth.models import Group
+from django.db import models
 from django.core.cache import cache
 import collections
+from file.models import File
 
 from django.shortcuts import render
 
@@ -97,10 +99,27 @@ class DictionaryFilterParser():
         self.__parseFiltered(visibleFields)
         return self.__filteredDictionaryList
 
-# Usage example of DictionaryFilterParse class
-def MergeDictionary(oldDictionary):
-    dparser = DictionaryFilterParser(oldDictionary)
-    print(f"NEWDICT: {dparser.GetParsedDictionary()}")
+
+# Key utility - Aljaz
+
+class KeyUtility():
+    keyList = []
+
+    def __init__(self):
+        self.keyList.clear()
+
+    def GetAllModelKeys(self, inputModel):
+        for field in inputModel._meta.get_fields():
+            if isinstance(field, models.ForeignKey):
+                foreignModel = field.remote_field.model
+                for foreignField in foreignModel._meta.get_fields():
+                    if not isinstance(foreignField, models.ManyToOneRel):
+                        self.keyList.append(f"{field.name}__{foreignField.name}")
+                    elif isinstance(foreignField, models.ForeignKey):
+                        self.GetAllModelKeys(foreignField)
+            else:
+                self.keyList.append(field.name)
+        return self.keyList
 
 class PBListViewMixin(object): 
     model = None
@@ -123,7 +142,7 @@ class PBListViewMixin(object):
         'page':1,
         'sortOrder':[],
         'sortField':[],
-        'visibleFields':[],
+        'visibleFields':['id'],
         'filters':{}
     }
 
@@ -132,7 +151,9 @@ class PBListViewMixin(object):
             q_settings = json.loads(q_settings)
         dictkeys = q_settings.keys()
         order= list(q_settings.get('sortOrder'))
+        print(order)
         orderfield = list(q_settings.get('sortField'))
+        print(orderfield)
         for i in range(len(order)):
             if(order[i]=="descend"):
                 orderfield[i] = "-" + orderfield[i]
@@ -211,11 +232,20 @@ class PBListViewMixin(object):
         serializer = serializerclass(queryset, many=True)
         
         dparser = DictionaryFilterParser(serializer.data)
-        keyNames = [key for key in dparser.GetFullParsedDictionary()[0].keys()]
+
+        # --- Old way for getting available columns - DONT DELETE FOR NOW ---
+        # keyNames = None
+        # try:
+        #     keyNames = [key for key in dparser.GetFullParsedDictionary()[0].keys()]
+        # except:
+        #     keyNames = [field.name for field in self.model._meta.get_fields()]
+        # --------------------------------------------------------------------
+
+        keyList = KeyUtility().GetAllModelKeys(self.model)
 
         response = {    
             'table_name': self.table_name + "_BROWSE",
-            'available_columns': keyNames,
+            'available_columns': keyList,
             'data': dparser.GetFilteredParsedDictionary(visibleFields),
 
             'size': size,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Popover,Table, Button, Checkbox, Input, Row, Col} from 'antd';
+import { Popover,Table, Button, Checkbox, Input, Row, Col, Icon} from 'antd';
 import { FormattedMessage } from 'react-intl';
 import lang from '../../translations/translations';
 import axios from 'axios';
@@ -37,6 +37,8 @@ class PBTable extends React.Component {
         SCCheckAll: false,
         lastClickedHeader: "",
         filterValues:{},
+        sortOrderValues: {},
+        sortFieldValues: {},
         redirect: false
     };
     CheckboxGroup = Checkbox.Group;
@@ -197,6 +199,18 @@ class PBTable extends React.Component {
       this.fetch();
     }
 
+    handleClearSort = () => {
+      this.setState({
+        settings: {
+          results: this.state.settings.results,
+          page: this.state.settings.page,
+          sortOrder: [],
+          sortField: [],
+          visibleFields: this.state.settings.visibleFields,
+          filters: this.state.settings.filters
+        }
+      }, () => this.fetch());
+    }
 
     fetch = () => {
         //console.log('params:', params);
@@ -249,6 +263,22 @@ class PBTable extends React.Component {
       console.log(text, this.state);
     }
 
+    renderColumnTitle = (title) => {
+      if(this.state.settings.sortField.indexOf(title) != -1) {
+        const titleSettingIndex = this.state.settings.sortField.indexOf(title);
+
+        if (this.state.settings.sortOrder[titleSettingIndex] == null) {
+          return <FormattedMessage id={`table.${title}`} defaultMessage={title} />
+        }else if (this.state.settings.sortOrder[titleSettingIndex] == 'ascend') {
+          return <><FormattedMessage id={`table.${title}`} defaultMessage={title} /><Icon type="caret-up" /></>
+        }else if (this.state.settings.sortOrder[titleSettingIndex] == 'descend') {
+          return <><FormattedMessage id={`table.${title}`} defaultMessage={title} /><Icon type="caret-down" /></>
+        }
+      }else{
+        return <FormattedMessage id={`table.${title}`} defaultMessage={title} />
+      }
+    }
+
     buildColumns() {
       if (!this.state.SCCheckedList){
           console.warn("No columns selected")
@@ -256,11 +286,13 @@ class PBTable extends React.Component {
       }
       var columns = this.state.SCCheckedList;
       var allKeys = [];
+
       columns.forEach(element => {
               allKeys.push( {
                   title: (
                     <div style={{ textAlign: 'center' }}>
-                        <div>{<FormattedMessage id={`table.${this.state.tableName}.${element}`} defaultMessage={element} />}</div>
+                        <div>{this.renderColumnTitle(element)}</div>
+
                         <Input.Search 
                         placeholder={lang[this.props.lang]['table.filter']} 
                         onClick={(e) => this.handleFilterClick(e)}  
@@ -307,7 +339,6 @@ class PBTable extends React.Component {
       });
     }
 
-
     render(){
       if (this.state.redirect) {
         return <Redirect to={this.state.redirectUrl} />
@@ -328,6 +359,7 @@ class PBTable extends React.Component {
             <Button type="primary"><FormattedMessage id="table.customColumns" defaultMessage="Custom columns" /></Button>
           </Popover>
           <Button type = "primary" onClick={() => this.setState({ filterValues: {}}, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
+          <Button type = "primary" onClick={this.handleClearSort}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
            <Table 
            dataSource={this.state.data} 
            columns={columns} 
