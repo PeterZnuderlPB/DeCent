@@ -34,7 +34,7 @@ class PostList(PBListViewMixin, generics.ListCreateAPIView):
 
 
 class PostDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
-    #permission_classes = (permissions.IsAuthenticated,)
+    model = Post
     required_groups= {
         'GET':['__all__'],
         'POST':['PostViewer'],
@@ -45,7 +45,6 @@ class PostDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
         'POST':['post.add_post'],
         'PUT':['post.change_post'],
     }
-    model = Post
     
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):

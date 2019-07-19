@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django.shortcuts import render
 
 from .serializers import GroupSerializer
-from .permissions import HasGroupPermission
+from .permissions import HasGroupPermission, HasObjectPermission
 
 
 class GroupList(generics.ListAPIView):
@@ -30,7 +30,7 @@ def home(request):
 class PBListViewMixin(object): 
     model = None
     table_name = "BASE LIST VIEW" # For search and filter options (Redis key)
-    #permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     required_groups= {
         'GET':['__all__'],
         'POST':['__all__'],
@@ -48,7 +48,7 @@ class PBListViewMixin(object):
         'page':1,
         'sortOrder':[],
         'sortField':[],
-        'visibleFields':['id', 'title'],
+        'visibleFields':[],
         'filters':{}
     }
 
@@ -148,8 +148,7 @@ class PBListViewMixin(object):
 
 class PBDetailsViewMixin(object):
     model = None
-
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     required_groups= {
         'GET':['__all__'],
         'POST':['__all__'],
@@ -171,15 +170,14 @@ class PBDetailsViewMixin(object):
         qs = self.get_queryset()
         filtered = qs.filter(id=pk, is_active=True)
         serializer = serializerclass(filtered, many=True)
-        data = serializer.data
+        data = serializer.data[0]
         instance = self.model.objects.filter(id = pk)
         att_types = [field.description for field in self.model._meta.get_fields()]
         att_names = [field.name for field in self.model._meta.get_fields()]
         fileds = self.model._meta.get_fields()
         return Response({'data': data, 'column_names': att_names, 'column_types':att_types}, status=status.HTTP_200_OK)
 
-    # Prevent editing locked posts - Aljaz
-    def update(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         if instance.is_locked:
