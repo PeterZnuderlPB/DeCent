@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import lang from '../../translations/translations';
 import axios from 'axios';
 import con from '../../apis';
-import { updateExpression } from '@babel/types';
+import { updateExpression, throwStatement } from '@babel/types';
 //import { FetchPostsStart } from '../../actions'
 import {Redirect} from 'react-router-dom';
 
@@ -24,6 +24,7 @@ class PBTable extends React.Component {
   }
     state = {
         windowSize:{ x: window.innerWidth, y: window.innerHeight},
+        tableName: "Table",
         data: [],
         loading: false,
         sortOptions:['ascend', 'descend', null],
@@ -162,7 +163,7 @@ class PBTable extends React.Component {
                 //console.log("Column Checkbox", col)
                 return(
                   <Col span={6} key={index}>
-                    <Checkbox value={col}>{col}</Checkbox>
+                    <Checkbox value={col}>{<FormattedMessage id={`table.${this.state.tableName}.${col}`} defaultMessage={col} />}</Checkbox>
                   </Col>
                 )
               })}
@@ -250,7 +251,8 @@ class PBTable extends React.Component {
               pagination,
               sortOrderKeys: newOrderKeys,
               availableColumns: response.data.available_columns,
-              SCCheckedList: response.data.settings.visibleFields
+              SCCheckedList: response.data.settings.visibleFields,
+              tableName: response.data.table_name
             }, this.printState
             );
           });
@@ -290,6 +292,7 @@ class PBTable extends React.Component {
                   title: (
                     <div style={{ textAlign: 'center' }}>
                         <div>{this.renderColumnTitle(element)}</div>
+
                         <Input.Search 
                         placeholder={lang[this.props.lang]['table.filter']} 
                         onClick={(e) => this.handleFilterClick(e)}  
@@ -311,11 +314,11 @@ class PBTable extends React.Component {
                   };}     
               })
       });
-        allKeys.push({
-          title: 'Eddit',
+        allKeys.unshift({
+          title: this.TranslateColumn("edit").toUpperCase(),
           dataIndex:'',
           key:'x',
-          render: () => <input type='button' value='Eddit' onClick={this.setRedirect} id={this.nextButtonId()} />   
+          render: () => <input type='button' value={this.TranslateColumn("edit")} onClick={this.setRedirect} id={this.nextButtonId()} />   
         }) 
       //console.log(allKeys)
       return allKeys;

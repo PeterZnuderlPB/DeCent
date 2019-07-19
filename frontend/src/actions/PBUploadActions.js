@@ -3,7 +3,7 @@ import { message } from 'antd';
 
 // TODO: Change fetch to axios
 
-export const UploadFile = (filesToUpload) => (dispatch, getState) => {
+export const UploadFile = (filesToUpload, category) => (dispatch, getState) => {
     dispatch(UploadFileStart(filesToUpload));
     const { user } = getState();
 
@@ -16,11 +16,12 @@ export const UploadFile = (filesToUpload) => (dispatch, getState) => {
         formData.append('file', el);
         formData.append('upload_date', formattedDate);
         formData.append('owner', user.auth.userInfo.id);
+        formData.append('category', category)
 
         fetch('http://127.0.0.1:8000/api/files/', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + user.auth.token.access_token,
+                'Authorization': user.auth.token.token_type+ " " + user.auth.token.access_token,
             },
             body: formData
             })

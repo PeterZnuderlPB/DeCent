@@ -90,8 +90,7 @@ export const FetchUserStart = (token) => async dispatch =>{
         console.log("Fetch user send to reducer", send)
         dispatch(FetchUserSuccess(send));
     }
-    
-    history.push('/');
+
 }
 
 export const FetchUserSuccess = (user_info) => {

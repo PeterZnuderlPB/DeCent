@@ -11,7 +11,7 @@ import lang from '../../../translations/translations';
 class UploadButton extends React.Component {
     handleUpload = () => {
         const filesToUpload = this.props.upload.files.slice(-this.props.maxfiles); // Adds files from store - slice by maximum length
-        this.props.UploadFile(filesToUpload);
+        this.props.UploadFile(filesToUpload, this.props.category);
     }
 
     render() {
@@ -27,6 +27,10 @@ class UploadButton extends React.Component {
             </Button>
         );
     }
+}
+
+UploadButton.defaultProps = {
+    category: "Def_Cat"
 }
 
 const mapStateToProps = state => {
