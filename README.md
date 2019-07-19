@@ -26,4 +26,4 @@ export const django_client_id = "t5Atz5P7YfpN0Ul2cDUWbAwMwjQfCfza5GmagZZu";
 export const django_client_secret =
   "FUTJYMX0xGp22rBHitfcL747Yypg3nf79azyyfITHjqueee6E6sBVeU4bwh8EBSDLPCbMKlTHTBasrvLw7tQxVullWYPY505OYI6qDMXNEM16gBp4GCcrlp5D5vb2T6N";
 ```
-* Save the changed file, restart React app and login to the webapp with your superuser
+* Save the changed file, restart React app and login to the webapp with your superuser. If your server says that you are anauthorised at login and you know you've put in the corect credentials, theres something wrong with this information.
