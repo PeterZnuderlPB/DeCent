@@ -3,7 +3,10 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from django.contrib.auth.models import Group
 from django.core.cache import cache
+import collections
+
 from django.shortcuts import render
+
 
 from .serializers import GroupSerializer
 from .permissions import HasGroupPermission, HasObjectPermission
@@ -26,6 +29,78 @@ class GroupList(generics.ListAPIView):
 
 def home(request):
 	return render(request, 'home.html')
+
+# Dictionary parser - Aljaz
+class DictionaryFilterParser():
+    __fullDictionaryList = []
+    __filteredDictionaryList = []
+    __dictionary = {}
+    __filteredDictionary = collections.OrderedDict()
+    __keyString = ""
+
+    def __init__(self, oldDictionaryList):
+        self.__clearData()
+        self.__parse(oldDictionaryList)
+
+    def __del__(self):
+        self.__fullDictionaryList = []
+        self.__filteredDictionaryList = []
+        self.__dictionary = {}
+        self.__filteredDictionary = collections.OrderedDict()
+        self.__keyString = ""
+
+    def __getDictionaryDepth(self, dictionary):
+        if isinstance(dictionary, dict):
+            return 1 + (max(map(self.__getDictionaryDepth, dictionary.values())) if dictionary else 0)
+        return 0
+
+    def __walkThruDictionary(self, dictionary):
+        for key, value in dictionary.items():
+            if isinstance(value, dict):
+                self.__keyString += f"{key}__"
+                self.__walkThruDictionary(value)
+
+                if self.__getDictionaryDepth(value) == 1:
+                    self.__keyString = ""
+            else:
+                if not self.__keyString == "":
+                    self.__dictionary[f'{self.__keyString}{key}'] = value
+                else:
+                    self.__dictionary[f'{key}'] = value
+        
+    def __parse(self, dictionaryList):
+        for dictionary in dictionaryList:
+            self.__walkThruDictionary(dictionary)
+            self.__fullDictionaryList.append(self.__dictionary)
+            self.__dictionary = {}
+
+    def __parseFiltered(self, visibleFields):
+        for dictionary in self.__fullDictionaryList:
+            self.__filteredDictionary = collections.OrderedDict()
+            for visibleField in visibleFields:
+                for key, value in dictionary.items():
+                    if visibleField == key:
+                        self.__filteredDictionary[key] = value
+            self.__filteredDictionaryList.append(self.__filteredDictionary)
+
+    def __clearData(self):
+        self.__fullDictionaryList = []
+        self.__filteredDictionaryList = []
+        self.__dictionary = {}
+        self.__filteredDictionary = collections.OrderedDict()
+        self.__keyString = ""
+
+    def GetFullParsedDictionary(self):
+        return self.__fullDictionaryList
+
+    def GetFilteredParsedDictionary(self, visibleFields):
+        self.__parseFiltered(visibleFields)
+        return self.__filteredDictionaryList
+
+# Usage example of DictionaryFilterParse class
+def MergeDictionary(oldDictionary):
+    dparser = DictionaryFilterParser(oldDictionary)
+    print(f"NEWDICT: {dparser.GetParsedDictionary()}")
 
 class PBListViewMixin(object): 
     model = None
@@ -134,12 +209,15 @@ class PBListViewMixin(object):
         visibleFields = final_val.get('visibleFields', None)
 
         serializer = serializerclass(queryset, many=True)
-        #ser_field = serializer.get_fields();
-        fieldNames = [field.name for field in self.model._meta.get_fields()]
-        response = {
+        
+        dparser = DictionaryFilterParser(serializer.data)
+        keyNames = [key for key in dparser.GetFullParsedDictionary()[0].keys()]
+
+        response = {    
             'table_name': self.table_name + "_BROWSE",
-            'available_columns': fieldNames,
-            'data': serializer.data,
+            'available_columns': keyNames,
+            'data': dparser.GetFilteredParsedDictionary(visibleFields),
+
             'size': size,
             'settings': final_val
         }
