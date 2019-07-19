@@ -8,12 +8,15 @@ import lang from '../../translations/translations';
 class PBMail extends React.Component {
     state = { 
         visible: false,
-        checked: ['subject'],
         file: null,
         subject: '',
         content: ''
         };
-
+    
+    componentDidMount(){
+        this.setState({...this.props}, () => console.log("Mail Component mounted. State:", this.state))
+    }
+    
     showModal = () => {
         this.setState({
         visible: true,
@@ -27,14 +30,14 @@ class PBMail extends React.Component {
         }
 
         const formData = new FormData();
-        formData.append('userId', this.props.user.userInfo.id);
+        formData.append('send_to', this.state.send_to);
         formData.append('subject', this.state.subject);
         formData.append('content', this.state.content);
         formData.append('file', this.state.file);
 
         const axiosConfig = {
             headers: {
-                'Authorization': 'Bearer ' + this.props.user.token.access_token
+                'Authorization': this.props.user.token.token_type + ' ' + this.props.user.token.access_token
             }
         }
 
@@ -60,8 +63,7 @@ class PBMail extends React.Component {
         }, () => {
             setTimeout(() => {
                 this.setState({ 
-                    checked: ['subject'], 
-                    subject: '',
+                    subject: this.props.subject,
                     content: '' 
                 }) // Delay to sync with fadeout anim
             }, 100);
@@ -77,12 +79,6 @@ class PBMail extends React.Component {
     handleFileChange = e => {
         this.setState({
             file: e.target.files[0]
-        });
-    }
-
-    handleCheckChange = checked => {
-        this.setState({
-            checked
         });
     }
 
@@ -105,47 +101,39 @@ class PBMail extends React.Component {
             wrapperCol: { span: 18 },
         }
 
-        let renderSubject = this.state.checked.indexOf('subject') != -1
+        let renderSubject = this.props.show_subject
         ? <Form.Item label={lang[this.props.lang]['mail.subject']} {...formItemLayout}> <Input name="subject" value={this.state.subject} onChange={this.handleInputChange} placeholder={lang[this.props.lang]['mail.subject']} {...formItemLayout} /> </Form.Item>
-        : <div className="contact-empty">&nbsp;</div>;
+        : null;
 
-        let rendeFile = this.state.checked.indexOf('file') != -1
+        let rendeFile = this.props.show_file
         ? <Form.Item label={lang[this.props.lang]['mail.fileLabel']} className="contact-file-wrapper" {...formItemLayout}>
             <Button type="primary"><Icon type="upload" /> {lang[this.props.lang]['mail.selectFile']}</Button>
             <p style={{ display: 'inline', marginLeft: '2%' }}>{this.state.file === null ? lang[this.props.lang]['mail.selectFilePlaceholder'] : `${this.state.file.name.slice(0, 15)}... ${this.state.file.name.substr(this.state.file.name.lastIndexOf('.') + 1)}`}</p>
             <Input onChange={this.handleFileChange} type="file" placeholder="File" {...formItemLayout} /> 
           </Form.Item>
-        : <div>&nbsp;</div>;
+        : null;
 
         return (
             <div>
-                <div className="contact-us" onClick={this.showModal}>{lang[this.props.lang]['mail.contactUs']}</div>
+                <div className="contact-us" onClick={this.showModal}>{lang[this.props.lang]['mail.' + this.props.btn_text_code]}</div>
                 <Modal
                 centered
                 style={{ userSelect: 'none' }}
-                title={lang[this.props.lang]['mail.contact']}
+                title={lang[this.props.lang]['mail.' + this.props.btn_text_code].toUpperCase()}
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
                 footer={[
                     <div className="contact-center">
                     <Button key="back" onClick={this.handleCancel}>
-                        {lang[this.props.lang]['mail.return']}
+                        {lang[this.props.lang]['mail.return'].toUpperCase()}
                     </Button>,
                     <Button key="submit" type="primary" onClick={this.handleOk}>
-                        {lang[this.props.lang]['mail.submit']}
+                        {lang[this.props.lang]['mail.submit'].toUpperCase()}
                     </Button>,
                     </div>
                   ]}
                 >
-                    <Checkbox.Group
-                    style={{ float: 'right', marginTop: '-4.5%' }} 
-                    options={checkBoxData}
-                    onChange={this.handleCheckChange}
-                    value={this.state.checked}
-                    defaultValue={['subject']}
-                    />
-
                     <Form style={{ userSelect: 'none' }} className="contact-transition" layout="horizontal">
                         {renderSubject}
                         <Form.Item label={lang[this.props.lang]['mail.content']} {...formItemLayout} >
@@ -161,6 +149,14 @@ class PBMail extends React.Component {
             </div>
         );
     }
+}
+
+PBMail.defaultProps = {
+    btn_text_code : "contact_us",
+    show_subject : true,
+    subject : "Default subject",
+    show_file : false,
+    send_to : "peter.znuderl@pro-bit.si" // TODO: set actual default email
 }
 
 const mapStateToProps = state => {

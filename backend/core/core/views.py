@@ -1,14 +1,16 @@
 import json
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
 from django.contrib.auth.models import Group
 from django.core.cache import cache
 import collections
 
-from .serializers import GroupSerializer
-from .permissions import HasGroupPermission
-from rest_framework.response import Response
-
 from django.shortcuts import render
+
+
+from .serializers import GroupSerializer
+from .permissions import HasGroupPermission, HasObjectPermission
+
 
 class GroupList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -24,7 +26,6 @@ class GroupList(generics.ListAPIView):
         serializer = GroupSerializer(groups, many=True)
         return Response(serializer.data)
 
-    
 
 def home(request):
 	return render(request, 'home.html')
@@ -102,27 +103,27 @@ def MergeDictionary(oldDictionary):
     print(f"NEWDICT: {dparser.GetParsedDictionary()}")
 
 class PBListViewMixin(object): 
-    #permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     model = None
     table_name = "BASE LIST VIEW" # For search and filter options (Redis key)
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     required_groups= {
         'GET':['__all__'],
-        'POST':['PostViewer'],
-        'PUT':['PostViewer'],
-        'DELETE':[],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+        'DELETE':['__all__'],
     }
     required_permissions={
-        'GET':['post.view_post'],
-        'POST':['post.add_post'],
-        'PUT':['post.change_post'],
-        'DELETE':['post.delete_post']
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+        'DELETE':['__all__']
     }
     DEFAULT_QUERY_SETTINGS={
         'results':10,
         'page':1,
         'sortOrder':[],
         'sortField':[],
-        'visibleFields':['id', 'title'],
+        'visibleFields':[],
         'filters':{}
     }
 
@@ -144,7 +145,8 @@ class PBListViewMixin(object):
         filters = q_settings.get('filters', None)
         filters_with_type = {}
         for key, val in filters.items():
-            filters_with_type[key + "__icontains"] = filters[key]
+            filters_with_type[key + "__icontains"] = val
+        filters_with_type["is_active"] = True
         qs = self.model.objects.filter(**filters_with_type).order_by(*clean_orderfield)
         return qs   
 
@@ -207,14 +209,58 @@ class PBListViewMixin(object):
         visibleFields = final_val.get('visibleFields', None)
 
         serializer = serializerclass(queryset, many=True)
+        
         dparser = DictionaryFilterParser(serializer.data)
         keyNames = [key for key in dparser.GetFullParsedDictionary()[0].keys()]
 
         response = {    
-            'table_name': 'Posts Browse',
+            'table_name': self.table_name + "_BROWSE",
             'available_columns': keyNames,
             'data': dparser.GetFilteredParsedDictionary(visibleFields),
+
             'size': size,
             'settings': final_val
         }
         return Response(response)
+
+
+class PBDetailsViewMixin(object):
+    model = None
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+        'DELETE':['__all__']
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+        'DELETE':['__all__']
+    }
+
+    def get_queryset(self):
+        return self.model.objects.all()
+    
+    def get(self, request, pk):
+        serializerclass = self.get_serializer_class()
+        qs = self.get_queryset()
+        filtered = qs.filter(id=pk, is_active=True)
+        serializer = serializerclass(filtered, many=True)
+        data = serializer.data[0]
+        instance = self.model.objects.filter(id = pk)
+        att_types = [field.description for field in self.model._meta.get_fields()]
+        att_names = [field.name for field in self.model._meta.get_fields()]
+        fileds = self.model._meta.get_fields()
+        return Response({'data': data, 'column_names': att_names, 'column_types':att_types}, status=status.HTTP_200_OK)
+
+    def put(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        if instance.is_locked:
+            return Response("Locked posts cannot be edited.", status=403)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

@@ -1,13 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Popover,Table, Button, Checkbox, Input} from 'antd';
+import { Popover,Table, Button, Checkbox, Input, Row, Col} from 'antd';
 import { FormattedMessage } from 'react-intl';
 import lang from '../../translations/translations';
 import axios from 'axios';
 import con from '../../apis';
 import { updateExpression } from '@babel/types';
 //import { FetchPostsStart } from '../../actions'
+import {Redirect} from 'react-router-dom';
+
 
 class PBTable extends React.Component {
     qs = require('qs');
@@ -21,6 +23,7 @@ class PBTable extends React.Component {
       filters: [],
   }
     state = {
+        windowSize:{ x: window.innerWidth, y: window.innerHeight},
         data: [],
         loading: false,
         sortOptions:['ascend', 'descend', null],
@@ -32,14 +35,25 @@ class PBTable extends React.Component {
         SCIndeterminate: true,
         SCCheckAll: false,
         lastClickedHeader: "",
-        filterValues:{}
+        filterValues:{},
+        redirect: false
     };
     CheckboxGroup = Checkbox.Group;
     
 
     componentDidMount() {
       //console.log("Mount", this.state)
+        window.addEventListener('resize', this.updateWindowDimensions);
         this.fetch();
+    }
+
+    componentWillUnmountas(){
+      window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+    updateWindowDimensions = () => {
+      const x  = window.innerWidth;
+      const y = window.innerHeight;
+      this.setState({ windowSize:{x:x, y:y} });
     }
 
     handleFilterClick = (event) =>{
@@ -136,11 +150,22 @@ class PBTable extends React.Component {
             </Checkbox>
         </div>
         <br />
-        <this.CheckboxGroup
-            options={this.state.availableColumns.map(col => ({label: this.TranslateColumn(col), value: col}))}
-            value={this.state.SCCheckedList}
-            onChange={this.handleActiveColumnsChange}
-          />
+          <Checkbox.Group 
+          style={{width:'100%'}} 
+          onChange={this.handleActiveColumnsChange} 
+          value={this.state.SCCheckedList}
+          >
+            <Row>
+              {this.state.availableColumns.map( (col, index) =>{
+                //console.log("Column Checkbox", col)
+                return(
+                  <Col span={6} key={index}>
+                    <Checkbox value={col}>{col}</Checkbox>
+                  </Col>
+                )
+              })}
+            </Row>
+          </Checkbox.Group>
         </div>
       )
     }
@@ -203,7 +228,7 @@ class PBTable extends React.Component {
                 newOrderKeys.push(this.state.sortOptions.indexOf(el));
               })
             }
-            console.log("New sort order keys", newOrderKeys);
+           // console.log("New sort order keys", newOrderKeys);
             this.setState({
               loading: false,
               data: response.data.data,
@@ -223,47 +248,68 @@ class PBTable extends React.Component {
     }
 
     buildColumns() {
-        if (!this.state.data){
-            console.warn("No table data")
-            return null;
-        }
-        var object = this.state.data[0];
-        var allKeys = []
-        if(object === undefined){return null}
-        Object.keys(object).forEach(element => {
-            if(!(this.props.settings.column_filters && this.props.settings.column_filters.includes(element)))
-            {
-                allKeys.push( {
-                    title: (
-                      <div style={{ textAlign: 'center' }}>
-                          <div>{<FormattedMessage id={`table.${element}`} defaultMessage={element} />}</div>
-                          <Input.Search 
-                          placeholder={lang[this.props.lang]['table.filter']} 
-                          onClick={(e) => this.handleFilterClick(e)}  
-                          onPressEnter={(e) => this.handleFilterSubmit(null, e)}
-                          onSearch={this.handleFilterSubmit}
-                          onChange = {this.handleFilterChange}
-                          value = {this.state.filterValues[element]}
-                          />
-                      </div>
-                  ),
-                    dataIndex: element,
-                    key: element,
-                    sorter: false, 
-                    align: 'center',
-                    onHeaderCell: (column) => {return {
-                      onClick: (event) => {
-                        this.handleHeaderClick(column, event);
-                        }, // click header row
-                    };}     
-                })
-            }
-        });
-        //console.log(allKeys)
-        return allKeys;
+      if (!this.state.SCCheckedList){
+          console.warn("No columns selected")
+          return null;
+      }
+      var columns = this.state.SCCheckedList;
+      var allKeys = [];
+      columns.forEach(element => {
+              allKeys.push( {
+                  title: (
+                    <div style={{ textAlign: 'center' }}>
+                        <div>{<FormattedMessage id={`table.${element}`} defaultMessage={element} />}</div>
+                        <Input.Search 
+                        placeholder={lang[this.props.lang]['table.filter']} 
+                        onClick={(e) => this.handleFilterClick(e)}  
+                        onPressEnter={(e) => this.handleFilterSubmit(null, e)}
+                        onSearch={this.handleFilterSubmit}
+                        onChange = {this.handleFilterChange}
+                        value = {this.state.filterValues[element]}
+                        />
+                    </div>
+                ),
+                  dataIndex: element,
+                  key: element,
+                  sorter: false, 
+                  align: 'center',
+                  onHeaderCell: (column) => {return {
+                    onClick: (event) => {
+                      this.handleHeaderClick(column, event);
+                      }, // click header row
+                  };}     
+              })
+      });
+        allKeys.push({
+          title: 'Eddit',
+          dataIndex:'',
+          key:'x',
+          render: () => <input type='button' value='Eddit' onClick={this.setRedirect} id={this.nextButtonId()} />   
+        }) 
+      //console.log(allKeys)
+      return allKeys;
+  }
+
+
+    buttonId=-1
+    nextButtonId = () => {
+      this.buttonId= this.buttonId+1
+      return this.state.data[this.buttonId]['id']
     }
 
+    setRedirect = (event) => {
+      console.log(event.target.id);
+      this.setState({
+        redirectUrl: "/EditView/post/" + event.target.id,
+        redirect: true
+      });
+    }
+
+
     render(){
+      if (this.state.redirect) {
+        return <Redirect to={this.state.redirectUrl} />
+      }
         //console.log(this.props)
         const columns = this.buildColumns();
         //console.log("Rerendering", this.state)
@@ -286,7 +332,7 @@ class PBTable extends React.Component {
            pagination={this.state.pagination} //false to turn it off
            loading={this.state.loading}
            onChange={this.handleTableChange}
-           //scroll={{ x: 1500, y: 300 }}
+           scroll={{ x: this.state.windowSize.x }}
            title={() => this.props.title}
 /*
            onHeaderRow={column => {
@@ -294,6 +340,7 @@ class PBTable extends React.Component {
               onClick: () => {this.setSorting(column)}, // click header row
             };
           }}*/
+          {...this.buttonId=-1}
            />
            </>
         );
