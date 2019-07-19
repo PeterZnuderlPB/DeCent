@@ -31,10 +31,15 @@ class PBUpload extends React.Component {
                         <Icon type="upload" /> {lang[this.props.lang]['upload.selectFile']}
                     </Button>
                 </Upload>
-                <UploadButton maxfiles={this.props.maxfiles} />
+                <UploadButton maxfiles={this.props.maxfiles} category={this.props.category}/>
             </div>
         );
     }
+}
+
+PBUpload.defaultProps = {
+    maxfiles: 1,
+    category: "Def_Cat",
 }
 
 const mapStateToPros = (state) => {
