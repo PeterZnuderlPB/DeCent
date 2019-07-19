@@ -268,11 +268,11 @@ class PBTable extends React.Component {
         const titleSettingIndex = this.state.settings.sortField.indexOf(title);
 
         if (this.state.settings.sortOrder[titleSettingIndex] == null) {
-          return <FormattedMessage id={`table.${title}`} defaultMessage={title} />
+          return <FormattedMessage id={`table.${this.state.tableName}.${title}`} defaultMessage={title} />
         }else if (this.state.settings.sortOrder[titleSettingIndex] == 'ascend') {
-          return <><FormattedMessage id={`table.${title}`} defaultMessage={title} /><Icon type="caret-up" /></>
+          return <><FormattedMessage id={`table.${this.state.tableName}.${title}`} defaultMessage={title} /><Icon type="caret-up" /></>
         }else if (this.state.settings.sortOrder[titleSettingIndex] == 'descend') {
-          return <><FormattedMessage id={`table.${title}`} defaultMessage={title} /><Icon type="caret-down" /></>
+          return <><FormattedMessage id={`table.${this.state.tableName}.${title}`} defaultMessage={title} /><Icon type="caret-down" /></>
         }
       }else{
         return <FormattedMessage id={`table.${title}`} defaultMessage={title} />
