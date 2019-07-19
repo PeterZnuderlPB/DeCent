@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.core.cache import cache
 import collections
+from file.models import File
 
 from django.shortcuts import render
 
@@ -99,7 +100,7 @@ class DictionaryFilterParser():
         return self.__filteredDictionaryList
 
 
-#Key utility - Aljaz
+# Key utility - Aljaz
 
 class KeyUtility():
     keyList = []
@@ -119,10 +120,6 @@ class KeyUtility():
             else:
                 self.keyList.append(field.name)
         return self.keyList
-
-
-
-
 
 class PBListViewMixin(object): 
     model = None
@@ -154,7 +151,9 @@ class PBListViewMixin(object):
             q_settings = json.loads(q_settings)
         dictkeys = q_settings.keys()
         order= list(q_settings.get('sortOrder'))
+        print(order)
         orderfield = list(q_settings.get('sortField'))
+        print(orderfield)
         for i in range(len(order)):
             if(order[i]=="descend"):
                 orderfield[i] = "-" + orderfield[i]
