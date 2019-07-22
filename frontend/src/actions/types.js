@@ -50,3 +50,14 @@ export const UPLOAD_FILE_START = "UPLOAD_FILE_START";
 export const UPLOAD_FILE_SUCCESS = "UPLOAD_FILE_SUCCESS";
 export const UPLOAD_FILE_FAIL = "UPLOAD_FILE_FAIL";
 export const UPLOAD_FILE_ADD = "UPLOAD_FILE_ADD";
+
+//-------------------
+//  EditView actions
+//-------------------
+export const FETCH_POST_START = "FETCH_POST_START";
+export const FETCH_POST_SUCCESS = "FETCH_POST_SUCCESS";
+export const FETCH_POST_FAIL = "FETCH_POST_FAIL";
+export const UPDATE_POST_START = "UPDATE_POST_START";
+export const UPDATE_POST_SUCCESS = "UPDATE_POST_SUCCESS";
+export const UPDATE_POST_FAIL = "UPDATE_POST_FAIL";
+export const UPDATE_POST_CANCEL = "UPDATE_POST_CANCEL";
