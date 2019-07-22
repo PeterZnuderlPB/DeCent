@@ -26,20 +26,19 @@ class App extends React.Component{
         
         return (
             <IntlProvider locale={this.props.lang} messages={translations[this.props.lang]}>
-            <>
-            <div className="container">
-                <Router history={history}>
-                    <Route path="/" component={NavBar}/>
-                    <Route path="/" component={PBModal}/>
-                    <hr/>
-                    <Route path="/" exact component={Profile}/>
-                    <Route path="/BrowseView/:table_name" exact component={PBTable}/>
-                    <Route path="/EditView/:table_name/:id" exact component={PBEditView}/>
-                </Router>
-            </div>
-            <BackTop />
-            <PBMail />
-            </>
+                <div className="container">
+                    <Router history={history}>
+                        <Route path="/" component={NavBar}/>
+                        <Route path="/" component={PBModal}/>
+                        <hr/>
+                        <Route path="/" exact component={Profile}/>
+                        <Route path="/BrowseView/:table_name" exact component={PBTable}/>
+                        <Route path="/EditView/:table_name/:id" exact component={PBEditView}/>
+                    </Router>
+                </div>
+
+                <BackTop />
+                <PBMail />
             </IntlProvider>
             
         );

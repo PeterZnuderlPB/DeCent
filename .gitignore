@@ -107,3 +107,6 @@ backend/core/testdb.sqlite3
 
 #Files from upload testing
 backend/core/storage/
+
+
+**/.vscode

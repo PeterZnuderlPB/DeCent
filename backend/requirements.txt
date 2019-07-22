@@ -5,7 +5,7 @@ django-rest-framework-social-oauth2
 djangorestframework_jwt
 django-cors-headers
 django-redis
-python-dotnet
+python-dotenv
 django-currentuser
 # For pdf -> possible change to django-wkhtmltopdf due to installation requirements
 django_weasyprint

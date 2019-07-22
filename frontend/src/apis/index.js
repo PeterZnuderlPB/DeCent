@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-export var baseUrlHttp = "http://localhost:8000/";
-export var apiUrlHttp = "http://localhost:8000/api/";
+export var baseUrlHttp = "http://localhost:80/";
+export var apiUrlHttp = "http://localhost:80/api/";
 
 
 export const django_client_id = "test";

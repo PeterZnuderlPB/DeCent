@@ -26,7 +26,7 @@ from .views import GroupList, home
 from .mail import SendMail
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
     #path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')), #    for OAuth2 authentication
     #re_path(r'^api-token-auth/', obtain_jwt_token),
     #re_path(r'^auth/', include('social_django.urls', namespace='social')),  # <- for Social Auth
