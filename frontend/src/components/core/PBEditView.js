@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input } from 'antd';
 import moment from 'moment';
+import { FetchPost } from '../../actions/PBEditViewActions';
 import axios from 'axios';
 import con from '../../apis';
 import { tsExternalModuleReference } from '@babel/types';
@@ -30,6 +31,8 @@ class PBEditView extends React.Component {
   }
 
   fetch = () => {
+    this.props.FetchPost(this.props.match.params.id);
+    console.log("FULL STATE AFTER ACTION", this.props.full);
     const uri = `/api/posts/${this.props.match.params.id}`;
     console.log("EDIT VIEW fetch", this.props.user);
     con.get(uri,
@@ -101,22 +104,42 @@ class PBEditView extends React.Component {
     }
 
     handleBoxChange(el, event){
-      this.state.data[el]= event.target.checked
+      this.setState({
+        data: {
+          ...this.state.data,
+          [el]: event.target.checked
+        }
+      });
       this.setState({ ...this.state.values });
      }
 
   handleDateChange(el, value){
-    this.state.data[el]= moment(value).format("YYYY-MM-DD")
+    this.setState({
+      data: {
+        ...this.state.data,
+        [el]: moment(value).format("YYYY-MM-DD")
+      }
+    });
     this.setState({ ...this.state.values});
    }
 
    handleNumberChange(el, event){  
-    this.state.data[el]= event.target.value
+    this.setState({
+      data: {
+        ...this.state.data,
+        [el]: event.target.value
+      }
+    });
     this.setState({ ...this.state.values });    
    }
  
-   handleChange = (el, event) => {  
-    this.state.data[el] = event.target.value
+   handleChange = (el, event) => {
+    this.setState({
+      data: {
+        ...this.state.data,
+        [el]: event.target.value
+      }
+    });
     this.setState({ ...this.state.values });
    }
 
@@ -189,7 +212,7 @@ addClick = () => {
 }
 
 const mapStateToProps = state =>{
-    return { user: state.user.auth }
+    return { user: state.user.auth, full: state }
 }
 
-export default connect(mapStateToProps)(PBEditView);
+export default connect(mapStateToProps, { FetchPost })(PBEditView);

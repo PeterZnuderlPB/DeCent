@@ -9,7 +9,7 @@ import {
 } from '../actions/types'
 
 const INTIAL_STATE = {
-    data: {},
+    data: [],
     loading: false
 }
 
