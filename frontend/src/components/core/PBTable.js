@@ -280,6 +280,7 @@ class PBTable extends React.Component {
     }
 
     buildColumns() {
+      console.log("Rebuilding columns");
       if (!this.state.SCCheckedList){
           console.warn("No columns selected")
           return null;
@@ -359,7 +360,7 @@ class PBTable extends React.Component {
             <Button type="primary"><FormattedMessage id="table.customColumns" defaultMessage="Custom columns" /></Button>
           </Popover>
           <Button type = "primary" onClick={() => this.setState({ filterValues: {}}, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
-          <Button type = "primary" onClick={this.handleClearSort}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
+          <Button type = "primary" onClick={this.handleClearSort}><FormattedMessage id="table.clearSorting" defaultMessage="Clear sorting" /></Button>
            <Table 
            dataSource={this.state.data} 
            columns={columns} 
@@ -367,7 +368,7 @@ class PBTable extends React.Component {
            loading={this.state.loading}
            onChange={this.handleTableChange}
            scroll={{ x: this.state.windowSize.x }}
-           title={() => this.props.title}
+           title={() => this.renderColumnTitle(this.state.tableName)}
 /*
            onHeaderRow={column => {
             return {
