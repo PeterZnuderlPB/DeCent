@@ -18,7 +18,7 @@ class Profile extends React.Component {
             />
 
            <PBTable 
-           data_source="/api/posts/"
+           table="posts"
            name={"testTable"} 
            title={"Test test"}
            />

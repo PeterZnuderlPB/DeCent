@@ -24,6 +24,7 @@ class PBTable extends React.Component {
   }
     state = {
         windowSize:{ x: window.innerWidth, y: window.innerHeight},
+        tableURI:'table',
         tableName: "Table",
         data: [],
         loading: false,
@@ -47,7 +48,15 @@ class PBTable extends React.Component {
     componentDidMount() {
       //console.log("Mount", this.state)
         window.addEventListener('resize', this.updateWindowDimensions);
-        this.fetch();
+        var table_uri;
+        if(this.props.match && this.props.match.params.table_name !== undefined){
+          table_uri = this.props.match.params.table_name;
+        }
+        else{
+          table_uri =this.props.table
+        }
+        this.setState({ tableURI: table_uri}, this.fetch)
+        //this.fetch();
     }
 
     componentWillUnmountas(){
@@ -215,6 +224,8 @@ class PBTable extends React.Component {
     fetch = () => {
         //console.log('params:', params);
         //debugger;
+        
+        const address = `/api/${this.state.tableURI}/`;
         let params = this.state.settings;
         if (params == this.init_settings){
           params = null;
@@ -225,7 +236,7 @@ class PBTable extends React.Component {
           params.filters = this.state.filterValues;
         }
         var settings = JSON.stringify(params);
-        con.get(this.props.data_source,{
+        con.get( address ,{
           params: {
             settings
             },

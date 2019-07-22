@@ -13,6 +13,7 @@ import PBModal from './core/PBModal';
 import Profile from './core/Profile';
 import PBMail from './core/PBMail';
 import PBEditView from './core/PBEditView'
+import PBTable from './core/PBTable'
 
 
 class App extends React.Component{
@@ -32,6 +33,7 @@ class App extends React.Component{
                     <Route path="/" component={PBModal}/>
                     <hr/>
                     <Route path="/" exact component={Profile}/>
+                    <Route path="/BrowseView/:table_name" exact component={PBTable}/>
                     <Route path="/EditView/:table_name/:id" exact component={PBEditView}/>
                 </Router>
             </div>

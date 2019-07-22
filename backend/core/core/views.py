@@ -256,7 +256,7 @@ class PBListViewMixin(object):
 
 class PBDetailsViewMixin(object):
     model = None
-    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    #permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     required_groups= {
         'GET':['__all__'],
         'POST':['__all__'],
