@@ -104,6 +104,7 @@ frontend/src/apis/index.js
 
 #SQLite DB ignore please
 backend/core/testdb.sqlite3
+**.sqlite3
 
 #Files from upload testing
 backend/core/storage/
@@ -112,3 +113,4 @@ backend/core/storage/
 **/.vscode
 
 backend/Scripts/
+/Scripts
