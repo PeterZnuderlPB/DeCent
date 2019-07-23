@@ -35,12 +35,12 @@ class PostDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Post
     required_groups= {
         'GET':['__all__'],
-        'POST':['PostViewer'],
+        'DELETE':['PostViewer'],
         'PUT':['PostViewer'],
     }
     required_permissions={
-        'GET':['post.view_post'],
-        'POST':['post.add_post'],
+        'GET':['__all__'],
+        'DELETE':['post.add_post'],
         'PUT':['post.change_post'],
     }
 
