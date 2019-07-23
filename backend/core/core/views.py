@@ -124,18 +124,15 @@ class KeyUtility():
 class PBListViewMixin(object): 
     model = None
     table_name = "BASE LIST VIEW" # For search and filter options (Redis key)
-    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission)
+    # User has to have ALL listed permission for a given method
     required_groups= {
         'GET':['__all__'],
         'POST':['__all__'],
-        'PUT':['__all__'],
-        'DELETE':['__all__'],
     }
     required_permissions={
         'GET':['__all__'],
         'POST':['__all__'],
-        'PUT':['__all__'],
-        'DELETE':['__all__']
     }
     DEFAULT_QUERY_SETTINGS={
         'results':10,

@@ -19,12 +19,10 @@ class PostList(PBListViewMixin, generics.ListCreateAPIView):
     required_groups= {
         'GET':['__all__'],
         'POST':['PostViewer'],
-        'PUT':['PostViewer'],
     }
     required_permissions={
-        'GET':['post.view_post'],
+        'GET':['__all__'],
         'POST':['post.add_post'],
-        'PUT':['post.change_post'],
     }
 
     def get_serializer_class(self):

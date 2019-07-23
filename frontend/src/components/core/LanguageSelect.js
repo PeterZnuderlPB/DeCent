@@ -29,9 +29,9 @@ class LanguageSelect extends React.Component {
           );
         return(
             <Dropdown overlay={menu}>
-                <Button>
-                    <Icon type="menu-unfold" /> <FormattedMessage id="lang.language" defaultMessage="Language" />
-                </Button>
+              <a className="ant-dropdown-link">
+                <FormattedMessage id="lang.language" defaultMessage="Language" /> <Icon type="down" />
+              </a>
             </Dropdown>
         );
     }
