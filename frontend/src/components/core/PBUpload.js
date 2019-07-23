@@ -25,14 +25,14 @@ class PBUpload extends React.Component {
         };
 
         return (
-            <div style={{ margin: '3%' }}>
+            <>
                 <Upload {...props}>
                     <Button>
                         <Icon type="upload" /> {lang[this.props.lang]['upload.selectFile']}
                     </Button>
                 </Upload>
                 <UploadButton maxfiles={this.props.maxfiles} category={this.props.category}/>
-            </div>
+            </>
         );
     }
 }

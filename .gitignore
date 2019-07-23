@@ -6,9 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-#Database SQLite
-*.sqlite3
-
 # Distribution / packaging
 .Python
 build/
@@ -111,3 +108,9 @@ backend/core/testdb.sqlite3
 
 #Files from upload testing
 backend/core/storage/
+
+
+**/.vscode
+
+backend/Scripts/
+/Scripts

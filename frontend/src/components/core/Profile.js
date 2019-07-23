@@ -11,12 +11,6 @@ class Profile extends React.Component {
 
         return(
             <>
-            <PBUpload 
-            maxfiles={2}
-            filetype={"image/*"}
-            category={"food"}
-            />
-
            <PBTable 
            table="posts"
            name={"testTable"} 
