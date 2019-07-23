@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin } from 'antd';
 import moment from 'moment';
+import history from '../../history';
 import { FetchPost, UpdatePost } from '../../actions/PBEditViewActions';
 import axios from 'axios';
 import con from '../../apis';
@@ -160,8 +161,10 @@ class PBEditView extends React.Component {
 }
 
 
-addClick = () => {  
-  this.state.values = Object.keys(this.state.data)
+addClick = () => { 
+  // Redirects user to index page in case of error
+  try {
+  this.state.values = Object.keys(this.state.data);
 
   console.log(this.state.column_names)
   console.log(this.state.column_types)
@@ -182,7 +185,9 @@ addClick = () => {
 
   }
   console.log(this.state.column_names)
-
+  } catch {
+    history.push("/");
+  }
 }
 
   render() {
