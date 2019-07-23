@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link} from 'react-router-dom';
 
-import { Drawer, Button, Avatar  } from 'antd';
+import { Drawer, Button, Avatar, Layout, Menu, Icon  } from 'antd';
+
 import { FormattedMessage } from 'react-intl';
 
 import LogInForm from './LogInForm';
@@ -13,6 +14,7 @@ import LanguageSelect from '../LanguageSelect'
 import { LogoutStart, ShowModal, HideModal, FetchUserStart} from '../../../actions';
 import { ChangeLangAction } from '../../../actions/langActions';
 
+const { Header, Content, Footer, Sider } = Layout;
 class NavBar extends React.Component {
     state = { visible: false, placement: 'left', form:"login" };
 
@@ -67,63 +69,91 @@ class NavBar extends React.Component {
 
     renderLogOut(){
         return(
-        <>
-            <li className="nav-item">
-                
+            <Menu.SubMenu
+            key="sub2"
+            title={
+              <span>
                 {localStorage.getItem("goog_avatar_url")?
                     <Avatar 
                         src={localStorage.getItem("goog_avatar_url")} 
                         alt="Profile"
                         ></Avatar>:
-                    null
+                    <Icon type="user" />
                  }
-                 <span >
-                 <FormattedMessage id="nav.welcome" defaultMessage="Welcome" />, {this.props.user.userInfo.first_name? this.props.user.userInfo.first_name:this.props.user.userInfo.username}
+                <span className="nav-text"><FormattedMessage id="nav.welcome" defaultMessage="Welcome" />, {this.props.user.userInfo.first_name? this.props.user.userInfo.first_name:this.props.user.userInfo.username}
                  </span>
-            </li>
-            <li className="nav-item">
-                <Button className="nav-link" onClick={this.onLogOut}><FormattedMessage id="nav.logout" defaultMessage="Logout" /></Button>
-            </li>
-        </>
+              </span>
+            }
+            >
+                <Menu.Item key="201">
+                    <Icon type="profile" />
+                    <span className="nav-text">
+                        <Link to="/profile"><FormattedMessage id="nav.profile" defaultMessage="Profile" /></Link>
+                    </span>
+                </Menu.Item>
+                <Menu.Item key="202">
+                    <Icon type="close-square" />
+                    <span className="nav-text" onClick={this.onLogOut}><FormattedMessage id="nav.logout" defaultMessage="Logout" /></span>
+                </Menu.Item>
+                
+            </Menu.SubMenu>
         )
     }
 
     renderSignInOptions(){
         return(
-            <>
-            <li className="nav-item">
-                <Button className="nav-link" onClick={() => this.showDrawer("register")}><FormattedMessage id="nav.register" defaultMessage="Register" /></Button>
-            </li>
-            <li className="nav-item">
-                <Button className="nav-link" onClick={() => this.showDrawer("login")}><FormattedMessage id="nav.login" defaultMessage="Login" /></Button>
-            </li>
-            <li className="nav-item">
-                <GoogleLoginButton />
-            </li>
-            </>
+            <Menu.SubMenu
+            key="sub1"
+            title={
+              <span>
+                <Icon type="appstore" />
+                <span><FormattedMessage id="nav.singin_register" defaultMessage="Signin/Register" /></span>
+              </span>
+            }
+          >
+                <Menu.Item key="101">
+                    <Icon type="shop" />
+                    <span className="nav-text" onClick={() => this.showDrawer("register")}><FormattedMessage id="nav.register" defaultMessage="Register" /></span>
+                </Menu.Item>
+                <Menu.Item key="102">
+                    <Icon type="shop" />
+                    <span className="nav-text" onClick={() => this.showDrawer("login")}><FormattedMessage id="nav.login" defaultMessage="Login" /></span>
+                </Menu.Item>
+                <Menu.Item key="103">
+                    <Icon type="shop" />
+                    <span className="nav-text"><GoogleLoginButton /></span>
+                </Menu.Item>
+            </Menu.SubMenu>
+            
         );
     }
 
     render(){
         return(
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <a className="navbar-brand" href="#">Navbar</a>
-                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-    
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav mr-auto">
-                        <li className="nav-item active">
-                            <Link className="nav-link" to="/"><FormattedMessage id="nav.home" defaultMessage="Home" /></Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/profile"><FormattedMessage id="nav.profile" defaultMessage="Profile" /></Link>
-                        </li>
-                        {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
-                        <LanguageSelect />
-                    </ul>
-                </div>
+            <>
+            <Sider
+                style={{
+                    overflow: 'auto',
+                    height: '100vh',
+                    position: 'fixed',
+                    left: 20,
+                }}
+                >
+                <div className="logo" />
+                <Menu theme="light" mode="inline" defaultSelectedKeys={['2']}>
+                    <Menu.Item key="1">
+                        <span className="nav-text"><LanguageSelect /></span>
+                    </Menu.Item>
+                    <Menu.Item key="2">
+                        <Icon type="home" />
+                        <span className="nav-text">
+                            <Link to="/"><FormattedMessage id="nav.home" defaultMessage="Home" /></Link>
+                        </span>
+                    </Menu.Item>
+                    {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
+                    
+                </Menu>
+                </Sider>
 
                 <Drawer
                 title={ <FormattedMessage id="auth.drawer" defaultMessage="Login/Register" /> }
@@ -135,7 +165,8 @@ class NavBar extends React.Component {
                 >
                     {this.renderForm()}
                 </Drawer>
-            </nav>
+            
+            </>
         );
     }
     
