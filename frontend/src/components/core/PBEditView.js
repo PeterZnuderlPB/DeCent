@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input } from 'antd';
+import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin } from 'antd';
 import moment from 'moment';
 import { FetchPost, UpdatePost } from '../../actions/PBEditViewActions';
 import axios from 'axios';
@@ -192,7 +192,7 @@ addClick = () => {
       <h1>EditView {this.props.match.params.table_name} - {this.props.match.params.id}</h1>
       
       <form >
-        {this.props.edit.loadingPost ? null : this.createUI()}        
+        {this.props.edit.loadingPost ? <div style={{ display: 'flex', alignItems: 'center', alignContent: 'center', justifyContent:'center', height: '300px'}}><Spin size="large" tip="Loading..."></Spin></div> : this.createUI()}        
       </form>
       </>
     );
