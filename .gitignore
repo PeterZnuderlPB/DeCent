@@ -110,7 +110,7 @@ backend/core/testdb.sqlite3
 backend/core/storage/
 
 
-**/.vscode
+*/.vscode
 
 backend/Scripts/
 /Scripts
