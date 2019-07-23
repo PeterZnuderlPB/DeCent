@@ -9,7 +9,7 @@ import { message } from 'antd'
 import {FetchUserStart} from './index'
 
 import { django_client_id,django_client_secret} from '../apis'
-import url from '../apis'
+import {baseUrlHttp} from '../apis'
 
 export const isAuthenticating = () => ({
     type: GOOGLE_IS_AUTHENTICATING
@@ -57,7 +57,8 @@ export const  convertGoogleToken = (access_token) => {
       searchParams.set("backend", "google-oauth2");
       searchParams.set("token", access_token);
       try {
-        let response = await fetch(`${url}/auth/convert-token/`, {
+        console.log("Base url for convert",baseUrlHttp)
+        let response = await fetch(`${baseUrlHttp}auth/convert-token/`, {
           method: "POST",
           headers: {
             Accept: "application/json",
