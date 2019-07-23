@@ -34,12 +34,12 @@ class App extends React.Component{
                 <Router history={history}>
                     <Layout >
                         <Route path="/" component={NavBar}/>
-                        <Layout>
+                        <Layout style={{ marginLeft: 230 }}>
                             <Header style={{ background: '#cceeff', padding: 0 }}>
                                 <Route path="/" component={PBModal}/>
                             </Header>
-                            <hr/>
-                            <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
+                            
+                            <Content >
                                 <Route path="/" exact component={() => <PBUpload maxfiles={2} filetype={"image/*"} category={"food"}/>}/>
                                 <Route path="/" exact component={Profile}/>
                                 <Route path="/BrowseView/:table_name" exact component={PBTable}/>
@@ -48,7 +48,7 @@ class App extends React.Component{
                             <Footer style={{ textAlign: 'center' }}>
                                 <Route path="/" component={PBMail}/>
                             </Footer>
-                        </Layout>
+                        </Layout>    
                     </Layout>
                 </Router>
             </div>
