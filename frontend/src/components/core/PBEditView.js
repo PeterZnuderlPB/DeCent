@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input } from 'antd';
+import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin } from 'antd';
 import moment from 'moment';
+import history from '../../history';
+import { FetchPost, UpdatePost } from '../../actions/PBEditViewActions';
 import axios from 'axios';
 import con from '../../apis';
-import { tsExternalModuleReference } from '@babel/types';
 
 
 const { TextArea } = Input; 
@@ -20,38 +21,25 @@ class PBEditView extends React.Component {
     column_names: [],
     values: [],
     time_assist:[],
-    
+    loaded: false
   };
 
-  dataSource = this.state.data
-  
-  componentDidMount() {
-    this.fetch();
-  }
-
-  fetch = () => {
-    const uri = `/api/posts/${this.props.match.params.id}`;
-    console.log("EDIT VIEW fetch", this.props.user);
-    con.get(uri,
-      {   headers:{
-          Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
-      },
-      contentType: 'json',
-    }).then(response => {
-      this.setState({
-        loading: false,
-        data: response.data.data,
-        column_names: response.data.column_names,
-        column_types: response.data.column_types
-      }, () =>{console.log("Response: ",response.data.data,response.data.column_names,response.data.column_types)});
-    });
+  componentWillMount() {
+    this.props.FetchPost(this.props.match.params.id);
   }
 
   createUI(){
+    // find better solution for this
+    if (!this.state.loaded){
+      this.state.data = this.props.edit.data.data;
+      this.state.column_names = this.props.edit.data.column_names;
+      this.state.column_types = this.props.edit.data.column_types;
+      this.state.loaded = true;
+    }
+
     this.addClick();
     return this.state.values.map((el, i, index) => 
         <div key={i}>
-          {/*console.log(el +' ' + el.length)*/}
 
           <label>{el}: </label>
           {this.state.column_types[i].includes("Integer")? <InputNumber value={this.state.data[el]||''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
@@ -76,7 +64,7 @@ class PBEditView extends React.Component {
 
     timeAsign = (el) =>{
       if(el != false){
-      this.state.time_assist=moment(el.slice(0, -8)).format("HH:mm:ss")
+      this.state.time_assist=moment(el.slice(0, -8)).format("HH:mm:ss") // cant replace with setState
       return (moment(this.state.time_assist, "HH:mm:ss"))
       }
     }
@@ -87,7 +75,12 @@ class PBEditView extends React.Component {
       for(let x = 0; x < 10; x = x+1){
         oldDate = oldDate + this.state.data[el][x]
       }
-      this.state.data[el] = this.state.data[el].replace(oldDate, newDate)
+      this.setState({
+        data: {
+          ...this.state.data,
+          [el]: this.state.data[el].replace(oldDate, newDate)
+        }
+      });
     }
 
     handleDateTimeChange2(el, value){
@@ -96,31 +89,58 @@ class PBEditView extends React.Component {
       for(let x = 11; x < 19; x = x+1){
         oldTime = oldTime + this.state.data[el][x]
       }
-      this.state.data[el] = this.state.data[el].replace(oldTime, newTime)
+      // this.state.data[el] = this.state.data[el].replace(oldTime, newTime)
+      this.setState({
+        data: {
+          ...this.state.data,
+          [el]: this.state.data[el].replace(oldTime, newTime)
+        }
+      });
       console.log(this.state.data[el])
     }
 
     handleBoxChange(el, event){
-      this.state.data[el]= event.target.checked
+      this.setState({
+        data: {
+          ...this.state.data,
+          [el]: event.target.checked
+        }
+      });
       this.setState({ ...this.state.values });
      }
 
   handleDateChange(el, value){
-    this.state.data[el]= moment(value).format("YYYY-MM-DD")
+    this.setState({
+      data: {
+        ...this.state.data,
+        [el]: moment(value).format("YYYY-MM-DD")
+      }
+    });
     this.setState({ ...this.state.values});
    }
 
    handleNumberChange(el, event){  
-    this.state.data[el]= event.target.value
+    this.setState({
+      data: {
+        ...this.state.data,
+        [el]: event.target.value
+      }
+    });
     this.setState({ ...this.state.values });    
    }
  
-   handleChange = (el, event) => {  
-    this.state.data[el] = event.target.value
+   handleChange = (el, event) => {
+    this.setState({
+      data: {
+        ...this.state.data,
+        [el]: event.target.value
+      }
+    });
     this.setState({ ...this.state.values });
    }
 
    handleSubmit = () => {
+    console.log("SUBMIT: ", this.props.edit);
     var dict = {}
     console.log(this.state.column_names)
     console.log(this.state.data)
@@ -136,21 +156,15 @@ class PBEditView extends React.Component {
       }
     }
     console.log("dict",dict)
+    this.props.UpdatePost(this.state.data["id"], dict);
 
-    const saveUri = `api/posts/${this.state.data["id"]}`;
-    console.log("SAVE VIEW saveData", this.props.user);
-    const conConfig = {
-      headers:{
-        Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token,
-
-      }
-    }
-    con.put(saveUri, dict, conConfig)
 }
 
 
-addClick = () => {  
-  this.state.values = Object.keys(this.state.data)
+addClick = () => { 
+  // Redirects user to index page in case of error
+  try {
+  this.state.values = Object.keys(this.state.data);
 
   console.log(this.state.column_names)
   console.log(this.state.column_types)
@@ -171,7 +185,9 @@ addClick = () => {
 
   }
   console.log(this.state.column_names)
-
+  } catch {
+    history.push("/");
+  }
 }
 
   render() {
@@ -181,7 +197,7 @@ addClick = () => {
       <h1>EditView {this.props.match.params.table_name} - {this.props.match.params.id}</h1>
       
       <form >
-        {this.createUI()}        
+        {this.props.edit.loadingPost ? <div style={{ display: 'flex', alignItems: 'center', alignContent: 'center', justifyContent:'center', height: '300px'}}><Spin size="large" tip="Loading..."></Spin></div> : this.createUI()}        
       </form>
       </>
     );
@@ -189,7 +205,7 @@ addClick = () => {
 }
 
 const mapStateToProps = state =>{
-    return { user: state.user.auth }
+    return { user: state.user.auth, edit: state.edit }
 }
 
-export default connect(mapStateToProps)(PBEditView);
+export default connect(mapStateToProps, { FetchPost, UpdatePost })(PBEditView);
