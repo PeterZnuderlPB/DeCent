@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { Popover,Table, Button, Checkbox, Input, Row, Col, Icon} from 'antd';
 import { FormattedMessage } from 'react-intl';
+import { FetchPostStart } from '../../actions/PBEditViewActions';
 import lang from '../../translations/translations';
 import axios from 'axios';
 import con from '../../apis';
@@ -345,6 +346,7 @@ class PBTable extends React.Component {
 
     setRedirect = (event) => {
       console.log(event.target.id);
+      this.props.FetchPostStart();
       this.setState({
         redirectUrl: "/EditView/post/" + event.target.id,
         redirect: true
@@ -401,4 +403,4 @@ const mapStateToProps = (state, ownProps) =>{
         }
 }
 
-export default connect(mapStateToProps)(PBTable);
+export default connect(mapStateToProps, { FetchPostStart })(PBTable);

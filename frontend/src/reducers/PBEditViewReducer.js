@@ -4,13 +4,13 @@ import {
     FETCH_POST_FAIL,
     UPDATE_POST_START,
     UPDATE_POST_SUCCESS,
-    UPDATE_POST_FAIL,
-    UPDATE_POST_CANCEL
+    UPDATE_POST_FAIL
 } from '../actions/types'
 
 const INTIAL_STATE = {
     data: [],
-    loading: false
+    loadingPost: false,
+    loadingUpdate: false
 }
 
 export default (state = INTIAL_STATE, action) => {
@@ -27,8 +27,6 @@ export default (state = INTIAL_STATE, action) => {
             return action.payload;
         case UPDATE_POST_FAIL:
             return action.payload;
-        case UPDATE_POST_CANCEL:
-            return INTIAL_STATE;
         default:
             return state;
     }
