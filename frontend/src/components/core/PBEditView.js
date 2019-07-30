@@ -310,12 +310,9 @@ class PBEditView extends React.Component {
           dict[this.state.column_names[x]] = this.state.data[this.state.column_names[x]] === null ? null : this.state.data[this.state.column_names[x]]["id"] // TODO: Format null 
         }
       }
-      console.log("Update dict", dict);
       this.props.UpdatePost(this.state.data["id"], dict);
   } else {
     this.state.values.map((el, i) => {
-      console.log("COL TYPE: ", this.state.column_types[i]);
-
       if(this.state.column_types[i] === "Foreign Key (type determined by related field)" && el.indexOf('user') != -1){
         dict[el] = this.props.user.userInfo.id;
       }
@@ -332,7 +329,6 @@ class PBEditView extends React.Component {
         dict[el] = this.state.data[el];
       }
     });
-    console.log("Add dict", dict);
     this.props.AddPost(dict);
   }
 
