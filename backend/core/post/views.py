@@ -13,16 +13,18 @@ from core.views import PBListViewMixin, PBDetailsViewMixin
 
 # Create your views here.
 class PostList(PBListViewMixin, generics.ListCreateAPIView): 
-    #permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     model = Post
     table_name = "POSTS" # For search and filter options (Redis key)
     required_groups= {
         'GET':['__all__'],
         'POST':['PostViewer'],
+        'PUT':['PostViewer'],
     }
     required_permissions={
-        'GET':['__all__'],
+        'GET':['post.view_post'],
         'POST':['post.add_post'],
+        'PUT':['post.change_post'],
     }
 
     def get_serializer_class(self):
@@ -35,12 +37,12 @@ class PostDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Post
     required_groups= {
         'GET':['__all__'],
-        'DELETE':['PostViewer'],
+        'POST':['PostViewer'],
         'PUT':['PostViewer'],
     }
     required_permissions={
-        'GET':['__all__'],
-        'DELETE':['post.add_post'],
+        'GET':['post.view_post'],
+        'POST':['post.add_post'],
         'PUT':['post.change_post'],
     }
 

@@ -4,6 +4,7 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework.response import Response
 
 from .models import CustomUser
+from core.views import PBListViewMixin, PBDetailsViewMixin
 from .serializers import CustomUserSerializer, CustomUserSimpleSerializer
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.oauth import get_user_from_token

@@ -44,6 +44,7 @@ class App extends React.Component{
                                 <Route path="/" exact component={Profile}/>
                                 <Route path="/BrowseView/:table_name" exact component={PBTable}/>
                                 <Route path="/EditView/:table_name/:id" exact component={PBEditView}/>
+                                <Route path="/EditView/:table_name/" exact component={PBEditView} />
                             </Content>
                             <Footer style={{ textAlign: 'center' }}>
                                 <Route path="/" component={PBMail}/>

@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import con from '../apis';
+import history from '../history';
 import {
     FETCH_POST_START,
     FETCH_POST_SUCCESS,
@@ -7,7 +8,9 @@ import {
     UPDATE_POST_START,
     UPDATE_POST_SUCCESS,
     UPDATE_POST_FAIL,
-    UPDATE_POST_CANCEL
+    ADD_POST_START,
+    ADD_POST_SUCCESS,
+    ADD_POST_FAIL
 } from './types'
 
 export const FetchPost = (postId) => (dispatch, getState) => {
@@ -29,9 +32,15 @@ export const FetchPost = (postId) => (dispatch, getState) => {
         return res.json();
     })
     .then(data => {
+        console.log("PBEditViewActions - Fetch data: ", data);
         if (data === undefined)
             return;
-        
+        // let mydata = {
+        //     data: data,
+        //     column_names: ['owner', 'name', 'upload_date'],
+        //     column_types: ['Foreign Key', 'String', 'Date (without time)']
+        // }
+
         dispatch(FetchPostSuccess(data));
         message.success("Successfully fetched post data.");
     });
@@ -54,7 +63,34 @@ export const UpdatePost = (postId, postData) => (dispatch, getState) => {
     })
     .catch(err => {
         dispatch(UpdatePostFail(postData));
-        message.error("Eror trying to update post.");
+        message.error("Error trying to update post.");
+    })
+}
+
+export const AddPost = (postData) => (dispatch, getState) => {
+    dispatch(AddPostStart(postData));
+    const { user } = getState();
+
+    postData = {
+        ...postData,
+        id: 0
+    }
+
+    const saveUri = `api/posts/`;
+    const conConfig = {
+      headers:{
+        Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`,
+      }
+    }
+    con.post(saveUri, postData, conConfig)
+    .then(res => {
+        dispatch(AddPostSuccess(postData));
+        history.push(`${history.location.pathname}/${res.data.id}`);
+        message.success("Successfully added post.");
+    })
+    .catch(err => {
+        dispatch(AddPostFail(postData));
+        message.error("Error trying to add post.");
     })
 }
 
@@ -64,7 +100,8 @@ export const FetchPostStart = () => {
         payload: {
             data: [],
             loadingPost: true,
-            loadingUpdate: false
+            loadingUpdate: false,
+            loadingAdd: false
         }
     }
 }
@@ -75,7 +112,8 @@ export const FetchPostSuccess = (postData) => {
         payload: {
             data: postData,
             loadingPost: false,
-            loadingUpdate: false
+            loadingUpdate: false,
+            loadingAdd: false
         }
     }
 }
@@ -93,7 +131,8 @@ export const UpdatePostStart = (postData) => {
         payload: {
             data: postData,
             loadingPost: false,
-            loadingUpdate: true
+            loadingUpdate: true,
+            loadingAdd: false
         }
     }
 }
@@ -104,7 +143,8 @@ export const UpdatePostSuccess = (postData) => {
         payload: {
             data: postData,
             loadingPost: false,
-            loadingUpdate: false
+            loadingUpdate: false,
+            loadingAdd: false
         }
     }
 }
@@ -115,7 +155,44 @@ export const UpdatePostFail = (postData) => {
         payload: {
             data: postData,
             loadingPost: false,
-            loadingUpdate: false
+            loadingUpdate: false,
+            loadingAdd: false
+        }
+    }
+}
+
+export const AddPostStart = (postData) => {
+    return {
+        type: ADD_POST_START,
+        payload: {
+            data: postData,
+            loadingPost: false,
+            loadingUpdate: false,
+            loadingAdd: true
+        }
+    }
+}
+
+export const AddPostSuccess = (postData) => {
+    return {
+        type: ADD_POST_SUCCESS,
+        payload: {
+            data: postData,
+            loadingPost: false,
+            loadingUpdate: false,
+            loadingAdd: false
+        }
+    }
+}
+
+export const AddPostFail = (postData) => {
+    return {
+        type: ADD_POST_FAIL,
+        payload: {
+            data: postData,
+            loadingPost: false,
+            loadingUpdate: false,
+            loadingAdd: false
         }
     }
 }

@@ -1,17 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Popover,Table, Button, Checkbox, Input, Row, Col, Icon, Menu, Layout} from 'antd';
+import { Popover,Table, Button, Checkbox, Input, Row, Col, Icon} from 'antd';
 import { FormattedMessage } from 'react-intl';
 import { FetchPostStart } from '../../actions/PBEditViewActions';
 import lang from '../../translations/translations';
 import axios from 'axios';
 import con from '../../apis';
+import history from '../../history';
 import { updateExpression, throwStatement } from '@babel/types';
 //import { FetchPostsStart } from '../../actions'
 import {Redirect} from 'react-router-dom';
 
-const { Header, Content, Footer, Sider } = Layout;
 class PBTable extends React.Component {
     qs = require('qs');
     assert = require('assert');
@@ -327,14 +327,12 @@ class PBTable extends React.Component {
                   };}     
               })
       });
-      if(allKeys.length > 0){
         allKeys.unshift({
           title: this.TranslateColumn("edit").toUpperCase(),
           dataIndex:'',
           key:'x',
           render: () => <input type='button' value={this.TranslateColumn("edit")} onClick={this.setRedirect} id={this.nextButtonId()} />   
         }) 
-      }
       //console.log(allKeys)
       return allKeys;
   }
@@ -355,29 +353,6 @@ class PBTable extends React.Component {
       });
     }
 
-    renderTopButtons=()=>{
-      return(
-        <Header>
-          <a onClick={() => this.fetch()}><FormattedMessage id="table.refreshTable" defaultMessage="Refresh table" /></a>
-
-          <Popover
-            content={this.ActiveColumnsContent()}
-            title={ <FormattedMessage id="table.columns" defaultMessage="Columns" /> }
-            trigger="click"
-            visible={this.state.customColumnsVis}
-            onVisibleChange={this.handleActiveColumnsClick}
-          >
-            <a type="primary"><FormattedMessage id="table.customColumns" defaultMessage="Custom columns" /></a>
-          </Popover><a  onClick={() => this.fetch()}><FormattedMessage id="table.refreshTable" defaultMessage="Refresh table" /></a>
-
-          <a  onClick={() => this.setState({ filterValues: {}}, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></a>
-
-          <a  onClick={this.handleClearSort}><FormattedMessage id="table.clearSorting" defaultMessage="Clear sorting" /></a>
-
-        </Header>
-      );
-    }
-
     render(){
       if (this.state.redirect) {
         return <Redirect to={this.state.redirectUrl} />
@@ -386,21 +361,37 @@ class PBTable extends React.Component {
         const columns = this.buildColumns();
         //console.log("Rerendering", this.state)
         return(
-          <Layout className="layout">
-            {this.renderTopButtons()}
-            <Content>
-              <Table 
-              dataSource={this.state.data} 
-              columns={columns} 
-              pagination={this.state.pagination} //false to turn it off
-              loading={this.state.loading}
-              onChange={this.handleTableChange}
-              scroll={{ x: this.state.windowSize.x }}
-              title={() => this.renderColumnTitle(this.state.tableName)}
-              {...this.buttonId=-1}
-              />
-            </Content>
-           </Layout>
+          <>
+          <Button type = "primary" onClick={() => this.fetch()}><FormattedMessage id="table.refreshTable" defaultMessage="Refresh table" /></Button>
+          <Popover
+            content={this.ActiveColumnsContent()}
+            title={ <FormattedMessage id="table.columns" defaultMessage="Columns" /> }
+            trigger="click"
+            visible={this.state.customColumnsVis}
+            onVisibleChange={this.handleActiveColumnsClick}
+            >
+            <Button type="primary"><FormattedMessage id="table.customColumns" defaultMessage="Custom columns" /></Button>
+          </Popover>
+          <Button type = "primary" onClick={() => this.setState({ filterValues: {}}, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
+          <Button type = "primary" onClick={this.handleClearSort}><FormattedMessage id="table.clearSorting" defaultMessage="Clear sorting" /></Button>
+          <Button type="danger" onClick={() => history.push("/EditView/post")}>Add Post</Button>
+           <Table 
+           dataSource={this.state.data} 
+           columns={columns} 
+           pagination={this.state.pagination} //false to turn it off
+           loading={this.state.loading}
+           onChange={this.handleTableChange}
+           scroll={{ x: this.state.windowSize.x }}
+           title={() => this.renderColumnTitle(this.state.tableName)}
+/*
+           onHeaderRow={column => {
+            return {
+              onClick: () => {this.setSorting(column)}, // click header row
+            };
+          }}*/
+          {...this.buttonId=-1}
+           />
+           </>
         );
     }
     

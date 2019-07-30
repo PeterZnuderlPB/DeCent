@@ -124,15 +124,18 @@ class KeyUtility():
 class PBListViewMixin(object): 
     model = None
     table_name = "BASE LIST VIEW" # For search and filter options (Redis key)
-    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission)
-    # User has to have ALL listed permission for a given method
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     required_groups= {
         'GET':['__all__'],
         'POST':['__all__'],
+        'PUT':['__all__'],
+        'DELETE':['__all__'],
     }
     required_permissions={
         'GET':['__all__'],
         'POST':['__all__'],
+        'PUT':['__all__'],
+        'DELETE':['__all__']
     }
     DEFAULT_QUERY_SETTINGS={
         'results':10,
@@ -253,14 +256,16 @@ class PBListViewMixin(object):
 
 class PBDetailsViewMixin(object):
     model = None
-    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    #permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
     required_groups= {
         'GET':['__all__'],
+        'POST':['__all__'],
         'PUT':['__all__'],
         'DELETE':['__all__']
     }
     required_permissions={
         'GET':['__all__'],
+        'POST':['__all__'],
         'PUT':['__all__'],
         'DELETE':['__all__']
     }
@@ -275,7 +280,15 @@ class PBDetailsViewMixin(object):
         serializer = serializerclass(filtered, many=True)
         data = serializer.data[0]
         instance = self.model.objects.filter(id = pk)
-        att_types = [field.description for field in self.model._meta.get_fields()]
+        att_types = []
+
+        for field in self.model._meta.get_fields():
+            if isinstance(field, models.ManyToOneRel) or isinstance(field, models.ManyToManyRel):
+                None
+            else:
+                att_types.append(field.description)
+
+        # att_types = [field.description for field in self.model._meta.get_fields()] - OLD WAY OF GETTING FIELDS DESCS
         att_names = [field.name for field in self.model._meta.get_fields()]
         fileds = self.model._meta.get_fields()
         return Response({'data': data, 'column_names': att_names, 'column_types':att_types}, status=status.HTTP_200_OK)

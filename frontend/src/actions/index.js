@@ -47,7 +47,8 @@ export const LoginStart = (credentials) => async dispatch =>{
         dispatch(LoginSuccess(response.data));
     }
     
-    history.push('/');
+    // Disabled for /editview/post/{id} --> user logs in, the edit loads
+    // history.push('/');
 }
 
 export const LoginSuccess = (token) => async dispatch => {

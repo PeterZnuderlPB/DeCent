@@ -39,7 +39,8 @@ urlpatterns = [
     path('groups/', GroupList.as_view()),
     path('', include('post.urls')),
     path('', include('file.urls')),
-    path('api/mail/', SendMail.as_view())
+    path('api/mail/', SendMail.as_view()),
+    path('', include('competency.urls'))
 ]
 
 if settings.DEBUG:

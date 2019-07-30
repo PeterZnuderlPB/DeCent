@@ -5,6 +5,7 @@ from rest_framework import generics, permissions
 from rest_framework import views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
+from core.views import PBDetailsViewMixin
 #from django_weasyprint import WeasyTemplateResponseMixin
 
 from .models import File
@@ -29,7 +30,8 @@ class FileList(generics.ListCreateAPIView):
     def get_serializer_class(self):
         return FileSerializerBasic
 
-class FileDetails(views.APIView):
+class FileDetails(generics.RetrieveAPIView):
+    serializer_class = FileSerializerBasic
     permission_classes = (permissions.IsAuthenticated,)
     parser_class = (FileUploadParser,)
 
