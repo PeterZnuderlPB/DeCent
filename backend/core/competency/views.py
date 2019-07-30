@@ -29,7 +29,7 @@ class CompotencyList(PBListViewMixin, generics.ListCreateAPIView):
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CompetencySerializerDepth
-        return CompetencySerializerDepth
+        return CompetencySerializerBasic
 
 class CompotencyDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Competency
@@ -48,7 +48,7 @@ class CompotencyDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIVie
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CompetencySerializerDepth
-        return CompetencySerializerDepth
+        return CompetencySerializerBasic
 
 class SubcategoryList(PBListViewMixin, generics.ListCreateAPIView): 
     permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)

@@ -148,7 +148,7 @@ class PBEditView extends React.Component {
           [elName]: data.data
         },
         fkLoading: false
-      }, () => console.log("NEW DATA", this.state));
+      });
     });
   }
 
@@ -177,7 +177,7 @@ class PBEditView extends React.Component {
             this.state.column_types[i].includes("Boolean")?
             (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
             this.state.column_types[i].includes("Foreign Key")?
-            (<Input value={this.state.data[el] !== null ? this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+            (<Input value={this.state.data[el] !== null ? this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("String")?
             (<Input value={this.state.data[el]||''} onChange={this.handleChange.bind(this, el)} />):
             (<TextArea rows={4} value={this.state.data[el]||''} onChange={this.handleChange.bind(this, el)} />)}
@@ -201,7 +201,7 @@ class PBEditView extends React.Component {
           // this.state.column_types[i].includes("Foreign Key") && el === 'subcategory' || el === 'organization'?
           // (<Select onFocus={() => this.fetchOptions(el)}>{this.renderOptions()}</Select>):
           this.state.column_types[i].includes("Foreign Key")?
-          (<Select onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
+          (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
           this.state.column_types[i].includes("String")?
           (<Input onChange={this.handleChange.bind(this, el)} />):
           (<TextArea rows={4} onChange={this.handleChange.bind(this, el)} />)}
@@ -287,39 +287,52 @@ class PBEditView extends React.Component {
     this.setState({ ...this.state.values });
    }
 
+   handleSelect = (event, el) => {
+
+     this.setState({
+       data: {
+         ...this.state.data,
+         [el]: event
+       }
+     });
+
+     this.setState({ ...this.state.values })
+   }
+
    handleSubmit = () => {
     var dict = {}
     if(this.props.match.params.id !== undefined) {
       for (let x = 0; x < this.state.column_names.length; x = x + 1){
         if(this.state.column_types[x] != "Foreign Key (type determined by related field)"){
-          console.log(this.state.column_types[x] + " " + this.state.data[this.state.column_names[x]])
           dict[this.state.column_names[x]] = this.state.data[this.state.column_names[x]]
         }
         else{
-          console.log(this.state.column_types[x] + " " + this.state.data[this.state.column_names[x]])
-          dict[this.state.column_names[x]] = this.state.data[this.state.column_names[x]]["id"]
+          dict[this.state.column_names[x]] = this.state.data[this.state.column_names[x]] === null ? null : this.state.data[this.state.column_names[x]]["id"] // TODO: Format null 
         }
       }
-
+      console.log("Update dict", dict);
       this.props.UpdatePost(this.state.data["id"], dict);
   } else {
-    for (let x = 0; x < this.state.column_names.length; x = x + 1){
-      if(this.state.column_types[x] === "Foreign Key (type determined by related field)"){
-        console.log(this.state.column_types[x] + " " + this.state.data[this.state.column_names[x]])
-        dict[this.state.column_names[x]] = this.props.user.userInfo.id
+    this.state.values.map((el, i) => {
+      console.log("COL TYPE: ", this.state.column_types[i]);
+
+      if(this.state.column_types[i] === "Foreign Key (type determined by related field)" && el.indexOf('user') != -1){
+        dict[el] = this.props.user.userInfo.id;
       }
-      else if(this.state.column_types[x] === "Date (with time)") {
-        dict[this.state.column_names[x]] = this.getCurrentDateTime();
+      else if (this.state.column_types[i] === "Foreign Key (type determined by related field)") {
+        dict[el] = this.state.data[el];
       }
-      else if(this.state.column_types[x] === "Date (without time)") {
-        dict[this.state.column_names[x]] = this.getCurrentDate();
+      else if(this.state.column_types[i] === "Date (with time)") {
+        dict[el] = this.getCurrentDateTime();
+      }
+      else if(this.state.column_types[i] === "Date (without time)") {
+        dict[el] = this.getCurrentDate();
       }
       else{
-        console.log(this.state.column_types[x] + " " + this.state.data[this.state.column_names[x]])
-        dict[this.state.column_names[x]] = this.state.data[this.state.column_names[x]]
+        dict[el] = this.state.data[el];
       }
-    }
-
+    });
+    console.log("Add dict", dict);
     this.props.AddPost(dict);
   }
 
