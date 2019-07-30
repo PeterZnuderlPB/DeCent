@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin } from 'antd';
+import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin, Select } from 'antd';
 import moment from 'moment';
 import history from '../../history';
 import { FetchPost, UpdatePost, AddPost } from '../../actions/PBEditViewActions';
 import axios from 'axios';
 import con from '../../apis';
+import { EWOULDBLOCK } from 'constants';
 
-
+const { Option } = Select;
 const { TextArea } = Input; 
 
 class PBEditView extends React.Component {
@@ -25,6 +26,9 @@ class PBEditView extends React.Component {
     propsLoading: true,
     propsLoaded: false,
     requestedData: false,
+    fkData: [],
+    fkLoading: true,
+    fkSelected: null
   };
 
   componentWillMount() {
@@ -114,6 +118,40 @@ class PBEditView extends React.Component {
     return `${this.getCurrentDate()}T${currentHour}:${currentMinute}:${currentSecond}.777777Z`;
   }
 
+  renderOptions = (elName) => {
+    if (this.state.fkLoading) {
+      return <Option disabled={true} value="NULL">Loading data...</Option>;
+    } else {
+      	return this.state.fkData[elName].map(el => 
+          <Option key={el.id} value={el.id}>{el.name}</Option>
+        );
+    }
+  }
+
+  fetchOptions = (elName) => {
+    this.setState({
+      fkLoading: true,
+      fkSelected: elName
+    });
+
+    fetch(`http://localhost:8000/api/${elName}/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22name%22],%22filters%22:%7B%7D%7D`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + this.props.user.token.access_token
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      this.setState({
+        fkData: {
+          ...this.state.fkData,
+          [elName]: data.data
+        },
+        fkLoading: false
+      }, () => console.log("NEW DATA", this.state));
+    });
+  }
+
   createUI(){
     // find better solution for this
     if (!this.state.loaded){
@@ -139,7 +177,7 @@ class PBEditView extends React.Component {
             this.state.column_types[i].includes("Boolean")?
             (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
             this.state.column_types[i].includes("Foreign Key")?
-            (<Input value={this.state.data[el]['id']||''} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+            (<Input value={this.state.data[el] !== null ? this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("String")?
             (<Input value={this.state.data[el]||''} onChange={this.handleChange.bind(this, el)} />):
             (<TextArea rows={4} value={this.state.data[el]||''} onChange={this.handleChange.bind(this, el)} />)}
@@ -160,8 +198,10 @@ class PBEditView extends React.Component {
           //HH:mm:ss
           this.state.column_types[i].includes("Boolean")?
           (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+          // this.state.column_types[i].includes("Foreign Key") && el === 'subcategory' || el === 'organization'?
+          // (<Select onFocus={() => this.fetchOptions(el)}>{this.renderOptions()}</Select>):
           this.state.column_types[i].includes("Foreign Key")?
-          (<Input value={this.props.user.userInfo.id} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+          (<Select onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
           this.state.column_types[i].includes("String")?
           (<Input onChange={this.handleChange.bind(this, el)} />):
           (<TextArea rows={4} onChange={this.handleChange.bind(this, el)} />)}

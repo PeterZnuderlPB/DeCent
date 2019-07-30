@@ -288,8 +288,16 @@ class PBDetailsViewMixin(object):
             else:
                 att_types.append(field.description)
 
+        att_names = []
+
+        for field in self.model._meta.get_fields():
+            if isinstance(field, models.ManyToOneRel) or isinstance(field, models.ManyToManyRel):
+                None
+            else:
+                att_names.append(field.name)
+
         # att_types = [field.description for field in self.model._meta.get_fields()] - OLD WAY OF GETTING FIELDS DESCS
-        att_names = [field.name for field in self.model._meta.get_fields()]
+        # att_names = [field.name for field in self.model._meta.get_fields()]
         fileds = self.model._meta.get_fields()
         return Response({'data': data, 'column_names': att_names, 'column_types':att_types}, status=status.HTTP_200_OK)
 

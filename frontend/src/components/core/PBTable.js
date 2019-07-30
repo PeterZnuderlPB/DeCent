@@ -226,7 +226,7 @@ class PBTable extends React.Component {
         //console.log('params:', params);
         //debugger;
         
-        const address = `/api/${this.state.tableURI}/`;
+        const address = `/api/compotencies/`;
         let params = this.state.settings;
         if (params == this.init_settings){
           params = null;

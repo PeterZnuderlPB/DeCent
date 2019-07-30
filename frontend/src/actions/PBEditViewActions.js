@@ -17,7 +17,7 @@ export const FetchPost = (postId) => (dispatch, getState) => {
     dispatch(FetchPostStart());
     const { user } = getState();
 
-    fetch(`http://localhost:8000/api/posts/${postId}`, {
+    fetch(`http://localhost:8000/api/compotencies/${postId}`, {
         method: 'GET',
         headers: {
             'Authorization': `${user.auth.token.token_type} ${user.auth.token.access_token}`
@@ -50,7 +50,7 @@ export const UpdatePost = (postId, postData) => (dispatch, getState) => {
     dispatch(UpdatePostStart(postData));
     const { user } = getState();
 
-    const saveUri = `api/posts/${postId}`;
+    const saveUri = `api/compotencies/${postId}`;
     const conConfig = {
       headers:{
         Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`,
@@ -76,7 +76,7 @@ export const AddPost = (postData) => (dispatch, getState) => {
         id: 0
     }
 
-    const saveUri = `api/posts/`;
+    const saveUri = `api/compotencies/`;
     const conConfig = {
       headers:{
         Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`,
