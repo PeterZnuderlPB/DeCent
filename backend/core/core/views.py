@@ -190,7 +190,7 @@ class PBListViewMixin(object):
             cached_val = cache.get(key)
             if(type(cached_val) == type("")):
                 cached_val = json.loads(cached_val)
-        else: 
+        else:
             cache.set(key, default_val, timeout=None)
             cached_val=default_val
         

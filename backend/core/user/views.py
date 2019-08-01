@@ -21,6 +21,7 @@ class CustomUserList( generics.ListCreateAPIView):
         encode_handler = api_settings.JWT_ENCODE_HANDLER
 
         user_serializer = CustomUserSimpleSerializer(data=request.data)
+
         if user_serializer.is_valid():
             user = user_serializer.save()
             return Response({'user': user_serializer.data}, status=status.HTTP_201_CREATED)

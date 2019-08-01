@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Competency, Subcategory, Organization
+from .models import Competency, Subcategory, Organization, OrganizationType
 
 from core.serializers import DynamicFieldsModelSerializer
 
@@ -24,6 +24,7 @@ class OrganizationSerializerBasic(DynamicFieldsModelSerializer ,serializers.Mode
         depth = 0 # How deep we want to serialize fk connections
 
 class OrganizationSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+
     class Meta:
         model = Organization
         fields = '__all__'
@@ -42,5 +43,18 @@ class CompetencySerializerDepth(DynamicFieldsModelSerializer, serializers.ModelS
 
     class Meta:
         model = Competency
+        fields = '__all__'
+        depth = 1
+
+class OrganizationTypeSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = OrganizationType #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class OrganizationTypeSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = OrganizationType
         fields = '__all__'
         depth = 1

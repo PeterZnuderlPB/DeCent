@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin, Select } from 'antd';
+import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin, Select, message } from 'antd';
 import moment from 'moment';
 import history from '../../history';
 import { FetchPost, UpdatePost, AddPost } from '../../actions/PBEditViewActions';
@@ -159,6 +159,11 @@ class PBEditView extends React.Component {
       this.state.column_names = this.props.edit.data.column_names;
       this.state.column_types = this.props.edit.data.column_types;
       this.state.loaded = true;
+      
+      if (this.state.data.organization.account !== this.props.user.userInfo.id) {
+        message.error("You cannot modify this post.");
+        history.push("/");
+      }
     }
 
     this.addClick();

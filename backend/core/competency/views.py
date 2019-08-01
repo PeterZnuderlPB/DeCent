@@ -5,8 +5,8 @@ from rest_framework import generics, permissions, status
 #Redis
 from django.conf import settings
 #Own
-from .models import Competency, Subcategory, Organization
-from .serializers import CompetencySerializerBasic, CompetencySerializerDepth, SubcategorySerializerDepth, OrganizationSerializerDepth
+from .models import Competency, Subcategory, Organization, OrganizationType
+from .serializers import CompetencySerializerBasic, CompetencySerializerDepth, SubcategorySerializerDepth, OrganizationSerializerDepth, OrganizationTypeSerializerDepth
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
 
@@ -89,3 +89,15 @@ class OrganizationList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return OrganizationSerializerDepth
         return OrganizationSerializerDepth
+
+class OrganizationTypeList(PBListViewMixin, generics.ListAPIView):
+    permission_classes = ()
+    model = OrganizationType
+    table_name = "Organizationtypes" # For search and filter options (Redis key)
+    required_groups = {}
+    required_permissions= {}
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return OrganizationTypeSerializerDepth
+        return OrganizationTypeSerializerDepth

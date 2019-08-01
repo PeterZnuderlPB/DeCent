@@ -41,7 +41,8 @@ class PBTable extends React.Component {
         filterValues:{},
         sortOrderValues: {},
         sortFieldValues: {},
-        redirect: false
+        redirect: false,
+        fkData: []
     };
     CheckboxGroup = Checkbox.Group;
     
@@ -234,6 +235,7 @@ class PBTable extends React.Component {
         else{
           //debugger;
           params.visibleFields = this.state.SCCheckedList;
+          params.visibleFields.push('id');
           params.filters = this.state.filterValues;
         }
         var settings = JSON.stringify(params);
@@ -255,6 +257,11 @@ class PBTable extends React.Component {
                 newOrderKeys.push(this.state.sortOptions.indexOf(el));
               })
             }
+
+            let newddd = response.data.available_columns;
+            console.log("OLD ARRAY", newddd);
+            newddd.splice(newddd.indexOf('id'), 1);
+            console.log("NEW ARRAY", newddd);
            // console.log("New sort order keys", newOrderKeys);
             this.setState({
               loading: false,
@@ -301,6 +308,10 @@ class PBTable extends React.Component {
       var allKeys = [];
 
       columns.forEach(element => {
+              if (element === 'id') {
+                return;
+              }
+
               allKeys.push( {
                   title: (
                     <div style={{ textAlign: 'center' }}>
