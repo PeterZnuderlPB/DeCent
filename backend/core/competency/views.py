@@ -120,7 +120,7 @@ class EvaluationList(PBListViewMixin, generics.ListCreateAPIView):
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return EvaluationSerializerDepth
-        return EvaluationSerializerDepth
+        return EvaluationSerializerBasic
 
 class EvaluationDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Evaluation

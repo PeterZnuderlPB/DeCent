@@ -70,7 +70,7 @@ class EvaluationSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelS
     class Meta:
         model = Evaluation
         fields = '__all__'
-        depth = 1
+        depth = 2
 
 class EvaluationTypeSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
 
