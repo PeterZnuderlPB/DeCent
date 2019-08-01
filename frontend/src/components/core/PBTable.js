@@ -227,7 +227,7 @@ class PBTable extends React.Component {
         //console.log('params:', params);
         //debugger;
         
-        const address = `/api/competency/`;
+        const address = `/api/${this.props.tableApi}/`;
         let params = this.state.settings;
         if (params == this.init_settings){
           params = null;
@@ -359,7 +359,7 @@ class PBTable extends React.Component {
       console.log(event.target.id);
       this.props.FetchPostStart();
       this.setState({
-        redirectUrl: "/EditView/post/" + event.target.id,
+        redirectUrl: `/EditView/${this.props.tableApi}/${event.target.id}`,
         redirect: true
       });
     }
@@ -385,7 +385,7 @@ class PBTable extends React.Component {
           </Popover>
           <Button type = "primary" onClick={() => this.setState({ filterValues: {}}, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
           <Button type = "primary" onClick={this.handleClearSort}><FormattedMessage id="table.clearSorting" defaultMessage="Clear sorting" /></Button>
-          <Button type="danger" onClick={() => history.push("/EditView/post")}>Add Post</Button>
+          <Button type="danger" onClick={() => history.push(`/EditView/${this.props.tableApi}`)}>Add Post</Button>
            <Table 
            dataSource={this.state.data} 
            columns={columns} 

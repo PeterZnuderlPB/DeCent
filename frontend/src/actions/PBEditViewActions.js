@@ -13,11 +13,11 @@ import {
     ADD_POST_FAIL
 } from './types'
 
-export const FetchPost = (postId) => (dispatch, getState) => {
+export const FetchPost = (postId, table) => (dispatch, getState) => {
     dispatch(FetchPostStart());
     const { user } = getState();
 
-    fetch(`http://localhost:8000/api/competency/${postId}`, {
+    fetch(`http://localhost:8000/api/${table}/${postId}`, {
         method: 'GET',
         headers: {
             'Authorization': `${user.auth.token.token_type} ${user.auth.token.access_token}`
@@ -46,11 +46,11 @@ export const FetchPost = (postId) => (dispatch, getState) => {
     });
 }
 
-export const UpdatePost = (postId, postData) => (dispatch, getState) => {
+export const UpdatePost = (postId, postData, table) => (dispatch, getState) => {
     dispatch(UpdatePostStart(postData));
     const { user } = getState();
 
-    const saveUri = `api/competency/${postId}`;
+    const saveUri = `api/${table}/${postId}`;
     const conConfig = {
       headers:{
         Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`,
@@ -67,7 +67,7 @@ export const UpdatePost = (postId, postData) => (dispatch, getState) => {
     })
 }
 
-export const AddPost = (postData) => (dispatch, getState) => {
+export const AddPost = (postData, table) => (dispatch, getState) => {
     dispatch(AddPostStart(postData));
     const { user } = getState();
 
@@ -79,7 +79,7 @@ export const AddPost = (postData) => (dispatch, getState) => {
 
     console.log("PREPAPRED FOR ADD", postData);
 
-    const saveUri = `api/competency/`;
+    const saveUri = `api/${table}/`;
     const conConfig = {
       headers:{
         Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`,

@@ -15,6 +15,7 @@ import PBMail from './core/PBMail';
 import PBEditView from './core/PBEditView'
 import PBTable from './core/PBTable'
 import PBUpload from './core/PBUpload'
+import Evaluations from './core/Evaluations';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -43,6 +44,7 @@ class App extends React.Component{
                                 <Route path="/" exact component={() => <PBUpload maxfiles={2} filetype={"image/*"} category={"food"}/>} />
                                 <Route path="/" exact component={Profile} />
                                 <Route path="/profile" exact component={() => <h1>Profile page!!</h1>} />
+                                <Route path="/evaluations" exact component={Evaluations} />
                                 <Route path="/BrowseView/:table_name" exact component={PBTable} />
                                 <Route path="/EditView/:table_name/:id" exact component={PBEditView} />
                                 <Route path="/EditView/:table_name/" exact component={PBEditView} />

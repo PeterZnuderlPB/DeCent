@@ -34,7 +34,7 @@ class PBEditView extends React.Component {
   componentWillMount() {
     if(this.props.match.params.id !== undefined) {
       if (this.props.user.userInfo.username !== "") {
-        this.props.FetchPost(this.props.match.params.id);
+        this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
         this.setState({
           requestedData: true,
         });
@@ -44,7 +44,7 @@ class PBEditView extends React.Component {
     if(this.props.match.params.id === undefined) {
       if(!this.state.requestedData){
           if(this.props.user.userInfo.username !== "") {
-            this.props.FetchPost(1);
+            this.props.FetchPost(1, this.props.match.params.table_name);
             this.setState({
               requestedData: true
             });
@@ -54,10 +54,11 @@ class PBEditView extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log(nextProps);
     if(this.props.match.params.id !== undefined) {
       if(!this.state.requestedData){
         if(nextProps.user.userInfo.username !== "") {
-          this.props.FetchPost(this.props.match.params.id);
+          this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
           this.setState({
             requestedData: true
           });
@@ -68,7 +69,7 @@ class PBEditView extends React.Component {
   if(this.props.match.params.id === undefined) {
     if(!this.state.requestedData){
         if(nextProps.user.userInfo.username !== "") {
-          this.props.FetchPost(1);
+          this.props.FetchPost(1, this.props.match.params.table_name);
           this.setState({
             requestedData: true
           });
@@ -123,7 +124,7 @@ class PBEditView extends React.Component {
       return <Option disabled={true} value="NULL">Loading data...</Option>;
     } else {
       	return this.state.fkData[elName].map(el => 
-          <Option key={el.id} value={el.id}>{el.name}</Option>
+          <Option key={el.id} value={el.id}>{el.name || el._type}{el[elName + '_type___type'] !== undefined ? ' - ' + el[elName + '_type___type'] : null}</Option>
         );
     }
   }
@@ -134,7 +135,7 @@ class PBEditView extends React.Component {
       fkSelected: elName
     });
 
-    fetch(`http://localhost:8000/api/${elName}/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22name%22],%22filters%22:%7B%7D%7D`, {
+    fetch(`http://localhost:8000/api/${elName}/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22name%22,%22_type%22,%22${elName}_type___type%22],%22filters%22:%7B%7D%7D`, {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + this.props.user.token.access_token
@@ -160,10 +161,11 @@ class PBEditView extends React.Component {
       this.state.column_types = this.props.edit.data.column_types;
       this.state.loaded = true;
       
-      if (this.state.data.organization.account !== this.props.user.userInfo.id) {
-        message.error("You cannot modify this post.");
-        history.push("/");
-      }
+      // if (this.state.data.organization.account !== this.props.user.userInfo.id) {
+      //   message.error("You cannot modify this post.");
+      //   history.push("/");
+      // }
+      console.log(this.state.data);
     }
 
     this.addClick();
@@ -171,7 +173,7 @@ class PBEditView extends React.Component {
       return this.state.values.map((el, i, index) => 
           <div key={i}>
 
-            <label>{el}: </label>
+            {el.includes('user') ? null : <label>{el}:</label>}
             {this.state.column_types[i].includes("Integer")? <InputNumber value={this.state.data[el]||''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
             this.state.column_types[i].includes("Date (without time)")?
             (<DatePicker defaultValue={moment(this.state.data[el], "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} />):
@@ -181,8 +183,10 @@ class PBEditView extends React.Component {
             //HH:mm:ss
             this.state.column_types[i].includes("Boolean")?
             (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+            el.includes('user')?
+            null:
             this.state.column_types[i].includes("Foreign Key")?
-            (<Input value={this.state.data[el] !== null ? this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+            (<Input value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("String")?
             (<Input value={this.state.data[el]||''} onChange={this.handleChange.bind(this, el)} />):
             (<TextArea rows={4} value={this.state.data[el]||''} onChange={this.handleChange.bind(this, el)} />)}
@@ -193,7 +197,7 @@ class PBEditView extends React.Component {
       } else {
         return this.state.values.map((el, i, index) => 
         <div key={i}>
-          <label>{el}: </label>
+          {el.includes('user') ? null : <label>{el}:</label>}
           {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
           this.state.column_types[i].includes("Date (without time)")?
           (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
@@ -205,6 +209,8 @@ class PBEditView extends React.Component {
           (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
           // this.state.column_types[i].includes("Foreign Key") && el === 'subcategory' || el === 'organization'?
           // (<Select onFocus={() => this.fetchOptions(el)}>{this.renderOptions()}</Select>):
+          el.includes('user')?
+          null:
           this.state.column_types[i].includes("Foreign Key")?
           (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
           this.state.column_types[i].includes("String")?

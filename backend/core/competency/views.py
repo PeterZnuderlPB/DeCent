@@ -5,8 +5,8 @@ from rest_framework import generics, permissions, status
 #Redis
 from django.conf import settings
 #Own
-from .models import Competency, Subcategory, Organization, OrganizationType
-from .serializers import CompetencySerializerBasic, CompetencySerializerDepth, SubcategorySerializerDepth, OrganizationSerializerDepth, OrganizationTypeSerializerDepth
+from .models import Competency, Subcategory, Organization, OrganizationType, Evaluation, EvaluationType, Subject
+from .serializers import CompetencySerializerBasic, CompetencySerializerDepth, SubcategorySerializerDepth, OrganizationSerializerDepth, OrganizationTypeSerializerDepth, EvaluationSerializerDepth, EvaluationSerializerBasic, EvaluationTypeSerializerBasic, EvaluationTypeSerializerDepth, SubjectSerializerBasic, SubjectSerializerDepth
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
 
@@ -101,3 +101,82 @@ class OrganizationTypeList(PBListViewMixin, generics.ListAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return OrganizationTypeSerializerDepth
         return OrganizationTypeSerializerDepth
+
+class EvaluationList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = Evaluation
+    table_name = "Evaluations" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return EvaluationSerializerDepth
+        return EvaluationSerializerDepth
+
+class EvaluationDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = Evaluation
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return EvaluationSerializerDepth
+        return EvaluationSerializerBasic
+
+class EvaluationTypeList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = EvaluationType
+    table_name = "Evaluationtypes" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return EvaluationTypeSerializerDepth
+        return EvaluationTypeSerializerDepth
+
+class SubjectList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = Subject
+    table_name = "Subjects" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return SubjectSerializerDepth
+        return SubjectSerializerDepth

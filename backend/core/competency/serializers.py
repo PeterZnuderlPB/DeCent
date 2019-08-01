@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Competency, Subcategory, Organization, OrganizationType
+from .models import Competency, Subcategory, Organization, OrganizationType, Evaluation, EvaluationType, Subject
 
 from core.serializers import DynamicFieldsModelSerializer
 
@@ -56,5 +56,44 @@ class OrganizationTypeSerializerBasic(DynamicFieldsModelSerializer ,serializers.
 class OrganizationTypeSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = OrganizationType
+        fields = '__all__'
+        depth = 1
+
+class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Evaluation #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class EvaluationSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Evaluation
+        fields = '__all__'
+        depth = 1
+
+class EvaluationTypeSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = EvaluationType #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class EvaluationTypeSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = EvaluationType
+        fields = '__all__'
+        depth = 1
+
+class SubjectSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Subject #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class SubjectSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Subject
         fields = '__all__'
         depth = 1

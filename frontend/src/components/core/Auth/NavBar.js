@@ -150,6 +150,12 @@ class NavBar extends React.Component {
                             <Link to="/"><FormattedMessage id="nav.home" defaultMessage="Home" /></Link>
                         </span>
                     </Menu.Item>
+                    <Menu.Item key="3">
+                        <Icon type="database" />
+                        <span className="nav-text">
+                            <Link to="/evaluations"><FormattedMessage id="nav.evaluations" defaultMessage="Evaluations" /></Link>
+                        </span>
+                    </Menu.Item>
                     {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
                     
                 </Menu>
