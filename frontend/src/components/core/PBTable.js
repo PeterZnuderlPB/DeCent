@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Popover,Table, Button, Checkbox, Input, Row, Col, Icon} from 'antd';
+import { Popover,Table, Button, Checkbox, Input, Row, Col, Icon, Dropdown, Menu } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import { FetchPostStart } from '../../actions/PBEditViewActions';
 import lang from '../../translations/translations';
@@ -441,11 +441,14 @@ class PBTable extends React.Component {
               })
       });
         allKeys.unshift({
-          title: this.TranslateColumn("edit").toUpperCase(),
+          title: 'ACTIONS',
           dataIndex:'',
           key:'x',
-          render: () => <input type='button' value={this.TranslateColumn("edit")} onClick={this.setRedirect} id={this.nextButtonId()} />   
-        }) 
+          render: () => <div id={this.nextButtonId()}>
+                          <input type='button' value={'View'} onClick={(e) => this.setRedirect(e, 'Detail')} />
+                          <input type='button' value={'Edit'} onClick={(e) => this.setRedirect(e, 'Edit')} />
+                        </div> //<input type='button' value={this.TranslateColumn("edit")} onClick={this.setRedirect} id={this.nextButtonId()} />   
+        });
       //console.log(allKeys)
       return allKeys;
   }
@@ -457,11 +460,11 @@ class PBTable extends React.Component {
       return this.state.data[this.buttonId]['id']
     }
 
-    setRedirect = (event) => {
-      console.log(event.target.id);
+    setRedirect = (event, operation) => {
+      // console.log(event.target.id);
       this.props.FetchPostStart();
       this.setState({
-        redirectUrl: `/EditView/${this.props.tableApi}/${event.target.id}`,
+        redirectUrl: `/${operation}View/${this.props.tableApi}/${event.target.parentElement.id}`,
         redirect: true
       });
     }
