@@ -193,7 +193,7 @@ class PBEditView extends React.Component {
             this.state.column_types[i].includes("Boolean")?
             (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
             el.includes('user')?
-            (<Input value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+            (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("Foreign Key")?
             (<Input value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("String")?

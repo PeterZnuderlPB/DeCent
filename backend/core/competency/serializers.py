@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Competency, Subcategory, Organization, OrganizationType, Evaluation, EvaluationType, Subject
+from .models import Competency, Subcategory, Organization, OrganizationType, Evaluation, EvaluationType, Subject, Tag
 
 from core.serializers import DynamicFieldsModelSerializer
 
@@ -95,5 +95,18 @@ class SubjectSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSeri
 class SubjectSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = Subject
+        fields = '__all__'
+        depth = 1
+
+class TagSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class TagSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Tag
         fields = '__all__'
         depth = 1

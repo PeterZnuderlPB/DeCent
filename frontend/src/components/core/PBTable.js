@@ -42,7 +42,11 @@ class PBTable extends React.Component {
         sortOrderValues: {},
         sortFieldValues: {},
         redirect: false,
-        fkData: []
+        fkData: [],
+        tagsVisible: false,
+        tagsData: [],
+        tagsLoading: true,
+        tagsChecked: []
     };
     CheckboxGroup = Checkbox.Group;
     
@@ -210,6 +214,72 @@ class PBTable extends React.Component {
       this.fetch();
     }
 
+    handleTagsClick = visible => {
+      this.setState({
+        tagsVisible: visible
+      });
+    }
+
+    activeTagsContent = () => {
+      return (
+      <Checkbox.Group 
+          style={{width:'100%'}} 
+          onChange={this.handleActiveTagsChange} 
+          value={this.state.tagsChecked}
+          >
+          <Row>
+              {this.state.tagsData.map( (col, index) =>{
+                //console.log("Column Checkbox", col)
+                return(
+                  <Col span={6} key={index}>
+                    <Checkbox value={col.id}>{col.tag}</Checkbox>
+                  </Col>
+                )
+              })}
+            </Row>
+        </Checkbox.Group>
+      );
+    }
+
+    handleActiveTagsChange = checkedList => {
+        if (checkedList.length > 1) {
+          checkedList.splice(0, 1);
+        }
+
+        this.setState({
+          tagsChecked: checkedList
+        }, () => this.fetch());
+    }
+
+    renderTags = () => {
+      return (
+        <Popover
+            content={this.activeTagsContent()}
+            title={"Tags"}
+            trigger="click"
+            visible={this.state.tagsVisible}
+            onVisibleChange={this.handleTagsClick}
+            >
+            <Button type="primary">Tags</Button>
+          </Popover>
+      );
+    }
+
+    fetchTagData = () => {
+      con.get(`/api/tag/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22tag%22],%22filters%22:%7B%7D%7D`, {
+        headers: {
+          Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+        }
+      })
+      .then(res => {
+        this.setState({
+          tagsLoading: false,
+          tagsData: res.data.data
+        });
+      })
+      .catch(err => console.log("TAG FETCH ERROR: ", err));
+    }
+
     handleClearSort = () => {
       this.setState({
         settings: {
@@ -223,7 +293,14 @@ class PBTable extends React.Component {
       }, () => this.fetch());
     }
 
+    prepareTagNames = () => {
+      let dict = {};
+      dict['tags__id'] = this.state.tagsChecked[0];
+      return dict;
+    }
+
     fetch = () => {
+      this.fetchTagData();
         //console.log('params:', params);
         //debugger;
         
@@ -235,9 +312,25 @@ class PBTable extends React.Component {
         else{
           //debugger;
           params.visibleFields = this.state.SCCheckedList;
-          params.visibleFields.push('id');
+          if (params.visibleFields.indexOf('id') === -1) {
+            params.visibleFields.push('id');
+          }
+
+          if (params.visibleFields.indexOf('tags') === -1) {
+            params.visibleFields.push('tags');
+          }
           params.filters = this.state.filterValues;
+          
+          if (this.state.tagsChecked.length !== 0) {
+            params.filters = {
+              ...params.filters,
+              tags__id: this.state.tagsChecked[0]
+            }
+          } else {
+            params.filters = this.state.filterValues;
+          }
         }
+        console.log("NEW PARAMS: ", params)
         var settings = JSON.stringify(params);
         con.get( address ,{
           params: {
@@ -258,10 +351,19 @@ class PBTable extends React.Component {
               })
             }
 
-            let newddd = response.data.available_columns;
-            console.log("OLD ARRAY", newddd);
-            newddd.splice(newddd.indexOf('id'), 1);
-            console.log("NEW ARRAY", newddd);
+            let cleanAvailableColumns = response.data.available_columns;
+            cleanAvailableColumns.splice(cleanAvailableColumns.indexOf('id'), 1);
+            cleanAvailableColumns.splice(cleanAvailableColumns.indexOf('tags'), 1);
+
+            let cleanSCCheckedList = response.data.settings.visibleFields;
+            cleanSCCheckedList.splice(cleanSCCheckedList.indexOf('id'), 1);
+            cleanSCCheckedList.splice(cleanSCCheckedList.indexOf('tags'), 1);
+
+            // let cleanSettings = {
+            //   ...response.data.settings,
+            //   visibleFields: cleanSCCheckedList
+            // }
+            
            // console.log("New sort order keys", newOrderKeys);
             this.setState({
               loading: false,
@@ -269,8 +371,8 @@ class PBTable extends React.Component {
               settings: response.data.settings,
               pagination,
               sortOrderKeys: newOrderKeys,
-              availableColumns: response.data.available_columns,
-              SCCheckedList: response.data.settings.visibleFields,
+              availableColumns: cleanAvailableColumns,
+              SCCheckedList: cleanSCCheckedList,
               tableName: response.data.table_name
             }, this.printState
             );
@@ -308,7 +410,7 @@ class PBTable extends React.Component {
       var allKeys = [];
 
       columns.forEach(element => {
-              if (element === 'id') {
+              if (element === 'id' || element === 'tags') {
                 return;
               }
 
@@ -383,7 +485,8 @@ class PBTable extends React.Component {
             >
             <Button type="primary"><FormattedMessage id="table.customColumns" defaultMessage="Custom columns" /></Button>
           </Popover>
-          <Button type = "primary" onClick={() => this.setState({ filterValues: {}}, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
+          {this.props.tableApi === 'competency' ? this.renderTags() : null}
+          <Button type = "primary" onClick={() => this.setState({ filterValues: {}, tagsChecked: [] }, this.fetch)}><FormattedMessage id="table.clearFilters" defaultMessage="Clear filters" /></Button>
           <Button type = "primary" onClick={this.handleClearSort}><FormattedMessage id="table.clearSorting" defaultMessage="Clear sorting" /></Button>
           <Button type="danger" onClick={() => history.push(`/EditView/${this.props.tableApi}`)}>Add Post</Button>
            <Table 

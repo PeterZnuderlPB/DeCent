@@ -5,8 +5,8 @@ from rest_framework import generics, permissions, status
 #Redis
 from django.conf import settings
 #Own
-from .models import Competency, Subcategory, Organization, OrganizationType, Evaluation, EvaluationType, Subject
-from .serializers import CompetencySerializerBasic, CompetencySerializerDepth, SubcategorySerializerDepth, OrganizationSerializerDepth, OrganizationTypeSerializerDepth, EvaluationSerializerDepth, EvaluationSerializerBasic, EvaluationTypeSerializerBasic, EvaluationTypeSerializerDepth, SubjectSerializerBasic, SubjectSerializerDepth
+from .models import Competency, Subcategory, Organization, OrganizationType, Evaluation, EvaluationType, Subject, Tag
+from .serializers import CompetencySerializerBasic, CompetencySerializerDepth, SubcategorySerializerDepth, OrganizationSerializerDepth, OrganizationTypeSerializerDepth, EvaluationSerializerDepth, EvaluationSerializerBasic, EvaluationTypeSerializerBasic, EvaluationTypeSerializerDepth, SubjectSerializerBasic, SubjectSerializerDepth, TagSerializerDepth
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
 
@@ -180,3 +180,23 @@ class SubjectList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return SubjectSerializerDepth
         return SubjectSerializerDepth
+
+class TagList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = Tag
+    table_name = "Tags" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return TagSerializerDepth
+        return TagSerializerDepth

@@ -69,6 +69,12 @@ class Estimate(PBModel):
     def __str__(self):
         return f'Added on {self.estimate_date} - Term -> {self.term_start}_{self.term_end} - EvaluationID[{self.evaluation.id}]'
 
+class Tag(PBModel):
+    tag = models.TextField()
+
+    def __str__(self):
+        return f'{self.tag}'
+
 class Competency(PBModel):
     name = models.TextField()
     description = models.TextField()
@@ -78,22 +84,10 @@ class Competency(PBModel):
     competency = models.ForeignKey('self', on_delete=models.CASCADE, related_name="compotencySelfReference", null=True, blank=True)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f'{self.name} - Owner -> {self.organization.name}'
-
-class Tag(models.Model):
-    tag = models.TextField()
-
-    def __str__(self):
-        return f'{self.tag}'
-
-class CompTags(models.Model):
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.competency.name} - {self.tag.tag}'
 
 class CompQuestion(PBModel):
     question = models.TextField()
