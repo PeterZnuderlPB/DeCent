@@ -445,9 +445,9 @@ class PBTable extends React.Component {
           dataIndex:'',
           key:'x',
           render: () => <div id={this.nextButtonId()}>
-                          <input type='button' value={'View'} onClick={(e) => this.setRedirect(e, 'Detail')} />
-                          <input type='button' value={'Edit'} onClick={(e) => this.setRedirect(e, 'Edit')} />
-                        </div> //<input type='button' value={this.TranslateColumn("edit")} onClick={this.setRedirect} id={this.nextButtonId()} />   
+                          <Button style={{ marginRight: '1%'}} type="primary" onClick={(e) => this.setRedirect(e, 'Detail')}>View</Button>
+                          <Button style={{ marginLeft: '1%'}} type="default" onClick={(e) => this.setRedirect(e, 'Edit')}>Edit</Button>
+                        </div> //<input type='button' value={this.TranslateColumn("edit")} onClick={this.setRedirect} id={this.nextButtonId()} /> - OLD WAY, KEEP FOR NOW   
         });
       //console.log(allKeys)
       return allKeys;
