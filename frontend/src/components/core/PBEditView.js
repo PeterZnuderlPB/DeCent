@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin, Select, message } from 'antd';
+import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin, Select, message, Modal } from 'antd';
 import moment from 'moment';
 import history from '../../history';
 import { FetchPost, UpdatePost, AddPost } from '../../actions/PBEditViewActions';
@@ -9,7 +9,8 @@ import con from '../../apis';
 import { EWOULDBLOCK } from 'constants';
 
 const { Option } = Select;
-const { TextArea } = Input; 
+const { TextArea } = Input;
+const { Search } = Input;
 
 class PBEditView extends React.Component {
   constructor(props) {
@@ -28,7 +29,17 @@ class PBEditView extends React.Component {
     requestedData: false,
     fkData: [],
     fkLoading: true,
-    fkSelected: null
+    fkSelected: null,
+    modalVisible: false,
+    selectedCompetency: null,
+    selectableCompetencies: [],
+    selectableCompetenciesLoading: true,
+    competencyQuestions: [],
+    competencyQuestionsLoading: true,
+    compotencyAnswers: [],
+    compotencyAnswersLoading: true,
+    answerSelected: null,
+    answersSelected: []
   };
 
   componentWillMount() {
@@ -154,6 +165,204 @@ class PBEditView extends React.Component {
     });
   }
 
+  showModal = () => {
+    this.setState({
+      compotencyAnswers: [],
+      answersSelected: []
+    });
+    this.fetchCompetencies();
+
+    this.setState({
+      modalVisible: true,
+    });
+  };
+
+  handleOk = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  handleCancel = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  fetchCompetencies = () => {
+    let params = {
+      results: 10,
+      page: 1,
+      sortOrder: [],
+      sortField: [],
+      visibleFields: [],
+      filters: {}
+    };
+
+    params.visibleFields.push('id', 'name');
+
+    let settings = JSON.stringify(params);
+
+    con.get('/api/competency/', {
+      params:{
+        settings
+      },
+      headers: {
+        Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+      }
+    })
+    .then(res => {
+      this.setState({
+        selectableCompetenciesLoading: false,
+        selectableCompetencies: res.data.data
+      });
+    })
+    .catch(err => console.log("[EditView] Competency fetch error: ", err));
+  }
+
+  findCompetencyInList = (id) => {
+    let competency;
+
+    this.state.selectableCompetencies.forEach(el => {
+      if(id == el.id) {
+        competency = el;
+      }
+    });
+
+    return competency;
+  }
+
+  handleCompetencySelect = e => {
+    this.setState({
+      selectedCompetency: this.findCompetencyInList(e.target.id),
+      modalVisible: false 
+    }, () => this.fetchQuestions());
+  }
+
+  renderCompetencies = () => {
+    return (
+      this.state.selectableCompetencies.map(el => {
+        return <div key={el.id}><p style={{ display: 'inline-block' }}>{el.name}</p> - <Button id={el.id} onClick={this.handleCompetencySelect} type="default">Select</Button></div>
+      })
+    );
+  }
+
+  fetchQuestions = () => {
+    let params = {
+      results: 10,
+      page: 1,
+      sortOrder: [],
+      sortField: [],
+      visibleFields: [],
+      filters: {
+        competency__id: this.state.selectedCompetency.id
+      }
+    };
+
+    params.visibleFields.push('id', 'question', 'description');
+
+    let settings = JSON.stringify(params);
+
+    con.get('/api/compquestion/', {
+      params: {
+        settings
+      },
+      headers: {
+        Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+      }
+    })
+    .then(res => {
+      this.setState({
+        competencyQuestionsLoading: false,
+        competencyQuestions: res.data.data
+      });
+    })
+    .catch(err => console.log("[EditView] Questions fetch error: ", err));
+  }
+
+  renderQuestions = () => {
+    return (
+      <>
+      <hr />
+      {this.state.competencyQuestions.map(el => {
+        return (
+          <>
+          <div style={{ marginTop: '0.6%' }}><b>Question: </b>{el.question}</div>
+          <div><b>Description: </b>{el.description}</div>
+          <div><b>Answer</b><i> (Select below)</i><b>:</b></div>
+          <Select onChange={(e) => this.handleAnswerSelect(e, el.id)} onFocus={() => this.fetchAnswers(el.id)}>
+            {this.state.compotencyAnswers[el.id] !== undefined
+            ? this.state.compotencyAnswers[el.id].map(el => {
+              return <Option value={el.id}>{el.answer}</Option>;
+            })
+            : <Option disabled={true} value="NULL">No data..</Option>}
+          </Select>
+          <div><b>Comment</b> <i>(Optional)</i><b>:</b> </div>
+          <TextArea id={`tbox${el.id}`} onChange={this.handleAnswerTextBox} placeholder="Enter your comment here." cols={3} />
+          </>
+        );
+      })}
+      </>
+    );
+  }
+
+  fetchAnswers = (elId) => {
+    this.setState({
+      compotencyAnswersLoading: true,
+      answerSelected: elId
+    });
+
+    let params = {
+      results: 10,
+      page: 1,
+      sortOrder: [],
+      sortField: [],
+      visibleFields: [],
+      filters: {
+        comp_question__id: elId
+      }
+    };
+
+    params.visibleFields.push('id', 'answer');
+
+    let settings = JSON.stringify(params);
+
+    con.get('/api/predefinedanswer/', {
+      params: {
+        settings
+      },
+      headers: {
+        Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+      }
+    })
+    .then(res => {
+      this.setState({
+        compotencyAnswersLoading: false,
+        compotencyAnswers: {
+          ...this.state.compotencyAnswers,
+          [elId]: res.data.data
+        }
+      });
+    })
+    .catch(err => console.log("[EditView] Answers fetch error: ", err));
+  }
+
+  handleAnswerSelect = (event, elId) => {
+    this.setState({
+      answersSelected: {
+        ...this.state.answersSelected,
+        [elId]: event
+      }
+    }, () => console.log("NEW STATE", this.state.answersSelected));
+  }
+
+  handleAnswerTextBox = (event) => {
+    console.log("TICK");
+
+    this.setState({
+      answersSelected: {
+        ...this.state.answersSelected,
+        [event.target.id]: event.target.value
+      }
+    });
+  }
+
   createUI(){
     // find better solution for this
     if (!this.state.loaded){
@@ -204,31 +413,90 @@ class PBEditView extends React.Component {
           </div>          
       )
       } else {
-        return this.state.values.map((el, i, index) => 
-        <div key={i}>
-          {el.includes('user') ? null : <label>{el}:</label>}
-          {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
-          this.state.column_types[i].includes("Date (without time)")?
-          (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
-          this.state.column_types[i].includes("Date (with time)")?
-          [<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateTimeChange.bind(this, el)} disabled />,
-          <TimePicker defaultValue={this.timeAsign(this.getCurrentDateTime())} onChange={this.handleDateTimeChange2.bind(this, el)} disabled />]:
-          //HH:mm:ss
-          this.state.column_types[i].includes("Boolean")?
-          (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
-          // this.state.column_types[i].includes("Foreign Key") && el === 'subcategory' || el === 'organization'?
-          // (<Select onFocus={() => this.fetchOptions(el)}>{this.renderOptions()}</Select>):
-          el.includes('user')?
-          (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
-          this.state.column_types[i].includes("Foreign Key")?
-          (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
-          this.state.column_types[i].includes("String")?
-          (<Input onChange={this.handleChange.bind(this, el)} />):
-          (<TextArea rows={4} onChange={this.handleChange.bind(this, el)} />)}
+        if (this.props.match.params.table_name === 'evaluation') {
+            return this.state.values.map((el, i, index) => 
+            <div key={i}>
+              {el.includes('user') ? null : <label>{el}:</label>}
+              {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
+              this.state.column_types[i].includes("Date (without time)")?
+              (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
+              this.state.column_types[i].includes("Date (with time)")?
+              [<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateTimeChange.bind(this, el)} disabled />,
+              <TimePicker defaultValue={this.timeAsign(this.getCurrentDateTime())} onChange={this.handleDateTimeChange2.bind(this, el)} disabled />]:
+              //HH:mm:ss
+              this.state.column_types[i].includes("Boolean")?
+              (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+              el.includes('user')?
+              (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+              this.state.column_types[i].includes("Foreign Key")?
+              (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
+              this.state.column_types[i].includes("String")?
+              (<Input onChange={this.handleChange.bind(this, el)} />):
+              (<TextArea rows={4} onChange={this.handleChange.bind(this, el)} />)}
 
-          {index.length-1 === i? (<input type="button" value="Submit" onClick={this.handleSubmit}/>):(console.log("-----"))}
-        </div>         
-        )}
+              {index.length -1 === i ? <div style={{ marginTop: '2%', marginBottom: '2%'}}><Button onClick={this.showModal} type="primary" style={{ display: 'inline-block' }}>Select competency</Button>
+              <Modal
+              title="Select competency"
+              closable={false}
+              visible={this.state.modalVisible}
+              onOk={this.handleOk}
+              onCancel={this.handleCancel}
+              footer={null}
+              >
+                <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection:'column', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
+                <Search
+                placeholder="Search for competency" 
+                onSearch={value => {
+                  let searchArray = []
+                  searchArray.push(value);
+
+                  this.setState({
+                    selectedCompetency: searchArray
+                  });
+
+                }}
+                style={{ width: 200 }}
+                />
+
+                <hr style={{ width: '100%' }}/>
+                {this.state.selectableCompetenciesLoading ? <Spin tip="Loading..." size="large" /> : this.renderCompetencies()}
+                </div>
+              </Modal>
+              <p style={{ display: 'inline-block', marginLeft: '0.3%', userSelect: 'none' }}>{this.state.selectedCompetency === null ? 'No competency selected...' : this.state.selectedCompetency.name}</p></div> : null}
+
+              {index.length - 1 === i 
+              ? this.state.selectedCompetency === null ? null : this.renderQuestions()
+              : null}
+
+              {index.length-1 === i? (<input style={{ display: 'block' }} type="button" value="Submit" onClick={this.handleSubmit}/>):(console.log("-----"))}
+            </div>         
+            )
+        }else{
+          return this.state.values.map((el, i, index) => 
+            <div key={i}>
+              {el.includes('user') ? null : <label>{el}:</label>}
+              {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
+              this.state.column_types[i].includes("Date (without time)")?
+              (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
+              this.state.column_types[i].includes("Date (with time)")?
+              [<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateTimeChange.bind(this, el)} disabled />,
+              <TimePicker defaultValue={this.timeAsign(this.getCurrentDateTime())} onChange={this.handleDateTimeChange2.bind(this, el)} disabled />]:
+              //HH:mm:ss
+              this.state.column_types[i].includes("Boolean")?
+              (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+              el.includes('user')?
+              (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+              this.state.column_types[i].includes("Foreign Key")?
+              (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
+              this.state.column_types[i].includes("String")?
+              (<Input onChange={this.handleChange.bind(this, el)} />):
+              (<TextArea rows={4} onChange={this.handleChange.bind(this, el)} />)}
+
+              {index.length-1 === i? (<input type="button" value="Submit" onClick={this.handleSubmit}/>):(console.log("-----"))}
+            </div>         
+            )
+        } 
+      }
     }
 
     timeAsign = (el) =>{
@@ -330,6 +598,9 @@ class PBEditView extends React.Component {
           dict[this.state.column_names[x]] = this.state.data[this.state.column_names[x]] === null ? null : this.state.data[this.state.column_names[x]]["id"] // TODO: Format null 
         }
       }
+      delete dict["tags"]; // Fix
+
+
       this.props.UpdatePost(this.state.data["id"], dict, this.props.match.params.table_name);
   } else {
     this.state.values.map((el, i) => {
@@ -349,9 +620,16 @@ class PBEditView extends React.Component {
         dict[el] = this.state.data[el];
       }
     });
-    this.props.AddPost(dict, this.props.match.params.table_name);
-  }
 
+    if (this.props.match.params.table_name === 'evaluation') {
+      dict['questions'] = this.state.answersSelected;
+      this.props.AddPost(dict, this.props.match.params.table_name);
+    } else {
+      this.props.AddPost(dict, this.props.match.params.table_name);
+    }
+
+  }
+  console.log("POSt DICT", dict);
 }
 
 

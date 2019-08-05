@@ -16,6 +16,7 @@ import PBEditView from './core/PBEditView'
 import PBTable from './core/PBTable'
 import PBUpload from './core/PBUpload'
 import Evaluations from './core/Evaluations';
+import PBDetailView from './core/PBDetailView';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -48,6 +49,7 @@ class App extends React.Component{
                                 <Route path="/BrowseView/:table_name" exact component={PBTable} />
                                 <Route path="/EditView/:table_name/:id" exact component={PBEditView} />
                                 <Route path="/EditView/:table_name/" exact component={PBEditView} />
+                                <Route path="/DetailView/:table_name/:id" exact component={PBDetailView} />
                             </Content>
                             <Footer style={{ textAlign: 'center' }}>
                                 <Route path="/" component={PBMail}/>

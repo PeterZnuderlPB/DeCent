@@ -5,8 +5,34 @@ from rest_framework import generics, permissions, status
 #Redis
 from django.conf import settings
 #Own
-from .models import Competency, Subcategory, Organization, OrganizationType, Evaluation, EvaluationType, Subject, Tag
-from .serializers import CompetencySerializerBasic, CompetencySerializerDepth, SubcategorySerializerDepth, OrganizationSerializerDepth, OrganizationTypeSerializerDepth, EvaluationSerializerDepth, EvaluationSerializerBasic, EvaluationTypeSerializerBasic, EvaluationTypeSerializerDepth, SubjectSerializerBasic, SubjectSerializerDepth, TagSerializerDepth
+from .models import (
+    Competency, 
+    Subcategory, 
+    Organization,
+    OrganizationType, 
+    Evaluation, 
+    EvaluationType, 
+    Subject, 
+    Tag, 
+    CompQuestion,
+    PredefinedAnswer
+)
+from .serializers import (
+    CompetencySerializerBasic,
+    CompetencySerializerDepth,
+    SubcategorySerializerDepth,
+    OrganizationSerializerDepth,
+    OrganizationTypeSerializerDepth,
+    EvaluationSerializerDepth,
+    EvaluationSerializerBasic,
+    EvaluationTypeSerializerBasic,
+    EvaluationTypeSerializerDepth,
+    SubjectSerializerBasic,
+    SubjectSerializerDepth,
+    TagSerializerDepth,
+    CompQuestionSerializerDepth,
+    PredefinedAnswerSerializerDepth
+)
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
 
@@ -117,6 +143,17 @@ class EvaluationList(PBListViewMixin, generics.ListCreateAPIView):
         'PUT':['__all__'],
     }
 
+    def create(self, request, *args, **kwargs):
+        print(f"REQUEST DATA: {request.data}")
+        print("ATTEMPTING TO CREATE EVALUATION")
+
+        for k,v in request.data['questions'].items():
+            print(f"Key: {k} - Value: {v}")
+
+        serializer = self.get_serializer(data=request.data)
+
+        print(f"Data after serialization: {serializer}")
+
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return EvaluationSerializerDepth
@@ -200,3 +237,43 @@ class TagList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return TagSerializerDepth
         return TagSerializerDepth
+
+class CompQuestionList(PBListViewMixin, generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = CompQuestion
+    table_name = "CompQuestions" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return CompQuestionSerializerDepth
+        return CompQuestionSerializerDepth
+
+class PredefinedAnswerList(PBListViewMixin, generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = PredefinedAnswer
+    table_name = "PredefinedAnswers" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return PredefinedAnswerSerializerDepth
+        return PredefinedAnswerSerializerDepth

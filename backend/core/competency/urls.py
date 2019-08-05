@@ -11,5 +11,7 @@ urlpatterns = [
     path('api/evaluation/<pk>', views.EvaluationDetails.as_view()),
     path('api/evaluation_type/', views.EvaluationTypeList.as_view()),
     path('api/subject/', views.SubjectList.as_view()),
-    path('api/tag/', views.TagList.as_view())
+    path('api/tag/', views.TagList.as_view()),
+    path('api/compquestion/', views.CompQuestionList.as_view()),
+    path('api/predefinedanswer/', views.PredefinedAnswerList.as_view())
 ]
