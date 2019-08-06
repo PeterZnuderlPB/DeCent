@@ -143,17 +143,6 @@ class EvaluationList(PBListViewMixin, generics.ListCreateAPIView):
         'PUT':['__all__'],
     }
 
-    def create(self, request, *args, **kwargs):
-        print(f"REQUEST DATA: {request.data}")
-        print("ATTEMPTING TO CREATE EVALUATION")
-
-        for k,v in request.data['questions'].items():
-            print(f"Key: {k} - Value: {v}")
-
-        serializer = self.get_serializer(data=request.data)
-
-        print(f"Data after serialization: {serializer}")
-
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return EvaluationSerializerDepth
