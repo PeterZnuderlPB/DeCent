@@ -6,7 +6,6 @@ import history from '../../history';
 import { FetchPost, UpdatePost, AddPost } from '../../actions/PBEditViewActions';
 import axios from 'axios';
 import con from '../../apis';
-import { EWOULDBLOCK } from 'constants';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -39,7 +38,8 @@ class PBEditView extends React.Component {
     compotencyAnswers: [],
     compotencyAnswersLoading: true,
     answerSelected: null,
-    answersSelected: []
+    answersSelected: [],
+    tierSelected: 0
   };
 
   componentWillMount() {
@@ -468,6 +468,18 @@ class PBEditView extends React.Component {
               ? this.state.selectedCompetency === null ? null : this.renderQuestions()
               : null}
 
+              {index.length - 1 === i 
+              ? <>
+                <hr style={{ width: '100%' }}/>
+                <h3>Rating</h3>
+                  <Select onChange={this.handleTierSelect} placeholder="Select tier for your evaluation">
+                    <Option value="1">Junior</Option>
+                    <Option value="2">Intermediate</Option>
+                    <Option value="3">Senior</Option>
+                  </Select>
+                </>
+              : null}
+              
               {index.length-1 === i? (<input style={{ display: 'block' }} type="button" value="Submit" onClick={this.handleSubmit}/>):(console.log("-----"))}
             </div>         
             )
@@ -497,6 +509,12 @@ class PBEditView extends React.Component {
             )
         } 
       }
+    }
+
+    handleTierSelect = (e) => {
+      this.setState({
+        tierSelected: e
+      });
     }
 
     timeAsign = (el) =>{
@@ -623,6 +641,7 @@ class PBEditView extends React.Component {
 
     if (this.props.match.params.table_name === 'evaluation') {
       dict['questions'] = this.state.answersSelected;
+      dict['tier'] = this.state.tierSelected;
       this.props.AddPost(dict, this.props.match.params.table_name);
     } else {
       this.props.AddPost(dict, this.props.match.params.table_name);

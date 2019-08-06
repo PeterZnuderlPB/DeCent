@@ -13,5 +13,7 @@ urlpatterns = [
     path('api/subject/', views.SubjectList.as_view()),
     path('api/tag/', views.TagList.as_view()),
     path('api/compquestion/', views.CompQuestionList.as_view()),
-    path('api/predefinedanswer/', views.PredefinedAnswerList.as_view())
+    path('api/predefinedanswer/', views.PredefinedAnswerList.as_view()),
+    path('api/answer/', views.AnswerList.as_view()),
+    path('api/comprating/', views.CompRatingList.as_view())
 ]

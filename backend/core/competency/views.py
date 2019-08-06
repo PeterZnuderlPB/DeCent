@@ -15,7 +15,9 @@ from .models import (
     Subject, 
     Tag, 
     CompQuestion,
-    PredefinedAnswer
+    PredefinedAnswer,
+    Answer,
+    CompRating
 )
 from .serializers import (
     CompetencySerializerBasic,
@@ -31,7 +33,10 @@ from .serializers import (
     SubjectSerializerDepth,
     TagSerializerDepth,
     CompQuestionSerializerDepth,
-    PredefinedAnswerSerializerDepth
+    PredefinedAnswerSerializerDepth,
+    AnswerSerializerDepth,
+    CompRatingSerializerBasic,
+    CompRatingSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -266,3 +271,43 @@ class PredefinedAnswerList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return PredefinedAnswerSerializerDepth
         return PredefinedAnswerSerializerDepth
+
+class AnswerList(PBListViewMixin, generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = Answer
+    table_name = "Answers" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return AnswerSerializerDepth
+        return AnswerSerializerDepth
+
+class CompRatingList(PBListViewMixin, generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = CompRating
+    table_name = "Compratings" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return CompRatingSerializerDepth
+        return CompRatingSerializerDepth

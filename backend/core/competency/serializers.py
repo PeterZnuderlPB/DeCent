@@ -11,11 +11,14 @@ from .models import (
     Subject, 
     Tag, 
     CompQuestion, 
-    PredefinedAnswer ,
-    Answer
+    PredefinedAnswer,
+    Answer,
+    CompRating
 )
 
 from core.serializers import DynamicFieldsModelSerializer
+
+TIER_LIST = ['Junior', 'Intermediate', 'Senior']
 
 class SubcategorySerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
 
@@ -81,6 +84,7 @@ class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
         depth = 0 # How deep we want to serialize fk connections
 
     def create(self, validated_data):
+        global TIER_LIST
 
         user = CustomUser.objects.get(id=validated_data['user_created'])
         evaluationType_obj = EvaluationType.objects.get(id=validated_data['evaluation_type'])
@@ -93,6 +97,7 @@ class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
         isLocked = validated_data['is_locked']
         commentTemp = validated_data['comment']
         evaluationDate = validated_data['evaluation_date']
+        tierNumber = validated_data['tier']
 
         question_list = validated_data['questions']
 
@@ -107,6 +112,9 @@ class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
             predefined_answer_obj = PredefinedAnswer.objects.get(id=v)
             answer_obj = Answer(user_created=user, user_last_modified=user, is_locked=False, is_active=True, comment=question_list[f'tbox{k}'], predefined_answer=predefined_answer_obj, comp_question=comp_question_obj, evaluation=evaluation_obj)
             answer_obj.save()
+
+        # Fetch Competency object as well
+        # compRating_obj = CompRating(tier=tierNumber, name=TIER_LIST[tierNumber - 1], competency=comp)
 
         return evaluation_obj
 
@@ -184,5 +192,31 @@ class PredefinedAnswerSerializerBasic(DynamicFieldsModelSerializer ,serializers.
 class PredefinedAnswerSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = PredefinedAnswer
+        fields = '__all__'
+        depth = 1
+
+class AnswerSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Answer #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class AnswerSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = '__all__'
+        depth = 2
+
+class CompRatingSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = CompRating #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class CompRatingSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = CompRating
         fields = '__all__'
         depth = 1
