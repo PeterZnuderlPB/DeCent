@@ -44,7 +44,8 @@ class PBEditView extends React.Component {
     answersSelected: [],
     tierSelected: 0,
     tagData: [],
-    doneAnswers: []
+    doneAnswers: [],
+    selectedTags: []
   };
 
   componentWillMount() {
@@ -479,7 +480,7 @@ class PBEditView extends React.Component {
             el.includes('user')?
             (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             el.includes('tags')?
-            (<Select onFocus={this.fetchTags} labelInValue={true} defaultValue={this.props.edit.data.data.tags.map(t => { return {key: t.id.toString(), label: t.tag}; })} mode="tags" onChange={(e) => console.log("NEW VALUES: ", e)} placeholder="Tags" >{this.state.tagData}</Select>):
+            (<Select onFocus={this.fetchTags} labelInValue={true} defaultValue={this.props.edit.data.data !== undefined ? this.props.edit.data.data.tags.map(t => { return {key: t.id.toString(), label: t.tag}; }) : null} mode="tags" onChange={(e) => this.setState({ selectedTags: e }) } placeholder="Tags" >{this.state.tagData}</Select>):
             this.state.column_types[i].includes("Foreign Key")?
             (<Input value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("String")?
@@ -822,7 +823,21 @@ class PBEditView extends React.Component {
           dict[this.state.column_names[x]] = this.state.data[this.state.column_names[x]] === null ? null : this.state.data[this.state.column_names[x]]["id"] // TODO: Format null 
         }
       }
-      delete dict["tags"]; // Fix
+      delete dict["tags"];
+
+      // Prepares tags for server, should also verify on serverside
+      if (this.props.match.params.table_name === 'evaluation') {
+          dict['questions'] = this.state.answersSelected;
+          dict['tier'] = this.state.tierSelected;
+      } else {
+        let tagsArray = [];
+
+        this.state.selectedTags.forEach(el => {
+          tagsArray.push(el.key);
+        })
+
+        dict["tags"] = tagsArray;
+      }
 
 
       this.props.UpdatePost(this.state.data["id"], dict, this.props.match.params.table_name);
@@ -850,6 +865,14 @@ class PBEditView extends React.Component {
       dict['tier'] = this.state.tierSelected;
       this.props.AddPost(dict, this.props.match.params.table_name);
     } else {
+        let tagsArray = [];
+
+        this.state.selectedTags.forEach(el => {
+          tagsArray.push(el.key);
+        })
+
+        dict["tags"] = tagsArray;
+
       this.props.AddPost(dict, this.props.match.params.table_name);
     }
 

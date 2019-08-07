@@ -89,7 +89,6 @@ class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
         user = CustomUser.objects.get(id=validated_data['user_created'])
         evaluationType_obj = EvaluationType.objects.get(id=validated_data['evaluation_type'])
         subject_obj = Subject.objects.get(id=validated_data['subject'])
-        # organization_obj = Organization.objects.get(id=validated_data['organization'])
 
         dateCreated = validated_data['date_created']
         dateLastModified = validated_data['date_last_modified']
@@ -120,6 +119,37 @@ class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
         compRating_obj.save()
 
         return evaluation_obj
+
+    def update(self, instance, validated_data):
+        userLastModified = CustomUser.objects.get(id=validated_data['user_last_modified'])
+        dateLastModified = validated_data['date_last_modified']
+        subject_obj = Subject.objects.get(id=validated_data['subject'])
+        question_list = validated_data['questions']
+        isActive = validated_data['is_active']
+        isLocked = validated_data['is_locked']
+        commentTemp = validated_data['comment']
+        tierNumber = validated_data['tier']
+
+        if not len(question_list) == 0:
+            for k,v in question_list.items():
+                if 'tbox' in k:
+                    answer_obj = Answer.objects.get(comp_question__id=int(k[4:]), evaluation__id=instance.id)
+                    answer_obj.comment = v
+                    answer_obj.save()
+                else:
+                    answer_obj = Answer.objects.get(comp_question__id=k, evaluation__id=instance.id)
+                    predefined_answer_obj = PredefinedAnswer.objects.get(id=v)
+                    answer_obj.predefined_answer = predefined_answer_obj
+                    answer_obj.save()
+
+        comp_rating_obj = CompRating.objects.get(evaluation__id=instance.id)
+        comp_rating_obj.tier = int(tierNumber)
+        comp_rating_obj.name = TIER_LIST[int(tierNumber) - 1]
+        comp_rating_obj.save()
+        
+        instance.subject = subject_obj
+        instance.save()
+        return instance
 
     def to_internal_value(self, value):
         return value

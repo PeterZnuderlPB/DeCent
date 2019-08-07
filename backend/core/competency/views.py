@@ -64,6 +64,7 @@ class CompotencyList(PBListViewMixin, generics.ListCreateAPIView):
 
 class CompotencyDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Competency
+
     required_groups= {
         'GET':['__all__'],
         'POST':['__all__'],
