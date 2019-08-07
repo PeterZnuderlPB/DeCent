@@ -386,7 +386,10 @@ class PBEditView extends React.Component {
           id: res.data.data.comp_question.competency.id,
           name: res.data.data.comp_question.competency.name
         }
-      }, () => this.fetchQuestions());
+      }, () => {
+        this.fetchQuestions();
+        this.fetchRating();
+      });
     })
     .catch(err => console.log("[EditView] CompetencyFromEvaluation fetch error: ", err));
   }
@@ -447,8 +450,8 @@ class PBEditView extends React.Component {
               {index.length - 1 === i 
               ? <>
                 <hr style={{ width: '100%' }}/>
-                <h3 onClick={this.fetchDoneAnswers}>RatingEVALEDIT</h3>
-                  <Select onChange={this.handleTierSelect} placeholder="Select tier for your evaluation">
+                <h3>RatingEVALEDIT</h3>
+                  <Select value={this.state.tierSelected} onChange={this.handleTierSelect} placeholder="Select tier for your evaluation">
                     <Option value="1">Junior</Option>
                     <Option value="2">Intermediate</Option>
                     <Option value="3">Senior</Option>
@@ -679,6 +682,39 @@ class PBEditView extends React.Component {
         });
       })
       .catch(err => console.log("[EditView] Tags fetch error: ", err));
+    }
+
+    fetchRating = () => {
+      let params = {
+        results: 10,
+        page: 1,
+        sortOrder: [],
+        sortField: [],
+        visibleFields: [],
+        filters: {
+          evaluation__id: this.props.match.params.id,
+          competency__id: this.state.selectedCompetency.id
+        }
+      };
+  
+      params.visibleFields.push('id', 'tier', 'name');
+  
+      let settings = JSON.stringify(params);
+
+      con.get(`/api/comprating/`, {
+        params: {
+          settings
+        },
+        headers: {
+          Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+        }
+      })
+      .then(res => {
+        this.setState({
+          tierSelected: res.data.data[0].tier
+        });
+      })
+      .catch(err => console.log("[EditView] DoneAnswers fetch error: ", err));
     }
 
     handleTierSelect = (e) => {
