@@ -39,7 +39,8 @@ class PBEditView extends React.Component {
     compotencyAnswersLoading: true,
     answerSelected: null,
     answersSelected: [],
-    tierSelected: 0
+    tierSelected: 0,
+    tagData: []
   };
 
   componentWillMount() {
@@ -55,7 +56,7 @@ class PBEditView extends React.Component {
     if(this.props.match.params.id === undefined) {
       if(!this.state.requestedData){
           if(this.props.user.userInfo.username !== "") {
-            this.props.FetchPost(1, this.props.match.params.table_name);
+            this.props.match.params.table_name === 'evaluation' ? this.props.FetchPost(15, this.props.match.params.table_name) : this.props.FetchPost(1, this.props.match.params.table_name); // FIX later
             this.setState({
               requestedData: true
             });
@@ -80,7 +81,7 @@ class PBEditView extends React.Component {
   if(this.props.match.params.id === undefined) {
     if(!this.state.requestedData){
         if(nextProps.user.userInfo.username !== "") {
-          this.props.FetchPost(1, this.props.match.params.table_name);
+          this.props.match.params.table_name === 'evaluation' ? this.props.FetchPost(15, this.props.match.params.table_name) : this.props.FetchPost(1, this.props.match.params.table_name); // FIX later
           this.setState({
             requestedData: true
           });
@@ -229,6 +230,7 @@ class PBEditView extends React.Component {
   }
 
   handleCompetencySelect = e => {
+    console.log("COMPETENCY DATA IN LIST:::", this.findCompetencyInList(e.target.id));
     this.setState({
       selectedCompetency: this.findCompetencyInList(e.target.id),
       modalVisible: false 
@@ -363,6 +365,24 @@ class PBEditView extends React.Component {
     });
   }
 
+  fetchAnswerDetail = () => {
+    con.get(`/api/answer/${this.props.match.params.id}`, {
+      headers: {
+        Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+      }
+    })
+    .then(res => {
+      console.log("COMPETENCY DATA FROM ANSWER DETAIL: ", res.data.data.comp_question.competency);
+      this.setState({
+        selectedCompetency: {
+          id: res.data.data.comp_question.competency.id,
+          name: res.data.data.comp_question.competency.name
+        }
+      }, () => this.fetchQuestions());
+    })
+    .catch(err => console.log("[EditView] AnswerDetail fetch error: ", err));
+  }
+
   createUI(){
     // find better solution for this
     if (!this.state.loaded){
@@ -388,7 +408,51 @@ class PBEditView extends React.Component {
 
     this.addClick();
       if(this.props.match.params.id !== undefined) {
-      return this.state.values.map((el, i, index) => 
+      if (this.props.match.params.table_name === 'evaluation') {
+        return this.state.values.map((el, i, index) => 
+            <div key={i}>
+              {el.includes('user') ? null : <label>{el}:</label>}
+              {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
+              this.state.column_types[i].includes("Date (without time)")?
+              (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
+              this.state.column_types[i].includes("Date (with time)")?
+              [<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateTimeChange.bind(this, el)} disabled />,
+              <TimePicker defaultValue={this.timeAsign(this.getCurrentDateTime())} onChange={this.handleDateTimeChange2.bind(this, el)} disabled />]:
+              //HH:mm:ss
+              this.state.column_types[i].includes("Boolean")?
+              (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+              el.includes('user')?
+              (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+              this.state.column_types[i].includes("Foreign Key")?
+              (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
+              this.state.column_types[i].includes("String")?
+              (<Input onChange={this.handleChange.bind(this, el)} />):
+              (<TextArea rows={4} onChange={this.handleChange.bind(this, el)} />)}
+
+
+              {index.length - 1 === i ? <div onClick={this.fetchAnswerDetail} ><h3 style={{ display: 'inline-block', marginLeft: '0.3%', userSelect: 'none' }}>{this.state.selectedCompetency === null ? 'Loading selected competency...' : this.state.selectedCompetency.name}</h3></div> : null}
+
+              {index.length - 1 === i 
+              ? this.state.selectedCompetency === null ? null : this.renderQuestions()
+              : null}
+
+              {index.length - 1 === i 
+              ? <>
+                <hr style={{ width: '100%' }}/>
+                <h3>RatingEVALEDIT</h3>
+                  <Select onChange={this.handleTierSelect} placeholder="Select tier for your evaluation">
+                    <Option value="1">Junior</Option>
+                    <Option value="2">Intermediate</Option>
+                    <Option value="3">Senior</Option>
+                  </Select>
+                </>
+              : null}
+              
+              {index.length-1 === i? (<input style={{ display: 'block' }} type="button" value="Submit" onClick={this.handleSubmit}/>):(console.log("-----"))}
+            </div>         
+            )
+      }else {
+        return this.state.values.map((el, i, index) => 
           <div key={i}>
 
             {el.includes('user') ? null : <label>{el}:</label>}
@@ -403,6 +467,8 @@ class PBEditView extends React.Component {
             (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
             el.includes('user')?
             (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+            el.includes('tags')?
+            (<Select onFocus={this.fetchTags} labelInValue={true} defaultValue={this.props.edit.data.data.tags.map(t => { return {key: t.id.toString(), label: t.tag}; })} mode="tags" onChange={(e) => console.log("NEW VALUES: ", e)} placeholder="Tags" >{this.state.tagData}</Select>):
             this.state.column_types[i].includes("Foreign Key")?
             (<Input value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("String")?
@@ -412,6 +478,7 @@ class PBEditView extends React.Component {
             {index.length-1 === i? (<input type="button" value="Submit" onClick={this.handleSubmit}/>):(console.log("-----"))}
           </div>          
       )
+      }
       } else {
         if (this.props.match.params.table_name === 'evaluation') {
             return this.state.values.map((el, i, index) => 
@@ -498,6 +565,8 @@ class PBEditView extends React.Component {
               (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
               el.includes('user')?
               (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+              el.includes('tags')?
+              (<Select onFocus={this.fetchTags} mode="tags" onChange={(e) => console.log("NEW VALUES: ", e)} placeholder="Tags" >{this.state.tagData}</Select>):
               this.state.column_types[i].includes("Foreign Key")?
               (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
               this.state.column_types[i].includes("String")?
@@ -509,6 +578,42 @@ class PBEditView extends React.Component {
             )
         } 
       }
+    }
+
+    fetchTags = () => {
+      let tagArray = [];
+
+      let params = {
+        results: 1000,
+        page: 1,
+        sortOrder: [],
+        sortField: [],
+        visibleFields: [],
+        filters: {}
+      };
+  
+      params.visibleFields.push('id', 'tag');
+  
+      let settings = JSON.stringify(params);
+  
+      con.get('/api/tag/', {
+        params: {
+          settings
+        },
+        headers: {
+          Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+        }
+      })
+      .then(res => {
+        res.data.data.map(el => {
+          tagArray.push(<Option value={el.id.toString()} key={el.id}>{el.tag}</Option>);
+        });
+
+        this.setState({
+          tagData: tagArray
+        }, () => console.log("TAGDATA", this.state.tagData));
+      })
+      .catch(err => console.log("[EditView] Tags fetch error: ", err));
     }
 
     handleTierSelect = (e) => {

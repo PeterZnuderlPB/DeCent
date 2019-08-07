@@ -113,8 +113,11 @@ class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
             answer_obj = Answer(user_created=user, user_last_modified=user, is_locked=False, is_active=True, comment=question_list[f'tbox{k}'], predefined_answer=predefined_answer_obj, comp_question=comp_question_obj, evaluation=evaluation_obj)
             answer_obj.save()
 
-        # Fetch Competency object as well
-        # compRating_obj = CompRating(tier=tierNumber, name=TIER_LIST[tierNumber - 1], competency=comp)
+        # Needed to get competency ID
+        question_obj = CompQuestion.objects.get(id=list(question_list.keys())[0])
+
+        compRating_obj = CompRating(tier=int(tierNumber), name=TIER_LIST[int(tierNumber) - 1], competency=question_obj.competency, user_created=user, user_last_modified=user, evaluation=evaluation_obj, is_active=isActive)
+        compRating_obj.save()
 
         return evaluation_obj
 

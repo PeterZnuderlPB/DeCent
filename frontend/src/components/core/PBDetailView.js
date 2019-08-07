@@ -118,7 +118,8 @@ class PBDetailView extends React.Component {
 
                         if (key === 'evaluation__id') {
                             {return this.state.evalData.map(elEval => {
-                                return <div key={elEval.id}><Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/evaluation/${el.id}`))} type="link">{elEval.evaluation_date} - {elEval.subject.organization.name}</Button></div>
+                                console.log("BUTTON DATA", el);
+                                return <div key={elEval.id}><Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/evaluation/${el.evaluation__id}`))} type="link">{elEval.evaluation_date} - {elEval.subject.organization.name}</Button></div>
                             })}
                         }
 
