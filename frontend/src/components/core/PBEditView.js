@@ -35,6 +35,7 @@ class PBEditView extends React.Component {
     modalVisible: false,
     selectedCompetency: null,
     selectableCompetencies: [],
+    selectableCompetenciesFull: [],
     selectableCompetenciesLoading: true,
     competencyQuestions: [],
     competencyQuestionsLoading: true,
@@ -220,6 +221,7 @@ class PBEditView extends React.Component {
     .then(res => {
       this.setState({
         selectableCompetenciesLoading: false,
+        selectableCompetenciesFull: res.data.data,
         selectableCompetencies: res.data.data
       });
     })
@@ -526,13 +528,25 @@ class PBEditView extends React.Component {
                 <Search
                 placeholder="Search for competency" 
                 onSearch={value => {
-                  let searchArray = []
-                  searchArray.push(value);
+                  if (value === '') {
+                    this.setState({
+                      selectableCompetencies: this.state.selectableCompetenciesFull
+                    })
+                  } else {
+                    this.setState({
+                      selectableCompetencies: this.state.selectableCompetenciesFull
+                    }, () => {
+                      this.setState({
+                        selectableCompetencies: this.state.selectableCompetencies.filter(el => el.name.toLowerCase().includes(value.toLowerCase()))
+                      });
+                    });
+                  }
+                  // let searchArray = []
+                  // searchArray.push(value);
 
-                  this.setState({
-                    selectedCompetency: searchArray
-                  });
-
+                  // this.setState({
+                  //   selectedCompetency: searchArray
+                  // });
                 }}
                 style={{ width: 200 }}
                 />
