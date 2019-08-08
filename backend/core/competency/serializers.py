@@ -14,7 +14,8 @@ from .models import (
     CompQuestion, 
     PredefinedAnswer,
     Answer,
-    CompRating
+    CompRating,
+    UserPermission
 )
 
 from core.serializers import DynamicFieldsModelSerializer
@@ -265,5 +266,18 @@ class SubjectTypeSerializerBasic(DynamicFieldsModelSerializer ,serializers.Model
 class SubjectTypeSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = SubjectType
+        fields = '__all__'
+        depth = 1
+
+class UserPermissionSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = UserPermission #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class UserPermissionSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = UserPermission
         fields = '__all__'
         depth = 1

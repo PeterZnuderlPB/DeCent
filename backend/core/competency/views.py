@@ -18,7 +18,8 @@ from .models import (
     CompQuestion,
     PredefinedAnswer,
     Answer,
-    CompRating
+    CompRating,
+    UserPermission
 )
 from .serializers import (
     CompetencySerializerBasic,
@@ -46,7 +47,9 @@ from .serializers import (
     CompRatingSerializerBasic,
     CompRatingSerializerDepth,
     SubjectTypeSerializerBasic,
-    SubjectTypeSerializerDepth
+    SubjectTypeSerializerDepth,
+    UserPermissionSerializerBasic,
+    UserPermissionSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -400,3 +403,23 @@ class SubjectTypeDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIVi
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return SubjectTypeSerializerDepth
         return SubjectTypeSerializerBasic
+
+class UserPermissionsList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = UserPermission
+    table_name = "Userpermissions" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return UserPermissionSerializerDepth
+        return UserPermissionSerializerBasic
