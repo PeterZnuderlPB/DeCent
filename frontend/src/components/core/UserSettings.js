@@ -1,6 +1,9 @@
 import React from 'react';
 import con from '../../apis';
-import { USER_SETTINGS_USERPERMISSIONS_LIST } from '../../constants';
+import {
+    USER_SETTINGS_USERPERMISSIONS_LIST,
+    USER_SETTINGS_PRIMARY_ORGANIZATION_LIST
+} from '../../constants';
 import { connect } from 'react-redux';
 import { Select, Button } from 'antd';
 
@@ -17,6 +20,41 @@ class UserSettings extends React.Component {
             organizationsLoading: true,
             organizations: []
         };
+    }
+
+    fetchPrimaryOrganization = () => {
+        this.setState({ organizationsLoading: true });
+
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {
+                account__id: this.props.user.userInfo.id
+            }
+          };
+      
+          params.visibleFields = params.visibleFields.concat(USER_SETTINGS_PRIMARY_ORGANIZATION_LIST);
+      
+          let settings = JSON.stringify(params);
+
+        con.get('/api/organization/', {
+            params: {
+                settings
+            },
+            headers: {
+              Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+          })
+          .then(res => {
+              this.setState({
+                  organizations: res.data.data,
+                  organizationsLoading: false
+              });
+          })
+          .catch(err => console.log("[UserSettings] PrimaryOrganization fetch error: ", err));
     }
 
     fetchUserOrganizations = () => {
@@ -47,6 +85,10 @@ class UserSettings extends React.Component {
           this.setState({
               organizations: res.data.data,
               organizationsLoading: false
+          }, () => {
+              if (this.state.organizations.length === 0) {
+                  this.fetchPrimaryOrganization();
+              }
           });
       })
       .catch(err => console.log("[UserSettings] UserPermission fetch error: ", err));
@@ -57,7 +99,7 @@ class UserSettings extends React.Component {
             return <Option value="NULL" disabled>Loading...</Option>
         } else {
             return this.state.organizations.map(el => {
-                return <Option key={el.id} value={el.id}>{el.organization__name}</Option>
+                return <Option key={el.id} value={el.id}>{el.organization__name || el.name}</Option>
             })
         }
     }
@@ -69,7 +111,7 @@ class UserSettings extends React.Component {
                 <Select onFocus={this.fetchUserOrganizations} style={{ width: '100%'}}>
                     {this.renderUserOrganizations()}
                 </Select>
-                <Button onClick={this.fetchUserOrganizations} style={{ marginTop: '1%' }} type="primary" block>Confirm</Button>
+                <Button style={{ marginTop: '1%' }} type="primary" block>Confirm</Button>
             </div>
         );
     }
