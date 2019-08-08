@@ -8,7 +8,8 @@ from .models import (
     OrganizationType, 
     Evaluation, 
     EvaluationType, 
-    Subject, 
+    Subject,
+    SubjectType,
     Tag, 
     CompQuestion, 
     PredefinedAnswer,
@@ -251,5 +252,18 @@ class CompRatingSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
 class CompRatingSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = CompRating
+        fields = '__all__'
+        depth = 1
+
+class SubjectTypeSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = SubjectType #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class SubjectTypeSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = SubjectType
         fields = '__all__'
         depth = 1

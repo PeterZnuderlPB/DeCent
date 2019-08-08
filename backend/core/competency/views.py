@@ -12,7 +12,8 @@ from .models import (
     OrganizationType, 
     Evaluation, 
     EvaluationType, 
-    Subject, 
+    Subject,
+    SubjectType,
     Tag, 
     CompQuestion,
     PredefinedAnswer,
@@ -22,21 +23,30 @@ from .models import (
 from .serializers import (
     CompetencySerializerBasic,
     CompetencySerializerDepth,
+    SubcategorySerializerBasic,
     SubcategorySerializerDepth,
+    OrganizationSerializerBasic,
     OrganizationSerializerDepth,
+    OrganizationTypeSerializerBasic,
     OrganizationTypeSerializerDepth,
-    EvaluationSerializerDepth,
     EvaluationSerializerBasic,
+    EvaluationSerializerDepth,
     EvaluationTypeSerializerBasic,
     EvaluationTypeSerializerDepth,
     SubjectSerializerBasic,
     SubjectSerializerDepth,
+    TagSerializerBasic,
     TagSerializerDepth,
+    CompQuestionSerializerBasic,
     CompQuestionSerializerDepth,
+    PredefinedAnswerSerializerBasic,
     PredefinedAnswerSerializerDepth,
+    AnswerSerializerBasic,
     AnswerSerializerDepth,
     CompRatingSerializerBasic,
-    CompRatingSerializerDepth
+    CompRatingSerializerDepth,
+    SubjectTypeSerializerBasic,
+    SubjectTypeSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -211,7 +221,26 @@ class SubjectList(PBListViewMixin, generics.ListCreateAPIView):
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return SubjectSerializerDepth
-        return SubjectSerializerDepth
+        return SubjectSerializerBasic
+
+class SubjectDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = Subject
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return SubjectSerializerDepth
+        return SubjectSerializerBasic
 
 class TagList(PBListViewMixin, generics.ListCreateAPIView): 
     permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
@@ -331,3 +360,43 @@ class CompRatingList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CompRatingSerializerDepth
         return CompRatingSerializerDepth
+
+class SubjectTypeList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = SubjectType
+    table_name = "Subjecttypes" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return SubjectTypeSerializerDepth
+        return SubjectTypeSerializerBasic
+
+class SubjectTypeDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = SubjectType
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return SubjectTypeSerializerDepth
+        return SubjectTypeSerializerBasic

@@ -578,7 +578,7 @@ class PBEditView extends React.Component {
               el.includes('user')?
               (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
               el.includes('tags')?
-              (<Select onFocus={this.fetchTags} mode="tags" onChange={(e) => console.log("NEW VALUES: ", e)} placeholder="Tags" >{this.state.tagData}</Select>):
+              (<Select onFocus={this.fetchTags} labelInValue={true} mode="tags" onChange={(e) => this.setState({ selectedTags: e }) } placeholder="Tags" >{this.state.tagData}</Select>):
               this.state.column_types[i].includes("Foreign Key")?
               (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
               this.state.column_types[i].includes("String")?
@@ -865,6 +865,8 @@ class PBEditView extends React.Component {
       dict['tier'] = this.state.tierSelected;
       this.props.AddPost(dict, this.props.match.params.table_name);
     } else {
+      delete dict["tags"];
+
         let tagsArray = [];
 
         this.state.selectedTags.forEach(el => {
@@ -872,12 +874,12 @@ class PBEditView extends React.Component {
         })
 
         dict["tags"] = tagsArray;
+        delete dict['user_created'];
 
-      this.props.AddPost(dict, this.props.match.params.table_name);
+        this.props.AddPost(dict, this.props.match.params.table_name);
     }
 
   }
-  console.log("POSt DICT", dict);
 }
 
 

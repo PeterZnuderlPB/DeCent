@@ -156,6 +156,12 @@ class NavBar extends React.Component {
                             <Link to="/evaluations"><FormattedMessage id="nav.evaluations" defaultMessage="Evaluations" /></Link>
                         </span>
                     </Menu.Item>
+                    <Menu.Item key="4">
+                        <Icon type="team" />
+                        <span className="nav-text">
+                            <Link to="/subjects"><FormattedMessage id="nav.subjects" defaultMessage="Subjects" /></Link>
+                        </span>
+                    </Menu.Item>
                     {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
                     
                 </Menu>
