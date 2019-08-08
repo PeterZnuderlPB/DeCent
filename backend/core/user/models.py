@@ -10,4 +10,5 @@ from django.contrib.auth.models import AbstractUser
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     biography = models.TextField(default="")
+    active_organization_id = models.IntegerField(blank=True, null=True)
     pass

@@ -12,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = ['email', 'username', 'first_name'] # Columns in the list of users in the admin console
     fieldsets = UserAdmin.fieldsets + (                 # Fields in the edit and create view of the admin console
-            ('Custom infromation', {'fields': ('biography',)}),
+            ('Custom infromation', {'fields': ('biography', 'active_organization_id',)}),
     )
 
 admin.site.register(CustomUser, CustomUserAdmin)
