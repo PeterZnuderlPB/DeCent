@@ -1,5 +1,22 @@
 from django.contrib import admin
-from .models import Category, Subcategory, OrganizationType, Organization, SubjectType, Subject, EvaluationType, Evaluation, Estimate, Competency, Tag, CompQuestion, PredefinedAnswer, Answer, CompRating
+from .models import (
+    Category,
+    Subcategory,
+    OrganizationType,
+    Organization,
+    SubjectType,
+    Subject,
+    EvaluationType,
+    Evaluation,
+    Estimate,
+    Competency,
+    Tag,
+    CompQuestion,
+    PredefinedAnswer,
+    Answer,
+    CompRating,
+    UserPermission
+)
 
 # Register your models here.
 
@@ -18,3 +35,4 @@ admin.site.register(CompQuestion)
 admin.site.register(PredefinedAnswer)
 admin.site.register(Answer)
 admin.site.register(CompRating)
+admin.site.register(UserPermission)

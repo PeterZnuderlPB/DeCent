@@ -122,3 +122,12 @@ class CompRating(PBModel):
 
     def __str__(self):
         return f'{self.tier} - {self.name}'
+
+class UserPermission(PBModel):
+    permissions = models.TextField()
+    account = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    subject = models.ManyToManyField(Subject, blank=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.account.username} - {self.organization.name} - {self.permissions}'
