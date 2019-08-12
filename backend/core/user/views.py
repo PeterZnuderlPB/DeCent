@@ -46,7 +46,7 @@ class CustomUserList( generics.ListCreateAPIView):
         serializer = CustomUserSimpleSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
 
-class CustomUserDetails(generics.RetrieveAPIView):
+class CustomUserDetails(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
 

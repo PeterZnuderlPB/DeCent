@@ -319,6 +319,7 @@ class PBTable extends React.Component {
           if (params.visibleFields.indexOf('tags') === -1) {
             params.visibleFields.push('tags');
           }
+
           params.filters = this.state.filterValues;
           
           if (this.state.tagsChecked.length !== 0) {
@@ -328,6 +329,13 @@ class PBTable extends React.Component {
             }
           } else {
             params.filters = this.state.filterValues;
+          }
+
+          if (this.props.tableApi == 'evaluation') {
+            params.filters = {
+              ...params.filters,
+              subject__organization__id: this.props.user.userInfo.active_organization_id  
+            }
           }
         }
         console.log("NEW PARAMS: ", params)

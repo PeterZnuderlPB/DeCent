@@ -10,7 +10,7 @@ import { Select, Button } from 'antd';
 const { Option } = Select;
 
 // TODO: 
-// Add fetching user data on page refresh
+// Add fetching user data on page refresh DONE
 // After completing the page -> refactor it in redux style
 class UserSettings extends React.Component {
     constructor(props) {
@@ -18,7 +18,8 @@ class UserSettings extends React.Component {
 
         this.state = {
             organizationsLoading: true,
-            organizations: []
+            organizations: [],
+            selectedOrganization: null
         };
     }
 
@@ -49,8 +50,18 @@ class UserSettings extends React.Component {
             }
           })
           .then(res => {
+              let tempCompanyDictionary = {};
+              tempCompanyDictionary['id'] = 0;
+              tempCompanyDictionary['organization__id'] = res.data.data[0].id;
+              tempCompanyDictionary['organization__organization_type'] = res.data.data[0].organization_type__id;
+              tempCompanyDictionary['organization__name'] = res.data.data[0].name;
+              tempCompanyDictionary['permissions'] = "CREATE;READ;UPDATE;DELETE";
+
               this.setState({
-                  organizations: res.data.data,
+                  organizations: [
+                      ...this.state.organizations,
+                      tempCompanyDictionary
+                  ],
                   organizationsLoading: false
               });
           })
@@ -86,9 +97,7 @@ class UserSettings extends React.Component {
               organizations: res.data.data,
               organizationsLoading: false
           }, () => {
-              if (this.state.organizations.length === 0) {
-                  this.fetchPrimaryOrganization();
-              }
+            this.fetchPrimaryOrganization();
           });
       })
       .catch(err => console.log("[UserSettings] UserPermission fetch error: ", err));
@@ -99,19 +108,38 @@ class UserSettings extends React.Component {
             return <Option value="NULL" disabled>Loading...</Option>
         } else {
             return this.state.organizations.map(el => {
-                return <Option key={el.id} value={el.id}>{el.organization__name || el.name}</Option>
+                return <Option key={el.id} value={el.organization__id}>{el.organization__name || el.name}</Option>
             })
         }
+    }
+
+    handleChange = e => {
+        this.setState({
+            selectedOrganization: e
+        });
+    }
+
+    updateUserActiveOrganization = () => {
+        con.patch(`/api/users/${this.props.user.userInfo.id}/`, {
+            active_organization_id: this.state.selectedOrganization
+        },
+        {
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+        }
+    })
+    .then(res => console.log("RES", res))
+    .catch(err => console.log("ERR", err));
     }
 
     render() {
         return (
             <div>
                 <h3 style={{ textAlign: 'center' }}>Choose organization: </h3>
-                <Select onFocus={this.fetchUserOrganizations} style={{ width: '100%'}}>
+                <Select onFocus={this.fetchUserOrganizations} onChange={this.handleChange} style={{ width: '100%'}}>
                     {this.renderUserOrganizations()}
                 </Select>
-                <Button style={{ marginTop: '1%' }} type="primary" block>Confirm</Button>
+                <Button style={{ marginTop: '1%' }} onClick={this.updateUserActiveOrganization} type="primary" block>Confirm</Button>
             </div>
         );
     }
