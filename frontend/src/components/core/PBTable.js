@@ -379,10 +379,17 @@ class PBTable extends React.Component {
 
             console.log("PUSHING DONE", subjectId);
 
-            params.filters = {
-              ...params.filters,
-              subject__organization__id: this.props.user.userInfo.active_organization_id,
-              subject__id: subjectId
+            if(this.state.allowedSubjects.length !== 0) {
+              params.filters = {
+                ...params.filters,
+                subject__organization__id: this.props.user.userInfo.active_organization_id,
+                subject__id: subjectId
+              }
+            } else {
+              params.filters = {
+                ...params.filters,
+                subject__organization__id: this.props.user.userInfo.active_organization_id
+              }
             }
           }
 
