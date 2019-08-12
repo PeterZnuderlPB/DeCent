@@ -6,6 +6,7 @@ import {
 } from '../../constants';
 import { connect } from 'react-redux';
 import { Select, Button } from 'antd';
+import { FetchUserStart } from '../../actions/index';
 
 const { Option } = Select;
 
@@ -128,7 +129,7 @@ class UserSettings extends React.Component {
                 Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
         }
     })
-    .then(res => console.log("RES", res))
+    .then(res => this.props.FetchUserStart(this.props.user.token))
     .catch(err => console.log("ERR", err));
     }
 
@@ -151,4 +152,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps)(UserSettings);
+export default connect(mapStateToProps, { FetchUserStart })(UserSettings);
