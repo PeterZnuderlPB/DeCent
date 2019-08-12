@@ -20,8 +20,13 @@ class UserSettings extends React.Component {
         this.state = {
             organizationsLoading: true,
             organizations: [],
-            selectedOrganization: null
+            selectedOrganization: null,
+            primaryOrganization: null
         };
+    }
+
+    componentDidMount = () => {
+        this.fetchPrimaryOrganization();
     }
 
     fetchPrimaryOrganization = () => {
@@ -55,7 +60,7 @@ class UserSettings extends React.Component {
               tempCompanyDictionary['id'] = 0;
               tempCompanyDictionary['organization__id'] = res.data.data[0].id;
               tempCompanyDictionary['organization__organization_type'] = res.data.data[0].organization_type__id;
-              tempCompanyDictionary['organization__name'] = res.data.data[0].name;
+              tempCompanyDictionary['organization__name'] = res.data.data[0].name + " [Owner]";
               tempCompanyDictionary['permissions'] = "CREATE;READ;UPDATE;DELETE";
 
               this.setState({
@@ -63,6 +68,7 @@ class UserSettings extends React.Component {
                       ...this.state.organizations,
                       tempCompanyDictionary
                   ],
+                  primaryOrganization: tempCompanyDictionary,
                   organizationsLoading: false
               });
           })
@@ -134,6 +140,36 @@ class UserSettings extends React.Component {
     .catch(err => console.log("ERR", err));
     }
 
+    fetchOrganizationManagers = () => {
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {
+                organization__id: this.props.user.userInfo.active_organization_id
+            }
+          };
+      
+          params.visibleFields = params.visibleFields.concat(USER_SETTINGS_USERPERMISSIONS_LIST);
+      
+          let settings = JSON.stringify(params);
+      
+          con.get('/api/userpermission/', {
+            params: {
+              settings
+            },
+            headers: {
+              Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+          })
+          .then(res => {
+              console.log("Permissions", res);
+          })
+          .catch(err => console.log("[UserSettings] UserPermission fetch error: ", err));
+    }
+
     render() {
         return (
             <div>
@@ -142,6 +178,17 @@ class UserSettings extends React.Component {
                     {this.renderUserOrganizations()}
                 </Select>
                 <Button style={{ marginTop: '1%' }} onClick={this.updateUserActiveOrganization} type="primary" block>Confirm</Button>
+                <hr />
+                <h3 onClick={this.fetchOrganizationManagers} style={{ textAlign: 'center' }}>Manage your organization: </h3>
+                <Select
+                showSearch
+                style={{ width: 200 }}
+                placeholder="Select user"
+                optionFilterProp="children"
+                >
+                    <Option value="1">Aljaz</Option>
+                    <Option value="2">TestUser</Option>
+                </Select>
             </div>
         );
     }
