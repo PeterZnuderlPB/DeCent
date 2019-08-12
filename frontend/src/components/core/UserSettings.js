@@ -94,6 +94,7 @@ class UserSettings extends React.Component {
         }
       })
       .then(res => {
+          console.log("ALLOWED", res);
           this.setState({
               organizations: res.data.data,
               organizationsLoading: false

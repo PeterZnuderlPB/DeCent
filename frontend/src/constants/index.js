@@ -13,5 +13,5 @@ export const EDIT_VIEW_ANSWERS = ['id', 'comment', 'predefined_answer__id', 'com
 // ----------------------------------
 // User Settings visibleField Consts
 // ----------------------------------
-export const USER_SETTINGS_USERPERMISSIONS_LIST = ['id', 'permissions', 'organization__id', 'organization__name', 'organization__organization_type'];
+export const USER_SETTINGS_USERPERMISSIONS_LIST = ['id', 'permissions', 'organization__id', 'organization__name', 'organization__organization_type', 'subject'];
 export const USER_SETTINGS_PRIMARY_ORGANIZATION_LIST = ['id', 'name', 'organization_type__id'];

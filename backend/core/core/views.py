@@ -166,7 +166,10 @@ class PBListViewMixin(object):
         filters = q_settings.get('filters', None)
         filters_with_type = {}
         for key, val in filters.items():
-            filters_with_type[key + "__icontains"] = val
+            if type(val) == list:
+                filters_with_type[key + "__in"] = val
+            else:
+                filters_with_type[key + "__icontains"] = val
         filters_with_type["is_active"] = True
         qs = self.model.objects.filter(**filters_with_type).order_by(*clean_orderfield)
         return qs   

@@ -11,6 +11,7 @@ import history from '../../history';
 import { updateExpression, throwStatement } from '@babel/types';
 //import { FetchPostsStart } from '../../actions'
 import {Redirect} from 'react-router-dom';
+import {  USER_SETTINGS_USERPERMISSIONS_LIST } from '../../constants';
 
 class PBTable extends React.Component {
     qs = require('qs');
@@ -46,7 +47,8 @@ class PBTable extends React.Component {
         tagsVisible: false,
         tagsData: [],
         tagsLoading: true,
-        tagsChecked: []
+        tagsChecked: [],
+        allowedSubjects: []
     };
     CheckboxGroup = Checkbox.Group;
     
@@ -62,6 +64,7 @@ class PBTable extends React.Component {
           table_uri =this.props.table
         }
         this.setState({ tableURI: table_uri}, this.fetch)
+        this.fetchUserPermissions();
         //this.fetch();
     }
 
@@ -299,8 +302,42 @@ class PBTable extends React.Component {
       return dict;
     }
 
+    fetchUserPermissions = () => {
+      let params = {
+        results: 1000,
+        page: 1,
+        sortOrder: [],
+        sortField: [],
+        visibleFields: [],
+        filters: {
+            organization__id: this.props.user.userInfo.active_organization_id,
+            account__id: this.props.user.userInfo.id
+        }
+      };
+  
+      params.visibleFields = params.visibleFields.concat(USER_SETTINGS_USERPERMISSIONS_LIST);
+  
+      let settings = JSON.stringify(params);
+  
+      con.get('/api/userpermission/', {
+        params: {
+          settings
+        },
+        headers: {
+          Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+        }
+      })
+      .then(res => {
+          this.setState({
+            allowedSubjects: res.data.data[0].subject
+          }, () => console.log("PERM STATE --> ", this.state));
+      })
+      .catch(err => console.log("[PBTale] UserPermission fetch error: ", err));
+    }
+
     fetch = () => {
       this.fetchTagData();
+      this.fetchUserPermissions();
         //console.log('params:', params);
         //debugger;
         
@@ -332,9 +369,20 @@ class PBTable extends React.Component {
           }
 
           if (this.props.tableApi == 'evaluation') {
+            console.log("IN EVALUATION--");
+
+            let subjectId = [];
+
+            this.state.allowedSubjects.forEach(el => {
+              subjectId.push(el.id);
+            });
+
+            console.log("PUSHING DONE", subjectId);
+
             params.filters = {
               ...params.filters,
-              subject__organization__id: this.props.user.userInfo.active_organization_id  
+              subject__organization__id: this.props.user.userInfo.active_organization_id,
+              subject__id: subjectId
             }
           }
 
