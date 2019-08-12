@@ -337,6 +337,13 @@ class PBTable extends React.Component {
               subject__organization__id: this.props.user.userInfo.active_organization_id  
             }
           }
+
+          if (this.props.tableApi == 'subject') {
+            params.filters = {
+              ...params.filters,
+              organization__id: this.props.user.userInfo.active_organization_id  
+            }
+          }
         }
         console.log("NEW PARAMS: ", params)
         var settings = JSON.stringify(params);
