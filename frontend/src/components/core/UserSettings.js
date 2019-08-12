@@ -182,12 +182,30 @@ class UserSettings extends React.Component {
                 <h3 onClick={this.fetchOrganizationManagers} style={{ textAlign: 'center' }}>Manage your organization: </h3>
                 <Select
                 showSearch
-                style={{ width: 200 }}
+                style={{ width: '30%' }}
                 placeholder="Select user"
                 optionFilterProp="children"
                 >
                     <Option value="1">Aljaz</Option>
                     <Option value="2">TestUser</Option>
+                </Select>
+                <Select
+                mode="multiple"
+                style={{ width: '30%' }}
+                >
+                    <Option value="1">Create</Option>
+                    <Option value="2">Read</Option>
+                    <Option value="3">Update</Option>
+                    <Option value="4">Delete</Option>
+                </Select>
+                <Select
+                mode="multiple"
+                style={{ width: '30%' }}
+                >
+                    <Option value="1">Create</Option>
+                    <Option value="2">Read</Option>
+                    <Option value="3">Update</Option>
+                    <Option value="4">Delete</Option>
                 </Select>
             </div>
         );
