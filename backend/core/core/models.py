@@ -21,8 +21,6 @@ class PBModel(models.Model):
     
     def save(self, *args, **kwargs):
         self.date_last_modified=datetime.utcnow()
-        if(not self.user_last_modified.id):
-            self.user_last_modified=get_current_authenticated_user()
-        if(not self.user_created_id):
-            self.user_created = get_current_authenticated_user()
+        self.user_last_modified=get_current_authenticated_user()
+        self.user_created = get_current_authenticated_user()
         super(PBModel, self).save(*args, **kwargs)

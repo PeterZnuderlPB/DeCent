@@ -7,9 +7,9 @@ import {
     USER_SETTINGS_USERS_LIST
 } from '../../constants';
 import { connect } from 'react-redux';
-import { Select, Button, Spin } from 'antd';
+import { Select, Button, Spin, Popconfirm, Icon, message } from 'antd';
 import { FetchUserStart } from '../../actions/index';
-import { UpdatePost, DeletePost } from '../../actions/PBEditViewActions';
+import { UpdatePost, DeletePost, AddPost } from '../../actions/PBEditViewActions';
 
 const { Option } = Select;
 
@@ -312,10 +312,46 @@ class UserSettings extends React.Component {
         this.props.DeletePost(elId, 'userpermission');
         this.fetchOrganizationManagers();
 
+        console.log(managersArray);
+
         managersArray.splice(deletedPostIndex, 1);
         this.setState({
             managers: managersArray
         });
+    }
+
+    handleAdd = e => {
+        let addDict = {
+            id: this.state.managers[this.state.managers.length - 1].id + 1,
+            permissions: "READ",
+            account__id: null,
+            organization__id: this.state.primaryOrganization.organization__id,
+            organization__name: this.state.primaryOrganization.organization__name,
+            organization__organization_type: this.state.primaryOrganization.organization_organization__type,
+            subject: [],
+        };
+
+        this.setState({
+            managers: [
+                ...this.state.managers,
+                addDict
+            ]
+        });
+
+        let postDict = {
+            id: this.state.managers[this.state.managers.length - 1].id + 1,
+            permissions: "READ",
+            subject: [],
+            account: addDict.account__id,
+            organization: addDict.organization__id,
+            is_active: true,
+            is_locked: false
+        }
+
+        // ADD POST LOGIC
+        this.props.AddPost(postDict, 'userpermission');
+        message.success("Permission set added - edit them on your likings and SAVE them!", 5);
+        this.fetchOrganizationManagers();
     }
 
     renderOrganizationManagers = () => {
@@ -354,7 +390,7 @@ class UserSettings extends React.Component {
                                 return;
 
                             return <Option value={elUser.id}>{elUser.username}</Option>
-                        })
+                            })
                         }
                     </Select>
                     <Select
@@ -382,7 +418,16 @@ class UserSettings extends React.Component {
                     }
                     </Select>
                     <Button onClick={(e) => this.handleSubmit(el.account__id, el.id, el.organization__id, e)} style={{ marginLeft: '0.4%' }} type="primary">Save</Button>
-                    <Button onClick={(e) => this.handleDelete(el.id, e)} style={{ marginLeft: '0.4%' }} type="danger">Remove</Button>
+                    <Popconfirm
+                    title="Are you sure delete this permission?"
+                    onConfirm={(e) => this.handleDelete(el.id, e)}
+                    onCancel={() => console.log("canceled")}
+                    icon={<Icon type="question-circle-o" style={{ color: 'red' }} />}
+                    okText="Yes"
+                    cancelText="No"
+                    >
+                    <Button style={{ marginLeft: '0.4%' }} type="danger">Remove</Button>
+                    </Popconfirm>
                     </div>
                 );
             });
@@ -400,7 +445,7 @@ class UserSettings extends React.Component {
                 <hr />
                 <h3 onClick={this.setUserPermissionIDs} style={{ textAlign: 'center' }}>Manage your organization: </h3>
                 {this.renderOrganizationManagers()}
-                <Button block type="default">Add new manager</Button>
+                <Button onClick={this.handleAdd} block type="default">Add new manager</Button>
             </div>
         );
     }
@@ -412,4 +457,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps, { FetchUserStart, UpdatePost, DeletePost })(UserSettings);
+export default connect(mapStateToProps, { FetchUserStart, UpdatePost, DeletePost, AddPost })(UserSettings);

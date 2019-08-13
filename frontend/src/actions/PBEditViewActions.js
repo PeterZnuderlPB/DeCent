@@ -74,10 +74,18 @@ export const AddPost = (postData, table) => (dispatch, getState) => {
     dispatch(AddPostStart(postData));
     const { user } = getState();
 
-    postData = {
-        ...postData,
-        organization: 1,
-        id: 0
+    if (table !== 'userpermission') {
+        postData = {
+            ...postData,
+            organization: 1,
+            id: 0
+        }
+    } else {
+        postData = {
+            ...postData,
+            account: user.auth.userInfo.id,
+            id: 0
+        }
     }
 
     console.log("PREPAPRED FOR ADD", postData);
@@ -91,13 +99,17 @@ export const AddPost = (postData, table) => (dispatch, getState) => {
     con.post(saveUri, postData, conConfig)
     .then(res => {
         dispatch(AddPostSuccess(postData));
-        history.push(`${history.location.pathname}/${res.data.id}`);
-        message.success("Successfully added post.");
+        if (table !== 'userpermission') { 
+            message.success("Successfully added post.");
+            history.push(`${history.location.pathname}/${res.data.id}`);
+        } else {
+            message.success("Successfully added post.");
+        }
     })
     .catch(err => {
         dispatch(AddPostFail(postData));
         message.error("Error trying to add post.");
-    })
+    });
 }
 
 export const DeletePost = (postId, table) => (dispatch, getState) => {
