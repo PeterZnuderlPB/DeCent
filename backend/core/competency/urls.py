@@ -20,5 +20,6 @@ urlpatterns = [
     path('api/answer/', views.AnswerList.as_view()),
     path('api/answer/<pk>', views.AnswerDetails.as_view()),
     path('api/comprating/', views.CompRatingList.as_view()),
-    path('api/userpermission/', views.UserPermissionsList.as_view())
+    path('api/userpermission/', views.UserPermissionsList.as_view()),
+    path('api/userpermission/<pk>', views.UserPermissionDetails.as_view())
 ]

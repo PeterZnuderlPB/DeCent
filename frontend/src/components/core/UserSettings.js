@@ -9,6 +9,7 @@ import {
 import { connect } from 'react-redux';
 import { Select, Button, Spin } from 'antd';
 import { FetchUserStart } from '../../actions/index';
+import { UpdatePost, DeletePost } from '../../actions/PBEditViewActions';
 
 const { Option } = Select;
 
@@ -29,7 +30,8 @@ class UserSettings extends React.Component {
             usersLoading: true,
             users: [],
             subjectsLoading: true,
-            subjects: []
+            subjects: [],
+            formSet: false
         };
     }
 
@@ -262,16 +264,78 @@ class UserSettings extends React.Component {
         let userPermissions = [];
 
         if (element !== undefined) {
-            userPermissions = element['permissions'].split(";");
+            if (element['permissions'] !== undefined) {
+                userPermissions = element['permissions'].split(";");
+            }
         }
-        
+
         return userPermissions;
+    }
+
+    handleTagChange = (elName, e) => {
+        this.setState({
+            [elName]: e
+        });
+    }
+
+    handleSubmit = (accountId, elId, organizationId, e) => {
+        // Saves changes to Dicitonary -> requests PUT
+        let permissions = this.state['permissions' + elId].join(";");
+        let user = this.state['user' + elId];
+
+        let updateDict = {
+            id: elId,
+            permissions: permissions,
+            account: user,
+            organization: organizationId,
+            subject: this.state['subjects' + elId],
+            is_active: true,
+            is_locked: false
+        };
+
+        this.props.UpdatePost(elId, updateDict, 'userpermission');
+    }
+
+    handleDelete = (elId, e) => {
+        let managersArray = this.state.managers;
+        let deletedPostIndex = null;
+
+        managersArray.forEach((el, i) => {
+            if (el.id == elId) {
+                deletedPostIndex = i;
+            }
+        });
+
+        if (deletedPostIndex === null)
+            return;
+
+        this.props.DeletePost(elId, 'userpermission');
+        this.fetchOrganizationManagers();
+
+        managersArray.splice(deletedPostIndex, 1);
+        this.setState({
+            managers: managersArray
+        });
     }
 
     renderOrganizationManagers = () => {
         if (this.state.managersLoading) {
             return <Spin tip="Loading..." size="large" />;
         } else {
+            if (!this.state.formSet) {
+                this.state.managers.forEach(el => {
+                    this.setState({
+                        ['permissions' + el.id]: this.setUserPermissionIDs(el),
+                        ['subjects' + el.id]: el.subject.map(elSubject => elSubject.id),
+                        ['user' + el.id]: el.account__id
+                    });
+                });
+
+                this.setState({
+                    formSet: true
+                })
+            }
+
             return this.state.managers.map(el => {
                 return (
                     <div style={{ marginBottom: '0.6%' }} key={el.id}>
@@ -281,6 +345,7 @@ class UserSettings extends React.Component {
                     placeholder="Select user"
                     optionFilterProp="children"
                     defaultValue={el.account__id}
+                    onChange={(e) => this.handleTagChange(`user${el.id}`, e)}
                     >
                         {this.state.usersLoading
                         ? <Option value="NULL" disabled>Loading...</Option>
@@ -296,6 +361,7 @@ class UserSettings extends React.Component {
                     mode="multiple"
                     style={{ width: '28%', marginLeft: '0.4%' }}
                     defaultValue={this.setUserPermissionIDs(el)}
+                    onChange={(e) => this.handleTagChange(`permissions${el.id}`, e)}
                     >
                         <Option value="CREATE">CREATE</Option>
                         <Option value="READ">READ</Option>
@@ -306,6 +372,7 @@ class UserSettings extends React.Component {
                     mode="multiple"
                     style={{ width: '28%', marginLeft: '0.4%' }}
                     defaultValue={el.subject.map(elSubject => elSubject.id)}
+                    onChange={(e) => this.handleTagChange(`subjects${el.id}`, e)}
                     >
                     {this.state.usersLoading
                     ? <Option value="NULL" disabled>Loading...</Option>
@@ -314,7 +381,8 @@ class UserSettings extends React.Component {
                         })
                     }
                     </Select>
-                    <Button style={{ marginLeft: '0.4%' }} type="primary">Save</Button>
+                    <Button onClick={(e) => this.handleSubmit(el.account__id, el.id, el.organization__id, e)} style={{ marginLeft: '0.4%' }} type="primary">Save</Button>
+                    <Button onClick={(e) => this.handleDelete(el.id, e)} style={{ marginLeft: '0.4%' }} type="danger">Remove</Button>
                     </div>
                 );
             });
@@ -332,7 +400,7 @@ class UserSettings extends React.Component {
                 <hr />
                 <h3 onClick={this.setUserPermissionIDs} style={{ textAlign: 'center' }}>Manage your organization: </h3>
                 {this.renderOrganizationManagers()}
-                <Button block type="danger">Add new manager</Button>
+                <Button block type="default">Add new manager</Button>
             </div>
         );
     }
@@ -344,4 +412,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps, { FetchUserStart })(UserSettings);
+export default connect(mapStateToProps, { FetchUserStart, UpdatePost, DeletePost })(UserSettings);

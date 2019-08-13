@@ -423,3 +423,23 @@ class UserPermissionsList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return UserPermissionSerializerDepth
         return UserPermissionSerializerBasic
+
+class UserPermissionDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = UserPermission
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return UserPermissionSerializerDepth
+        return UserPermissionSerializerBasic

@@ -10,7 +10,10 @@ import {
     UPDATE_POST_FAIL,
     ADD_POST_START,
     ADD_POST_SUCCESS,
-    ADD_POST_FAIL
+    ADD_POST_FAIL,
+    DELETE_POST_START,
+    DELETE_POST_SUCCESS,
+    DELETE_POST_FAIL
 } from './types'
 
 export const FetchPost = (postId, table) => (dispatch, getState) => {
@@ -95,6 +98,29 @@ export const AddPost = (postData, table) => (dispatch, getState) => {
         dispatch(AddPostFail(postData));
         message.error("Error trying to add post.");
     })
+}
+
+export const DeletePost = (postId, table) => (dispatch, getState) => {
+    // dispatch(DeletePostStart());
+    const { user } = getState();
+
+    const deleteUri = `api/${table}/${postId}`;
+
+    const conConfig = {
+        headers:{
+          Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`,
+        }
+    }
+
+    con.delete(deleteUri, conConfig)
+    .then(res => {
+        // dispatch(DeletePostSuccess());
+        message.success("Successfully deleted post.");
+    })
+    .catch(err => {
+        // dispatch(DeletePostFail());
+        message.error("Error trying to delete post.");
+    });
 }
 
 export const FetchPostStart = () => {
@@ -196,6 +222,33 @@ export const AddPostFail = (postData) => {
             loadingPost: false,
             loadingUpdate: false,
             loadingAdd: false
+        }
+    }
+}
+
+export const DeletePostStart = () => {
+    return {
+        type: DELETE_POST_START,
+        data: {
+            loadingDelete: true
+        }
+    }
+}
+
+export const DeletePostSuccess = () => {
+    return {
+        type: DELETE_POST_SUCCESS,
+        data: {
+            loadingDelete: false
+        }
+    }
+}
+
+export const DeletePostFail = () => {
+    return {
+        type: DELETE_POST_FAIL,
+        data: {
+            loadingDelete: false
         }
     }
 }
