@@ -52,4 +52,8 @@ class CustomUserDetails(generics.RetrieveUpdateAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
 
-    
+class FullUserList(generics.ListCreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSimpleSerializer
+
+    permission_classes = (permissions.AllowAny,)

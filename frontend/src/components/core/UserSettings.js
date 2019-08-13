@@ -2,10 +2,12 @@ import React from 'react';
 import con from '../../apis';
 import {
     USER_SETTINGS_USERPERMISSIONS_LIST,
-    USER_SETTINGS_PRIMARY_ORGANIZATION_LIST
+    USER_SETTINGS_PRIMARY_ORGANIZATION_LIST,
+    USER_SETTINGS_SUBJECT_LIST,
+    USER_SETTINGS_USERS_LIST
 } from '../../constants';
 import { connect } from 'react-redux';
-import { Select, Button } from 'antd';
+import { Select, Button, Spin } from 'antd';
 import { FetchUserStart } from '../../actions/index';
 
 const { Option } = Select;
@@ -21,12 +23,31 @@ class UserSettings extends React.Component {
             organizationsLoading: true,
             organizations: [],
             selectedOrganization: null,
-            primaryOrganization: null
+            primaryOrganization: null,
+            managersLoading: true,
+            managers: [],
+            usersLoading: true,
+            users: [],
+            subjectsLoading: true,
+            subjects: []
         };
     }
 
     componentDidMount = () => {
         this.fetchPrimaryOrganization();
+        this.fetchAllUsers();
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (this.props.user.userInfo.id !== prevProps.user.userInfo.id) {
+            this.fetchPrimaryOrganization();
+            this.fetchAllUsers();
+        }
+
+        if(this.state.primaryOrganization !== prevState.primaryOrganization) {
+            this.fetchOrganizationManagers();
+            this.fetchOrganizationSubjects();
+        }
     }
 
     fetchPrimaryOrganization = () => {
@@ -70,7 +91,7 @@ class UserSettings extends React.Component {
                   ],
                   primaryOrganization: tempCompanyDictionary,
                   organizationsLoading: false
-              });
+              }, () => console.log("FETCHED")); // Fix fetch throwing unauthorized error (ComponentDidReceiveProps)
           })
           .catch(err => console.log("[UserSettings] PrimaryOrganization fetch error: ", err));
     }
@@ -148,7 +169,7 @@ class UserSettings extends React.Component {
             sortField: [],
             visibleFields: [],
             filters: {
-                organization__id: this.props.user.userInfo.active_organization_id
+                organization__id: this.state.primaryOrganization.organization__id
             }
           };
       
@@ -165,9 +186,139 @@ class UserSettings extends React.Component {
             }
           })
           .then(res => {
-              console.log("Permissions", res);
+              this.setState({
+                managersLoading: false,
+                managers: res.data.data
+              }, () => "MANAGERS SET", this.state);
           })
           .catch(err => console.log("[UserSettings] UserPermission fetch error: ", err));
+    }
+
+    fetchOrganizationSubjects = () => {
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {
+                organization__id: this.state.primaryOrganization.organization__id
+            }
+          };
+      
+          params.visibleFields = params.visibleFields.concat(USER_SETTINGS_SUBJECT_LIST);
+      
+          let settings = JSON.stringify(params);
+      
+          con.get('/api/subject/', {
+            params: {
+              settings
+            },
+            headers: {
+              Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+          })
+          .then(res => {
+              this.setState({
+                  subjects: res.data.data,
+                  subjectsLoading: false
+              });
+          })
+          .catch(err => console.log("[UserSettings] Subject fetch error: ", err));
+    }
+
+    fetchAllUsers = () => {
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {}
+          };
+      
+          params.visibleFields = params.visibleFields.concat(USER_SETTINGS_USERS_LIST);
+      
+          let settings = JSON.stringify(params);
+      
+          con.get('/api/allusers/', {
+            params: {
+              settings
+            },
+            headers: {
+              Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+          })
+          .then(res => {
+              this.setState({
+                  users: res.data,
+                  usersLoading: false
+              }, () => console.log("USER DATA ==> ", this.state));
+          })
+          .catch(err => console.log("[UserSettings] Users fetch error: ", err));
+    }
+
+    setUserPermissionIDs = (element) => {
+        let userPermissions = [];
+
+        if (element !== undefined) {
+            userPermissions = element['permissions'].split(";");
+        }
+        
+        return userPermissions;
+    }
+
+    renderOrganizationManagers = () => {
+        if (this.state.managersLoading) {
+            return <Spin tip="Loading..." size="large" />;
+        } else {
+            return this.state.managers.map(el => {
+                return (
+                    <div style={{ marginBottom: '0.6%' }} key={el.id}>
+                    <Select
+                    showSearch
+                    style={{ width: '28%', marginLeft: '0.4%' }}
+                    placeholder="Select user"
+                    optionFilterProp="children"
+                    defaultValue={el.account__id}
+                    >
+                        {this.state.usersLoading
+                        ? <Option value="NULL" disabled>Loading...</Option>
+                        : this.state.users.map(elUser => {
+                            if(elUser.id === this.props.user.userInfo.id)
+                                return;
+
+                            return <Option value={elUser.id}>{elUser.username}</Option>
+                        })
+                        }
+                    </Select>
+                    <Select
+                    mode="multiple"
+                    style={{ width: '28%', marginLeft: '0.4%' }}
+                    defaultValue={this.setUserPermissionIDs(el)}
+                    >
+                        <Option value="CREATE">CREATE</Option>
+                        <Option value="READ">READ</Option>
+                        <Option value="UPDATE">UPDATE</Option>
+                        <Option value="DELETE">DELETE</Option>
+                    </Select>
+                    <Select
+                    mode="multiple"
+                    style={{ width: '28%', marginLeft: '0.4%' }}
+                    defaultValue={el.subject.map(elSubject => elSubject.id)}
+                    >
+                    {this.state.usersLoading
+                    ? <Option value="NULL" disabled>Loading...</Option>
+                    : this.state.subjects.map(elSubject => {
+                        return <Option value={elSubject.id}>{elSubject.name}</Option>
+                        })
+                    }
+                    </Select>
+                    <Button style={{ marginLeft: '0.4%' }} type="primary">Save</Button>
+                    </div>
+                );
+            });
+        }
     }
 
     render() {
@@ -179,34 +330,9 @@ class UserSettings extends React.Component {
                 </Select>
                 <Button style={{ marginTop: '1%' }} onClick={this.updateUserActiveOrganization} type="primary" block>Confirm</Button>
                 <hr />
-                <h3 onClick={this.fetchOrganizationManagers} style={{ textAlign: 'center' }}>Manage your organization: </h3>
-                <Select
-                showSearch
-                style={{ width: '30%' }}
-                placeholder="Select user"
-                optionFilterProp="children"
-                >
-                    <Option value="1">Aljaz</Option>
-                    <Option value="2">TestUser</Option>
-                </Select>
-                <Select
-                mode="multiple"
-                style={{ width: '30%' }}
-                >
-                    <Option value="1">Create</Option>
-                    <Option value="2">Read</Option>
-                    <Option value="3">Update</Option>
-                    <Option value="4">Delete</Option>
-                </Select>
-                <Select
-                mode="multiple"
-                style={{ width: '30%' }}
-                >
-                    <Option value="1">Create</Option>
-                    <Option value="2">Read</Option>
-                    <Option value="3">Update</Option>
-                    <Option value="4">Delete</Option>
-                </Select>
+                <h3 onClick={this.setUserPermissionIDs} style={{ textAlign: 'center' }}>Manage your organization: </h3>
+                {this.renderOrganizationManagers()}
+                <Button block type="danger">Add new manager</Button>
             </div>
         );
     }
