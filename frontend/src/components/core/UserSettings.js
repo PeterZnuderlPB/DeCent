@@ -31,7 +31,8 @@ class UserSettings extends React.Component {
             users: [],
             subjectsLoading: true,
             subjects: [],
-            formSet: false
+            formSet: false,
+            organizationCurrentlyInUse: null
         };
     }
 
@@ -43,12 +44,21 @@ class UserSettings extends React.Component {
     componentDidUpdate = (prevProps, prevState) => {
         if (this.props.user.userInfo.id !== prevProps.user.userInfo.id) {
             this.fetchPrimaryOrganization();
+            this.fetchUserOrganizations();
             this.fetchAllUsers();
         }
 
         if(this.state.primaryOrganization !== prevState.primaryOrganization) {
             this.fetchOrganizationManagers();
             this.fetchOrganizationSubjects();
+        }
+
+        if(this.state.organizations.length !== prevState.organizations.length) {
+            this.getCurrentSelectedOrganization();
+        }
+
+        if(this.props.user.userInfo.active_organization_id !== prevProps.user.userInfo.active_organization_id) {
+            this.getCurrentSelectedOrganization();
         }
     }
 
@@ -348,10 +358,19 @@ class UserSettings extends React.Component {
             is_locked: false
         }
 
-        // ADD POST LOGIC
         this.props.AddPost(postDict, 'userpermission');
-        message.success("Permission set added - edit them on your likings and SAVE them!", 5);
+        message.success("Permission set added - edit it to your likings and SAVE it!", 5);
         this.fetchOrganizationManagers();
+    }
+
+    getCurrentSelectedOrganization = () => {
+        let selectedOrganization = this.state.organizations.find(el => {
+            return el.organization__id ===this.props.user.userInfo.active_organization_id
+        });
+
+        this.setState({
+            organizationCurrentlyInUse: selectedOrganization
+        });
     }
 
     renderOrganizationManagers = () => {
@@ -437,13 +456,13 @@ class UserSettings extends React.Component {
     render() {
         return (
             <div>
-                <h3 style={{ textAlign: 'center' }}>Choose organization: </h3>
+                <h3 style={{ textAlign: 'center' }}>Choose organization <i>(Current - <b>{this.state.organizationCurrentlyInUse !== null ? this.state.organizationCurrentlyInUse.organization__name : 'Loading...'}</b>)</i>: </h3>
                 <Select onFocus={this.fetchUserOrganizations} onChange={this.handleChange} style={{ width: '100%'}}>
                     {this.renderUserOrganizations()}
                 </Select>
                 <Button style={{ marginTop: '1%' }} onClick={this.updateUserActiveOrganization} type="primary" block>Confirm</Button>
                 <hr />
-                <h3 onClick={this.setUserPermissionIDs} style={{ textAlign: 'center' }}>Manage your organization: </h3>
+                <h3 style={{ textAlign: 'center' }}>Manage your organization: </h3>
                 {this.renderOrganizationManagers()}
                 <Button onClick={this.handleAdd} block type="default">Add new manager</Button>
             </div>
