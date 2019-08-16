@@ -253,12 +253,12 @@ class PBListViewMixin(object):
         except:
             userPermssions = None
         
-        if not 'organization' in request.build_absolute_uri('?') and not 'userpermission' in request.build_absolute_uri('?') and not 'competency' in request.build_absolute_uri('?'):
+        if not 'organization' in request.build_absolute_uri('?') and not 'userpermission' in request.build_absolute_uri('?') and not 'competency' in request.build_absolute_uri('?') and not 'tag' in request.build_absolute_uri('?'):
             if userPermssions == None:
                 print(f"User is currently using his own company!")
             else:
                 if not 'READ' in userPermssions.permissions:
-                    if not 'profile' in request.META['HTTP_REFERER']:
+                    if not 'profile' in request.META['HTTP_REFERER'] and not 'EditView' in request.META['HTTP_REFERER']:
                         return Response({"Unsuccessful": "User doesn't have READ permission."}, status=403)
 
         response = {    
