@@ -408,7 +408,7 @@ class PBTable extends React.Component {
               params.filters = {
                 ...params.filters,
                 subject__organization__id: this.props.user.userInfo.active_organization_id,
-                subject__id: subjectId
+                id: subjectId
               }
             } else {
               params.filters = {
