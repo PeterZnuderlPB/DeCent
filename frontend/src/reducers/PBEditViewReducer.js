@@ -12,7 +12,7 @@ import {
 
 const INTIAL_STATE = {
     data: [],
-    loadingPost: false,
+    loadingPost: true,
     loadingUpdate: false,
     loadingAdd: false
 }

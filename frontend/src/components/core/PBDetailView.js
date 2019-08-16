@@ -44,6 +44,16 @@ class PBDetailView extends React.Component {
             this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
             this.fetchData(this.props.match.params.table_name);
         }
+
+        if (prevProps.user.userInfo.id !== this.props.user.userInfo.id)
+        {
+            this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
+            this.fetchData(this.props.match.params.table_name);
+
+            this.setState({
+                subTitle: this.props.match.params.table_name === 'evaluation' ? 'Answers' : 'Evaluations'
+            });
+        }
     }
 
     fetchData = (tableName) => {
