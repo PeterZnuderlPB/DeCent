@@ -441,6 +441,7 @@ class UserSettings extends React.Component {
                     </Select>
                     <Button onClick={(e) => this.handleSubmit(el.account__id, el.id, el.organization__id, e)} style={{ marginLeft: '0.4%' }} type="primary">Save</Button>
                     <Popconfirm
+                    placement="left"
                     title="Are you sure delete this permission?"
                     onConfirm={(e) => this.handleDelete(el.id, e)}
                     onCancel={() => console.log("canceled")}
