@@ -157,23 +157,72 @@ class PBEditView extends React.Component {
       fkSelected: elName
     });
 
-    fetch(`http://localhost:8000/api/${elName}/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22name%22,%22_type%22,%22${elName}_type___type%22,%22organization__name%22],%22filters%22:%7B%7D%7D`, {
-      method: 'GET',
+    // fetch(`http://localhost:8000/api/${elName}/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22name%22,%22_type%22,%22${elName}_type___type%22,%22organization__name%22],%22filters%22:%7B%7D%7D`, {
+    //   method: 'GET',
+    //   headers: {
+    //     'Authorization': 'Bearer ' + this.props.user.token.access_token
+    //   }
+    // })
+    // .then(res => res.json())
+    // .then(data => {
+    //   console.log("GETFDATA", data.data);
+    //   this.setState({
+    //     fkData: {
+    //       ...this.state.fkData,
+    //       [elName]: data.data
+    //     },
+    //     fkLoading: false
+    //   });
+    // });
+
+    let params = {}
+
+    if (elName === 'competency') {
+      params = {
+        results: 1000,
+        page: 1,
+        sortOrder: [],
+        sortField: [],
+        visibleFields: [],
+        filters: {
+          organization__id: this.props.user.userInfo.active_organization_id
+        }
+      };
+    } else {
+      params = {
+        results: 1000,
+        page: 1,
+        sortOrder: [],
+        sortField: [],
+        visibleFields: [],
+        filters: {
+          id: this.props.user.userInfo.active_organization_id
+        }
+      }; 
+    }
+
+    params.visibleFields.push('id', 'name', '_type', `${elName}_type__type`, 'organization__name');
+
+    let settings = JSON.stringify(params);
+
+    con.get(`api/${elName}/`, {
+      params:{
+        settings
+      },
       headers: {
-        'Authorization': 'Bearer ' + this.props.user.token.access_token
+        Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
       }
     })
-    .then(res => res.json())
-    .then(data => {
-      console.log("GETFDATA", data.data);
+    .then(res => {
       this.setState({
-        fkData: {
-          ...this.state.fkData,
-          [elName]: data.data
-        },
-        fkLoading: false
-      });
-    });
+          fkData: {
+            ...this.state.fkData,
+            [elName]: res.data.data
+          },
+          fkLoading: false
+        });
+    })
+    .catch(err => console.log("[EditView] Fetch options error: ", err));
   }
 
   showModal = () => {
