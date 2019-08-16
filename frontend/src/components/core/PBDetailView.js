@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spin, Button } from 'antd';
+import { Spin, Button, Comment, Icon, Avatar, Form, Input } from 'antd';
 import { connect } from 'react-redux';
 import { FetchPost } from '../../actions/PBEditViewActions';
 import { 
@@ -8,6 +8,31 @@ import {
 } from '../../constants';
 import history from '../../history';
 import con from '../../apis';
+
+const { TextArea } = Input;
+
+const Editor = ({ onChange, onSubmit, submitting, value }) => (
+    <div>
+        <Form.Item>
+            <TextArea
+            rows={4}
+            onChange={onChange}
+            value={value}
+            />
+        </Form.Item>
+
+        <Form.Item>
+            <Button
+            htmlType="submit"
+            loading={submitting}
+            onClick={onSubmit}
+            type="primary"
+            >
+                Add comment
+            </Button>
+        </Form.Item>
+    </div>
+);
 
 class PBDetailView extends React.Component {
     constructor(props) {
