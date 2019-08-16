@@ -428,6 +428,9 @@ class UserSettings extends React.Component {
                     style={{ width: '28%', marginLeft: '0.4%' }}
                     defaultValue={el.subject.map(elSubject => elSubject.id)}
                     onChange={(e) => this.handleTagChange(`subjects${el.id}`, e)}
+                    filterOption={(input, option) => 
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
                     >
                     {this.state.usersLoading
                     ? <Option value="NULL" disabled>Loading...</Option>
