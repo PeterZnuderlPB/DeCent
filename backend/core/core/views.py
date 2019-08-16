@@ -6,6 +6,7 @@ from django.db import models
 from django.core.cache import cache
 import collections
 from file.models import File
+from competency.models import UserPermission
 
 from django.shortcuts import render
 
@@ -245,6 +246,20 @@ class PBListViewMixin(object):
         # --------------------------------------------------------------------
 
         keyList = KeyUtility().GetAllModelKeys(self.model)
+
+        userPermssions = None
+        try:
+            userPermssions = UserPermission.objects.get(id=request.user.id, organization_id=request.user.active_organization_id)
+        except:
+            userPermssions = None
+        
+        if not 'organization' in request.build_absolute_uri('?') and not 'userpermission' in request.build_absolute_uri('?') and not 'subject' in request.build_absolute_uri('?'):
+            if userPermssions == None:
+                print(f"User is currently using his own company!")
+            else:
+                if not 'READ' in userPermssions.permissions:
+                    if not 'profile' in request.META['HTTP_REFERER']:
+                        return Response({"Unsuccessful": "User doesn't have READ permission."}, status=403)
 
         response = {    
             'table_name': self.table_name + "_BROWSE",
