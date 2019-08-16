@@ -253,7 +253,7 @@ class PBListViewMixin(object):
         except:
             userPermssions = None
         
-        if not 'organization' in request.build_absolute_uri('?') and not 'userpermission' in request.build_absolute_uri('?') and not 'subject' in request.build_absolute_uri('?'):
+        if not 'organization' in request.build_absolute_uri('?') and not 'userpermission' in request.build_absolute_uri('?'):
             if userPermssions == None:
                 print(f"User is currently using his own company!")
             else:
