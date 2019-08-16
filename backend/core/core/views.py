@@ -258,7 +258,7 @@ class PBListViewMixin(object):
                 print(f"User is currently using his own company!")
             else:
                 if not 'READ' in userPermssions.permissions:
-                    if not 'profile' in request.META['HTTP_REFERER'] and not 'EditView' in request.META['HTTP_REFERER']:
+                    if not 'profile' in request.META['HTTP_REFERER'] and not 'EditView' in request.META['HTTP_REFERER'] and not 'DetailView' in request.META['HTTP_REFERER']:
                         return Response({"Unsuccessful": "User doesn't have READ permission."}, status=403)
 
         response = {    
