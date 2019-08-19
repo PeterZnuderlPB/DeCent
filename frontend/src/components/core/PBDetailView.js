@@ -208,23 +208,43 @@ class PBDetailView extends React.Component {
         });
     }
 
+    handleCommentDelete = e => {
+        let newCommentsArray = this.state.comments;
+        newCommentsArray.splice(newCommentsArray.find(c => c.id === parseInt(e.target.value)), 1);
+
+        this.setState({
+            comments: newCommentsArray
+        });
+    }
+
     renderCommentData = () => {
         return (
             <div>
+                {this.state.comments.length !== 0 ? <hr /> : null}
                 {this.state.comments.map(el => {
                     return (
-                        <Comment
-                        author={<a>{el.username}</a>}
-                        avatar={
-                            <Avatar
-                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                            alt={el.username}
+                        <div key={el.id}>
+                            <Comment
+                            author={<a>{el.username}</a>}
+                            avatar={
+                                <Avatar
+                                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                                alt={el.username}
+                                />
+                            }
+                            content={
+                                <>
+                                {this.props.post.data.data !== undefined 
+                                ? this.props.post.data.data.organization.id === this.props.user.userInfo.active_organization_id
+                                    ? <Button value={el.id} onClick={this.handleCommentDelete} type="danger"><Icon type="delete" /></Button>
+                                    : null
+                                : null
+                                }
+                                <p>{el.comment}</p>
+                                </>
+                            }
                             />
-                        }
-                        content={
-                            <p>{el.comment}</p>
-                        }
-                        />
+                        </div>
                     );
                 })}
                 <Comment
@@ -256,8 +276,7 @@ class PBDetailView extends React.Component {
             <hr />
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.renderAnswerData()}
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.props.match.params.table_name === 'evaluation' ? <Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/competency/${this.state.data[0]['competency__id']}`))} type="link">Go to <b>{this.state.data[0] !== undefined ? this.state.data[0]['competency__name'] : null}</b></Button> : null}
-            <hr />
-            {this.renderCommentData()}
+            {this.props.match.params.table_name === 'competency' ? this.renderCommentData() : null}
             </>
         );
     }
