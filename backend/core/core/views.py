@@ -321,6 +321,19 @@ class PBDetailsViewMixin(object):
 
     def put(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
+
+        userPermssions = None
+        try:
+            userPermssions = UserPermission.objects.get(id=request.user.id, organization_id=request.user.active_organization_id)
+        except:
+            userPermssions = None
+
+        if userPermssions == None:
+            print(f"[PUT] User using his own company")
+        else:
+            if not 'UPDATE' in userPermssions.permissions:
+                return Response("You do not have update permission.", status=403)
+
         instance = self.get_object()
         if instance.is_locked:
             return Response("Locked posts cannot be edited.", status=403)

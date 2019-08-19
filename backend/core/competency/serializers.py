@@ -150,6 +150,7 @@ class EvaluationSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelS
         comp_rating_obj.save()
         
         instance.subject = subject_obj
+        instance.comment = commentTemp
         instance.save()
         return instance
 
