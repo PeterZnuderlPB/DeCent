@@ -19,7 +19,8 @@ from .models import (
     PredefinedAnswer,
     Answer,
     CompRating,
-    UserPermission
+    UserPermission,
+    Comment
 )
 from .serializers import (
     CompetencySerializerBasic,
@@ -49,7 +50,9 @@ from .serializers import (
     SubjectTypeSerializerBasic,
     SubjectTypeSerializerDepth,
     UserPermissionSerializerBasic,
-    UserPermissionSerializerDepth
+    UserPermissionSerializerDepth,
+    CommentSerializerBasic,
+    CommentSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -443,3 +446,43 @@ class UserPermissionDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAP
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return UserPermissionSerializerDepth
         return UserPermissionSerializerBasic
+
+class CommnetList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = Comment
+    table_name = "Commnets" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return CommentSerializerDepth
+        return CommentSerializerBasic
+
+class CommentDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = Comment
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return CommentSerializerDepth
+        return CommentSerializerBasic
