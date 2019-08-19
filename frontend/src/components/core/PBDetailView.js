@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spin, Button, Comment, Icon, Avatar, Form, Input, message } from 'antd';
+import { Spin, Button, Comment, Icon, Avatar, Form, Input, Modal, message } from 'antd';
 import { connect } from 'react-redux';
 import { FetchPost } from '../../actions/PBEditViewActions';
 import { 
@@ -47,7 +47,9 @@ class PBDetailView extends React.Component {
             subTitle: '',
             comments: [],
             commentValue: '',
-            commentLoading: false
+            commentLoading: false,
+            modalVisible: false,
+            userData: null
         }
     }
     
@@ -181,6 +183,23 @@ class PBDetailView extends React.Component {
         .catch(err => console.log("[DetailView] Comment fetch error: ", err));
     }
 
+    fetchUser = (userId) => {
+        if (userId === undefined)
+            return;
+
+        con.get(`/api/users/${userId}/`, {
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(res => {
+            this.setState({
+                userData: res.data.data
+            });
+        })
+        .catch(err => console.log("[DetailView] User fetch error: ", err));
+    }
+
     renderAnswerData = () => {
         return (
             <div>
@@ -249,6 +268,30 @@ class PBDetailView extends React.Component {
         });
     }
 
+    handleModalOk = e => {
+        console.log(e);
+        this.setState({
+          modalVisible: false,
+        });
+    };
+    
+    handleModalCancel = e => {
+        console.log(e);
+        this.setState({
+          modalVisible: false,
+        });
+    };
+
+    showModal = (userId) => {
+        this.fetchUser(userId);
+
+        this.setState({
+        modalVisible: true,
+        });
+    };
+
+
+
     renderCommentData = () => {
         return (
             <div>
@@ -257,7 +300,7 @@ class PBDetailView extends React.Component {
                     return (
                         <div key={el.id}>
                             <Comment
-                            author={<a onClick={() => console.log("ACCOUNT CLICKED", el.account__id)}>{el.account__username} - {el.organization__name}</a>}
+                            author={<a onClick={() => this.showModal(el.account__id)}>{el.account__username} - {el.organization__name}</a>}
                             avatar={
                                 <Avatar
                                 src={`https://picsum.photos/id/${el.id}/200/300`}
@@ -290,7 +333,7 @@ class PBDetailView extends React.Component {
                     );
                 })}
                 <Comment
-                author={<a onClick={() => console.log("ACCOUNT CLICKED", this.props.user.userInfo.id)}>{this.props.user.userInfo.username}</a>}
+                author={<a onClick={() => this.showModal(this.props.user.userInfo.id)}>{this.props.user.userInfo.username}</a>}
                 avatar={
                     <Avatar
                     src={`https://picsum.photos/id/${666}/200/300`}
@@ -306,6 +349,16 @@ class PBDetailView extends React.Component {
                     />
                 }
                 />
+                 <Modal
+                title={this.state.userData !== null ? this.state.userData : <Spin tip="Loading user.." />}
+                visible={this.state.modalVisible}
+                onOk={this.handeModalOk}
+                onCancel={this.handleModalCancel}
+                >
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                </Modal>
             </div>
         );
     }
