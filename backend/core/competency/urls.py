@@ -21,5 +21,7 @@ urlpatterns = [
     path('api/answer/<pk>', views.AnswerDetails.as_view()),
     path('api/comprating/', views.CompRatingList.as_view()),
     path('api/userpermission/', views.UserPermissionsList.as_view()),
-    path('api/userpermission/<pk>', views.UserPermissionDetails.as_view())
+    path('api/userpermission/<pk>', views.UserPermissionDetails.as_view()),
+    path('api/comment/', views.CommnetList.as_view()),
+    path('api/comment/<pk>', views.CommentDetails.as_view())
 ]

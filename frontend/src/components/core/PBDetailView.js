@@ -5,6 +5,7 @@ import { FetchPost } from '../../actions/PBEditViewActions';
 import { 
     DETAIL_VIEW_EVALUATION,
     DETAIL_VIEW_COMPOTENCY,
+    DETAIL_VIEW_COMMENTS
 } from '../../constants';
 import history from '../../history';
 import con from '../../apis';
@@ -44,11 +45,7 @@ class PBDetailView extends React.Component {
             redirect: false,
             evalData: [],
             subTitle: '',
-            comments: [
-                {id: 1, username:'Aljaz', comment: 'test123erewrewrewrerw'},
-                {id: 2, username:'Jani', comment: 'tebvnbvstnvbnbvnbvn123erewrebvvvvvvvvvvvvvvvvvvvvvvwrewrerw'},
-                {id: 3, username:'Aljaz', comment: 'fdgfdgfdgdgdgfdgfgfdgfdgfdgfdgfdgfdgd'}
-            ],
+            comments: [],
             commentValue: '',
             commentLoading: false
         }
@@ -57,6 +54,7 @@ class PBDetailView extends React.Component {
     componentDidMount = () => {
         this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
         this.fetchData(this.props.match.params.table_name);
+        this.fetchCommnets(this.props.match.params.id);
 
         this.setState({
             subTitle: this.props.match.params.table_name === 'evaluation' ? 'Answers' : 'Evaluations'
@@ -75,12 +73,14 @@ class PBDetailView extends React.Component {
             
             this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
             this.fetchData(this.props.match.params.table_name);
+            this.fetchCommnets(this.props.match.params.id);
         }
 
         if (prevProps.user.userInfo.id !== this.props.user.userInfo.id)
         {
             this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
             this.fetchData(this.props.match.params.table_name);
+            this.fetchCommnets(this.props.match.params.id);
 
             this.setState({
                 subTitle: this.props.match.params.table_name === 'evaluation' ? 'Answers' : 'Evaluations'
@@ -147,6 +147,38 @@ class PBDetailView extends React.Component {
             });
         })
         .catch(err => console.log("[DetailView] Evaluation fetch error: ", err));
+    }
+
+    fetchCommnets = (compotencyId) => {
+        let params = {
+            results: 10,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {
+                competency__id: compotencyId
+            }
+          };
+      
+          params.visibleFields = params.visibleFields.concat(DETAIL_VIEW_COMMENTS);
+
+          let settings = JSON.stringify(params);
+
+        con.get(`/api/comment/`, {
+            params: {
+                settings
+            },
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(res => {
+            this.setState({
+                comments: res.data.data
+            });
+        })
+        .catch(err => console.log("[DetailView] Comment fetch error: ", err));
     }
 
     renderAnswerData = () => {
@@ -225,11 +257,11 @@ class PBDetailView extends React.Component {
                     return (
                         <div key={el.id}>
                             <Comment
-                            author={<a>{el.username}</a>}
+                            author={<a onClick={() => console.log("ACCOUNT CLICKED", el.account__id)}>{el.account__username} - {el.organization__name}</a>}
                             avatar={
                                 <Avatar
-                                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                                alt={el.username}
+                                src={`https://picsum.photos/id/${el.id}/200/300`}
+                                alt={el.account__username}
                                 />
                             }
                             content={
@@ -242,6 +274,14 @@ class PBDetailView extends React.Component {
                                     : null
                                 : null
                                 }
+                                {this.props.user.userInfo.id !== undefined
+                                ? this.props.user.userInfo.id === el.account__id
+                                    ? <Button onClick={() => console.log("EDITING COMMENT ID => ", el.id)} style={{ marginLeft: '0.3%'}} value={el.id} type="default"><Icon type="edit" /></Button>
+                                    : null
+                                : null
+                                }
+                                <br />
+                                <span>Date created: {el.date_created}</span>
                                 <p>{el.comment}</p>
                                 </>
                             }
@@ -250,10 +290,10 @@ class PBDetailView extends React.Component {
                     );
                 })}
                 <Comment
-                author={<a>{this.props.user.userInfo.username}</a>}
+                author={<a onClick={() => console.log("ACCOUNT CLICKED", this.props.user.userInfo.id)}>{this.props.user.userInfo.username}</a>}
                 avatar={
                     <Avatar
-                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                    src={`https://picsum.photos/id/${666}/200/300`}
                     alt={this.props.user.userInfo.username}
                     />
                 }
