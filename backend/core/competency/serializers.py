@@ -15,7 +15,8 @@ from .models import (
     PredefinedAnswer,
     Answer,
     CompRating,
-    UserPermission
+    UserPermission,
+    Comment
 )
 
 from core.serializers import DynamicFieldsModelSerializer
@@ -280,5 +281,18 @@ class UserPermissionSerializerBasic(DynamicFieldsModelSerializer ,serializers.Mo
 class UserPermissionSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = UserPermission
+        fields = '__all__'
+        depth = 1
+
+class CommentSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class CommentSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Comment
         fields = '__all__'
         depth = 1
