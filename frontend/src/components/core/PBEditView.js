@@ -157,27 +157,11 @@ class PBEditView extends React.Component {
       fkSelected: elName
     });
 
-    // fetch(`http://localhost:8000/api/${elName}/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22name%22,%22_type%22,%22${elName}_type___type%22,%22organization__name%22],%22filters%22:%7B%7D%7D`, {
-    //   method: 'GET',
-    //   headers: {
-    //     'Authorization': 'Bearer ' + this.props.user.token.access_token
-    //   }
-    // })
-    // .then(res => res.json())
-    // .then(data => {
-    //   console.log("GETFDATA", data.data);
-    //   this.setState({
-    //     fkData: {
-    //       ...this.state.fkData,
-    //       [elName]: data.data
-    //     },
-    //     fkLoading: false
-    //   });
-    // });
+    console.log("FETCH OPTIONS FOR: ", elName);
 
     let params = {}
 
-    if (elName === 'competency') {
+    if (elName === 'competency' || elName === 'subject') {
       params = {
         results: 1000,
         page: 1,
@@ -188,7 +172,7 @@ class PBEditView extends React.Component {
           organization__id: this.props.user.userInfo.active_organization_id
         }
       };
-    } else {
+    } else if (elName === 'organization') {
       params = {
         results: 1000,
         page: 1,
@@ -198,6 +182,16 @@ class PBEditView extends React.Component {
         filters: {
           id: this.props.user.userInfo.active_organization_id
         }
+      };
+    } 
+    else {
+      params = {
+        results: 1000,
+        page: 1,
+        sortOrder: [],
+        sortField: [],
+        visibleFields: [],
+        filters: {}
       }; 
     }
 
@@ -214,6 +208,7 @@ class PBEditView extends React.Component {
       }
     })
     .then(res => {
+      console.log("FETCHED OPTIONS", res.data.data);
       this.setState({
           fkData: {
             ...this.state.fkData,
@@ -454,19 +449,17 @@ class PBEditView extends React.Component {
       this.state.column_types = this.props.edit.data.column_types;
       this.state.loaded = true;
       
-    if (this.props.match.params.id !== undefined){
-      if (this.state.data.organization !== undefined) {
-        if (this.state.data.organization.account !== this.props.user.userInfo.id) {
-          message.error("You cannot modify this post.");
+    if (this.props.match.params.id !== undefined) {
+        if (!this.props.user.userInfo.permissions.permissions.includes("UPDATE")) {
+          message.error("You don't have UPDATE permission.");
           history.push("/");
         }
       } else {
-        if (this.state.data.subject.organization.account !== this.props.user.userInfo.id) {
-          message.error("You cannot modify this post.");
-          history.push("/evaluations");
+        if (!this.props.user.userInfo.permissions.permissions.includes("CREATE")) {
+          message.error("You don't have CREATE permission.");
+          history.push("/");
         }
       }
-    }
     }
 
     this.addClick();

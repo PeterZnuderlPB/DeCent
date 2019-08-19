@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spin, Button, Comment, Icon, Avatar, Form, Input } from 'antd';
+import { Spin, Button, Comment, Icon, Avatar, Form, Input, message } from 'antd';
 import { connect } from 'react-redux';
 import { FetchPost } from '../../actions/PBEditViewActions';
 import { 
@@ -43,7 +43,14 @@ class PBDetailView extends React.Component {
             loading: true,
             redirect: false,
             evalData: [],
-            subTitle: ''
+            subTitle: '',
+            comments: [
+                {id: 1, username:'Aljaz', comment: 'test123erewrewrewrerw'},
+                {id: 2, username:'Jani', comment: 'tebvnbvstnvbnbvnbvn123erewrebvvvvvvvvvvvvvvvvvvvvvvwrewrerw'},
+                {id: 3, username:'Aljaz', comment: 'fdgfdgfdgdgdgfdgfgfdgfdgfdgfdgfdgfdgd'}
+            ],
+            commentValue: '',
+            commentLoading: false
         }
     }
     
@@ -173,6 +180,74 @@ class PBDetailView extends React.Component {
         );
     }
 
+    handleCommentChange = e => {
+        this.setState({
+            commentValue: e.target.value
+        });
+    }
+
+    handleCommentSubmit = () => {
+        if (this.state.commentValue === '') {
+            message.error("You can't submit an empty comment!");
+            return;
+        }
+
+        this.setState({
+            commentLoading: true
+        }, () => {
+            setTimeout(() => {
+                this.setState({
+                    commentLoading: false,
+                    comments: [
+                        ...this.state.comments,
+                        {id: 4, username: this.props.user.userInfo.username, comment: this.state.commentValue}
+                    ],
+                    commentValue: ''
+                });
+            }, 1000);
+        });
+    }
+
+    renderCommentData = () => {
+        return (
+            <div>
+                {this.state.comments.map(el => {
+                    return (
+                        <Comment
+                        author={<a>{el.username}</a>}
+                        avatar={
+                            <Avatar
+                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                            alt={el.username}
+                            />
+                        }
+                        content={
+                            <p>{el.comment}</p>
+                        }
+                        />
+                    );
+                })}
+                <Comment
+                author={<a>{this.props.user.userInfo.username}</a>}
+                avatar={
+                    <Avatar
+                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                    alt={this.props.user.userInfo.username}
+                    />
+                }
+                content={
+                    <Editor
+                    onChange={this.handleCommentChange}
+                    onSubmit={this.handleCommentSubmit}
+                    submitting={this.state.commentLoading}
+                    value={this.state.commentValue}
+                    />
+                }
+                />
+            </div>
+        );
+    }
+
     render() {
         return (
             <>
@@ -181,6 +256,8 @@ class PBDetailView extends React.Component {
             <hr />
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.renderAnswerData()}
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.props.match.params.table_name === 'evaluation' ? <Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/competency/${this.state.data[0]['competency__id']}`))} type="link">Go to <b>{this.state.data[0] !== undefined ? this.state.data[0]['competency__name'] : null}</b></Button> : null}
+            <hr />
+            {this.renderCommentData()}
             </>
         );
     }

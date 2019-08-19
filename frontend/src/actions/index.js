@@ -19,6 +19,7 @@ import {
 } from './types'
 import {django_client_id, django_client_secret} from '../apis'
 import{ googleLogoutAction} from './googleAuthActions'
+import { USER_SETTINGS_USERPERMISSIONS_LIST } from '../constants';
 
 //----------------
 //Actions Login
@@ -86,7 +87,53 @@ export const FetchUserStart = (token) => async dispatch =>{
     if(!response){
         dispatch(FetchUserFail("No response."));
     }
-    else{
+    else {
+        console.log("USER RESP", response.data.user.active_organization_id);
+        
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {
+                organization__id: response.data.user.active_organization_id,
+                account__id: response.data.user.id
+            }
+        };
+      
+        params.visibleFields = params.visibleFields.concat(USER_SETTINGS_USERPERMISSIONS_LIST);
+      
+        let settings = JSON.stringify(params);
+
+        const permissionResponse = await con.get (
+            '/api/userpermission/', 
+            {
+                params: {
+                    settings
+                },
+                headers: {
+                    Authorization: header,
+                  }
+            }
+        ).catch(err => { 
+           console.log("User permission fetch error: ", err);
+        });
+
+        if (permissionResponse.data.data[0] === undefined) {
+            response.data.user = {
+                ...response.data.user,
+                permissions: {
+                    permissions: "CREATE;READ;UPDATE;DELETE"
+                }
+            }
+        } else {
+            response.data.user = {
+                ...response.data.user,
+                permissions: permissionResponse.data.data[0]
+            }
+        }
+
         const send  = {data: response.data, token: token}
         console.log("Fetch user send to reducer", send)
         dispatch(FetchUserSuccess(send));
