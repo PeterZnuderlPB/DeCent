@@ -236,7 +236,9 @@ class PBDetailView extends React.Component {
                                 <>
                                 {this.props.post.data.data !== undefined 
                                 ? this.props.post.data.data.organization.id === this.props.user.userInfo.active_organization_id
-                                    ? <Button value={el.id} onClick={this.handleCommentDelete} type="danger"><Icon type="delete" /></Button>
+                                    ? this.props.user.userInfo.permissions.permissions.includes("DELETE")
+                                        ? <Button value={el.id} onClick={this.handleCommentDelete} type="danger"><Icon type="delete" /></Button>
+                                        : null
                                     : null
                                 : null
                                 }
