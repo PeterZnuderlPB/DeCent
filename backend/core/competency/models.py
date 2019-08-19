@@ -131,3 +131,12 @@ class UserPermission(PBModel):
 
     def __str__(self):
         return f'{self.account.username} - {self.organization.name} - {self.permissions}'
+
+class Comment(PBModel):
+    comment = models.TextField()
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    account = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Comment #{self.id} - {self.account.username} - {self.organization.name} - {self.competency.name}'

@@ -15,7 +15,8 @@ from .models import (
     PredefinedAnswer,
     Answer,
     CompRating,
-    UserPermission
+    UserPermission,
+    Comment
 )
 
 # Register your models here.
@@ -36,3 +37,4 @@ admin.site.register(PredefinedAnswer)
 admin.site.register(Answer)
 admin.site.register(CompRating)
 admin.site.register(UserPermission)
+admin.site.register(Comment)
