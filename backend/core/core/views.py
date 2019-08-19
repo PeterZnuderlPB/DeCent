@@ -173,7 +173,26 @@ class PBListViewMixin(object):
                 filters_with_type[key + "__icontains"] = val
         filters_with_type["is_active"] = True
         qs = self.model.objects.filter(**filters_with_type).order_by(*clean_orderfield)
-        return qs   
+        return qs
+
+    def create(self, request, *args, **kwargs):
+        userPermssions = None
+        try:
+            userPermssions = UserPermission.objects.get(id=request.user.id, organization_id=request.user.active_organization_id)
+        except:
+            userPermssions = None
+
+        if userPermssions == None:
+            print(f"[POST] User using his own company")
+        else:
+            if not 'CREATE' in userPermssions.permissions:
+                return Response("You do not have create permission.", status=403)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
         #cache.set(request.user.id, request.query_params, timeout=CACHE_TTL)
@@ -255,7 +274,7 @@ class PBListViewMixin(object):
         
         if not 'organization' in request.build_absolute_uri('?') and not 'userpermission' in request.build_absolute_uri('?') and not 'competency' in request.build_absolute_uri('?') and not 'tag' in request.build_absolute_uri('?'):
             if userPermssions == None:
-                print(f"User is currently using his own company!")
+                print(f"[GET] User using his own company")
             else:
                 if not 'READ' in userPermssions.permissions:
                     if not 'profile' in request.META['HTTP_REFERER'] and not 'EditView' in request.META['HTTP_REFERER'] and not 'DetailView' in request.META['HTTP_REFERER']:
@@ -341,3 +360,20 @@ class PBDetailsViewMixin(object):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        userPermssions = None
+        try:
+            userPermssions = UserPermission.objects.get(id=request.user.id, organization_id=request.user.active_organization_id)
+        except:
+            userPermssions = None
+
+        if userPermssions == None:
+            print(f"[DESTROY] User using his own company")
+        else:
+            if not 'DELETE' in userPermssions.permissions:
+                return Response("You do not have delete permission.", status=403)
+
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
