@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spin, Button, Comment, Icon, Avatar, Form, Input, Modal, message } from 'antd';
+import { Spin, Button, Comment, Icon, Avatar, Form, Input, Modal, Descriptions, message } from 'antd';
 import { connect } from 'react-redux';
 import { FetchPost } from '../../actions/PBEditViewActions';
 import { 
@@ -194,8 +194,8 @@ class PBDetailView extends React.Component {
         })
         .then(res => {
             this.setState({
-                userData: res.data.data
-            });
+                userData: res.data
+            }, () => console.log("STATE AFTER UDATA", this.state));
         })
         .catch(err => console.log("[DetailView] User fetch error: ", err));
     }
@@ -269,16 +269,16 @@ class PBDetailView extends React.Component {
     }
 
     handleModalOk = e => {
-        console.log(e);
         this.setState({
           modalVisible: false,
+          userData: null
         });
     };
     
     handleModalCancel = e => {
-        console.log(e);
         this.setState({
           modalVisible: false,
+          userData: null
         });
     };
 
@@ -295,7 +295,7 @@ class PBDetailView extends React.Component {
     renderCommentData = () => {
         return (
             <div>
-                {this.state.comments.length !== 0 ? <hr /> : null}
+                {this.state.comments.length !== 0 ? <><hr /> <h3>Comments</h3></> : null}
                 {this.state.comments.map(el => {
                     return (
                         <div key={el.id}>
@@ -350,14 +350,18 @@ class PBDetailView extends React.Component {
                 }
                 />
                  <Modal
-                title={this.state.userData !== null ? this.state.userData : <Spin tip="Loading user.." />}
+                // title={this.state.userData !== null ? this.state.userData : <Spin tip="Loading user.." />}
                 visible={this.state.modalVisible}
                 onOk={this.handeModalOk}
                 onCancel={this.handleModalCancel}
                 >
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
+                    {this.state.userData !== null
+                    ?<div>
+                        <span><b>Username: </b>{this.state.userData.username}</span> <br />
+                        <span><b>Full name: </b>{this.state.userData.first_name} {this.state.userData.last_name}</span> <br/>
+                        <span><b>Biography: </b>{this.state.userData.biography}</span> <br />
+                    </div>
+                    : null}
                 </Modal>
             </div>
         );
