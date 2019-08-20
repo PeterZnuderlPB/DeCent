@@ -1,6 +1,7 @@
 import json
 from django.views.generic import ListView
 from rest_framework import generics, permissions, status
+from rest_framework.response import Response
 #from django_weasyprint import WeasyTemplateResponseMixin
 #Redis
 from django.conf import settings
@@ -466,6 +467,17 @@ class CommnetList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CommentSerializerDepth
         return CommentSerializerBasic
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        addedComment = Comment.objects.last()
+        depthSerializer = CommentSerializerDepth(addedComment)
+
+        return Response(depthSerializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class CommentDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Comment

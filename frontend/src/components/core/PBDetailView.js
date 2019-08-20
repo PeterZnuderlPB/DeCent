@@ -243,28 +243,63 @@ class PBDetailView extends React.Component {
             return;
         }
 
-        this.setState({
-            commentLoading: true
-        }, () => {
-            setTimeout(() => {
-                this.setState({
-                    commentLoading: false,
-                    comments: [
-                        ...this.state.comments,
-                        {id: 4, username: this.props.user.userInfo.username, comment: this.state.commentValue}
-                    ],
-                    commentValue: ''
-                });
-            }, 1000);
+        let dict = {
+            comment: this.state.commentValue,
+            competency: this.props.match.params.id,
+            organization: this.props.user.userInfo.active_organization_id,
+            account: this.props.user.userInfo.id,
+            is_active: true,
+            is_locked: false
+        };
+
+        const saveUri = `api/comment/`;
+        const conConfig = {
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token,
+            }
+        }
+
+        con.post(saveUri, dict, conConfig)
+        .then(res => {
+            message.success("Successfully added comment.",res );
+            this.setState({
+                commentLoading: true
+            }, () => {
+                setTimeout(() => {
+                    this.setState({
+                        commentLoading: false,
+                        comments: [
+                            ...this.state.comments,
+                            {id: res.data.id, comment: res.data.comment, organization__name: res.data.organization.name, account__id: this.props.user.userInfo.id, account__username: this.props.user.userInfo.username, date_created: res.data.date_created }
+                        ],
+                        commentValue: ''
+                    });
+                }, 1000);
+            });
+        })
+        .catch(err => {
+            message.error("Error trying to add comment.");
         });
     }
 
     handleCommentDelete = e => {
-        let newCommentsArray = this.state.comments;
-        newCommentsArray.splice(newCommentsArray.find(c => c.id === parseInt(e.target.value)), 1);
+        const commentId = e.target.value;
 
-        this.setState({
-            comments: newCommentsArray
+        con.delete(`/api/comment/${commentId}`, {
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(res => {
+            let newCommentsArray = this.state.comments;
+            newCommentsArray.splice(newCommentsArray.findIndex(c => c.id === parseInt(commentId)), 1);
+
+            this.setState({
+                comments: newCommentsArray
+            });
+        })
+        .catch(err => {
+            message.error("Coud not delete the comment.");
         });
     }
 
