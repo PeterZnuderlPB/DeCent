@@ -304,9 +304,9 @@ class PBDetailView extends React.Component {
     }
 
     handleModalOk = e => {
+        console.log("CLICKED MODAL OK");
         this.setState({
-          modalVisible: false,
-          userData: null
+          modalVisible: false
         });
     };
     
@@ -387,8 +387,9 @@ class PBDetailView extends React.Component {
                  <Modal
                 // title={this.state.userData !== null ? this.state.userData : <Spin tip="Loading user.." />}
                 visible={this.state.modalVisible}
-                onOk={this.handeModalOk}
+                onOk={this.handleModalOk}
                 onCancel={this.handleModalCancel}
+                footer={null}
                 >
                     {this.state.userData !== null
                     ?<div>
