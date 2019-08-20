@@ -2,6 +2,8 @@ import json
 from django.views.generic import ListView
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from django.db.models.query import QuerySet
+from django.db.models import Q
 #from django_weasyprint import WeasyTemplateResponseMixin
 #Redis
 from django.conf import settings
@@ -229,6 +231,48 @@ class SubjectList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return SubjectSerializerDepth
         return SubjectSerializerBasic
+
+    def get_queryset(self, q_settings):   
+        user_permissions = None
+        user_permissions_subjects = None
+        subject_list = []
+        try:
+            user_permissions = UserPermission.objects.get(account__id=self.request.user.id, organization__id=self.request.user.active_organization_id)
+            user_permissions_subjects = user_permissions.subject.all()
+            for s in user_permissions_subjects:
+                subject_list.append(s.id)
+
+        except:
+            user_permissions = None
+
+        allowedSubjects = Subject.objects.filter(Q(id__in=subject_list) | Q(subject__id__in=subject_list))
+        # subject_list = Subject.objects.filter()
+
+        if (type(q_settings) == type('')):
+            q_settings = json.loads(q_settings)
+        dictkeys = q_settings.keys()
+        order= list(q_settings.get('sortOrder'))
+        orderfield = list(q_settings.get('sortField'))
+        for i in range(len(order)):
+            if(order[i]=="descend"):
+                orderfield[i] = "-" + orderfield[i]
+            elif(order[i] == None):
+                orderfield[i]= None
+
+        nullOrder = [i for i in range(len(order)) if order[i]== None]
+        clean_orderfield = [orderfield[i] for i in range(len(orderfield)) if orderfield[i] is not None]
+
+
+        filters = q_settings.get('filters', None)
+        filters_with_type = {}
+        for key, val in filters.items():
+            if type(val) == list:
+                filters_with_type[key + "__in"] = val
+            else:
+                filters_with_type[key + "__icontains"] = val
+        filters_with_type["is_active"] = True
+        qs = allowedSubjects.filter(**filters_with_type).order_by(*clean_orderfield)
+        return qs
 
 class SubjectDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Subject

@@ -392,31 +392,6 @@ class PBTable extends React.Component {
               }
             }
           }
-
-          if (this.props.tableApi == 'subject') {
-            console.log("IN SUBJECT--");
-
-            let subjectId = [];
-
-            this.state.allowedSubjects.forEach(el => {
-              subjectId.push(el.id);
-            });
-
-            console.log("PUSHING DONE", subjectId);
-
-            if(this.state.allowedSubjects.length !== 0) {
-              params.filters = {
-                ...params.filters,
-                subject__organization__id: this.props.user.userInfo.active_organization_id,
-                id: subjectId
-              }
-            } else {
-              params.filters = {
-                ...params.filters,
-                subject__organization__id: this.props.user.userInfo.active_organization_id
-              }
-            }
-          }
         }
         console.log("NEW PARAMS: ", params)
         var settings = JSON.stringify(params);

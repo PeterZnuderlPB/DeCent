@@ -44,7 +44,7 @@ class Subject(PBModel):
     subject = models.ForeignKey('self', on_delete=models.CASCADE, related_name="subjectSelfReference", null=True, blank=True)
 
     def __str__(self):
-        return f'{self.name} - {self.subject_type._type} - {self.organization.name}'
+        return f'Subject #{self.id} - {self.name} - {self.subject_type._type} - {self.organization.name}'
 
 class EvaluationType(PBModel):
     _type = models.TextField()
