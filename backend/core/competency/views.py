@@ -245,7 +245,11 @@ class SubjectList(PBListViewMixin, generics.ListCreateAPIView):
         except:
             user_permissions = None
 
-        allowedSubjects = Subject.objects.filter(Q(id__in=subject_list) | Q(subject__id__in=subject_list))
+        allowedSubjects = None
+        if not user_permissions == None:
+            allowedSubjects = Subject.objects.filter(Q(id__in=subject_list) | Q(subject__id__in=subject_list))
+        else:
+            allowedSubjects = Subject.objects.filter(organization__id=self.request.user.active_organization_id)
         # subject_list = Subject.objects.filter()
 
         if (type(q_settings) == type('')):
