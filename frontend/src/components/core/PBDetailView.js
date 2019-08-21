@@ -12,8 +12,9 @@ import con from '../../apis';
 
 const { TextArea } = Input;
 
-const Editor = ({ onChange, onSubmit, submitting, value }) => (
+const Editor = ({ onChange, onSubmit, submitting, value, commentId, editHandleCommentCancel }) => (
     <div>
+        {commentId !== undefined ? <Button onClick={() => editHandleCommentCancel(commentId)} style={{ backgroundColor: '#ffbb33', color:'#d9534f' }} type="danger"><Icon type="close" /></Button> : null}
         <Form.Item>
             <TextArea
             rows={4}
@@ -29,7 +30,7 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
             onClick={onSubmit}
             type="primary"
             >
-                Add comment
+                {commentId !== undefined ? 'Save comment' : 'Add comment'}
             </Button>
         </Form.Item>
     </div>
@@ -49,7 +50,9 @@ class PBDetailView extends React.Component {
             commentValue: '',
             commentLoading: false,
             modalVisible: false,
-            userData: null
+            userData: null,
+            editCommentValue: '',
+            editCommentLoading: false
         }
     }
     
@@ -176,8 +179,13 @@ class PBDetailView extends React.Component {
             }
         })
         .then(res => {
+            let comments = res.data.data;
+            comments.forEach(el => {
+                el.editing = false
+            });
+
             this.setState({
-                comments: res.data.data
+                comments
             });
         })
         .catch(err => console.log("[DetailView] Comment fetch error: ", err));
@@ -237,6 +245,12 @@ class PBDetailView extends React.Component {
         });
     }
 
+    editHandleCommentChange = e => {
+        this.setState({
+            editCommentValue: e.target.value
+        });
+    }
+
     handleCommentSubmit = () => {
         if (this.state.commentValue === '') {
             message.error("You can't submit an empty comment!");
@@ -270,7 +284,7 @@ class PBDetailView extends React.Component {
                         commentLoading: false,
                         comments: [
                             ...this.state.comments,
-                            {id: res.data.id, comment: res.data.comment, organization__name: res.data.organization.name, account__id: this.props.user.userInfo.id, account__username: this.props.user.userInfo.username, date_created: res.data.date_created }
+                            {id: res.data.id, comment: res.data.comment, organization__name: res.data.organization.name, account__id: this.props.user.userInfo.id, account__username: this.props.user.userInfo.username, date_created: res.data.date_created, editing: false }
                         ],
                         commentValue: ''
                     });
@@ -279,6 +293,65 @@ class PBDetailView extends React.Component {
         })
         .catch(err => {
             message.error("Error trying to add comment.");
+        });
+    }
+
+    editHandleCommentSubmit = commentId => {
+        if (this.state.editCommentValue === '') {
+            message.error("You can't submit an empty comment!");
+            return;
+        }
+
+        let dict = {
+            comment: this.state.editCommentValue
+        };
+
+        const saveUri = `api/comment/${commentId}`;
+        const conConfig = {
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token,
+            }
+        }
+
+        con.patch(saveUri, dict, conConfig)
+        .then(res => {
+            message.success("Successfully edited comment.",res );
+            this.setState({
+                editCommentLoading: true
+            }, () => {
+                setTimeout(() => {
+                    let newCommentsArray = this.state.comments;
+                    let editingCommentIndex = newCommentsArray.findIndex(c => c.id === parseInt(commentId));
+                    newCommentsArray[editingCommentIndex].editing = false;
+                    newCommentsArray[editingCommentIndex].comment = res.data.comment;
+
+                    this.setState({
+                        editCommentLoading: false,
+                        comments: newCommentsArray,
+                        editCommentValue: ''
+                    });
+                }, 1000);
+            });
+        })
+        .catch(err => {
+            message.error("Error trying to edit comment.");
+        });
+    }
+
+    editHandleCommentCancel = commentId => {
+        let newCommentsArray = this.state.comments;
+        let editingCommentIndex = newCommentsArray.findIndex(c => c.id === parseInt(commentId));
+
+        newCommentsArray.forEach(el => {
+            if (el.editing)
+                el.editing = false;
+        });
+
+        newCommentsArray[editingCommentIndex].editing = false;
+
+        this.setState({
+            editCommentValue: newCommentsArray[editingCommentIndex].comment,
+            comments: newCommentsArray
         });
     }
 
@@ -325,7 +398,22 @@ class PBDetailView extends React.Component {
         });
     };
 
+    handleCommentEdit = commentId => {
+        let newCommentsArray = this.state.comments;
+        let editingCommentIndex = newCommentsArray.findIndex(c => c.id === parseInt(commentId));
 
+        newCommentsArray.forEach(el => {
+            if (el.editing)
+                el.editing = false;
+        });
+
+        newCommentsArray[editingCommentIndex].editing = true;
+
+        this.setState({
+            editCommentValue: newCommentsArray[editingCommentIndex].comment,
+            comments: newCommentsArray
+        });
+    }
 
     renderCommentData = () => {
         return (
@@ -343,6 +431,7 @@ class PBDetailView extends React.Component {
                                 />
                             }
                             content={
+                                !el.editing ?
                                 <>
                                 {this.props.post.data.data !== undefined 
                                 ? this.props.post.data.data.organization.id === this.props.user.userInfo.active_organization_id
@@ -354,14 +443,23 @@ class PBDetailView extends React.Component {
                                 }
                                 {this.props.user.userInfo.id !== undefined
                                 ? this.props.user.userInfo.id === el.account__id
-                                    ? <Button onClick={() => console.log("EDITING COMMENT ID => ", el.id)} style={{ marginLeft: '0.3%'}} value={el.id} type="default"><Icon type="edit" /></Button>
+                                    ? <Button onClick={() => this.handleCommentEdit(el.id)} style={{ marginLeft: '0.3%'}} value={el.id} type="default"><Icon type="edit" /></Button>
                                     : null
                                 : null
                                 }
                                 <br />
-                                <span>Date created: {el.date_created}</span>
+                                <span style={{ fontWeight: 500 }}>Date created:</span><span> {el.date_created}</span>
                                 <p>{el.comment}</p>
                                 </>
+                                : 
+                                <Editor 
+                                onChange={this.editHandleCommentChange}
+                                onSubmit={() => this.editHandleCommentSubmit(el.id)}
+                                submitting={this.state.editCommentLoading}
+                                value={this.state.editCommentValue}
+                                commentId={el.id}
+                                editHandleCommentCancel={this.editHandleCommentCancel}
+                                />
                             }
                             />
                         </div>
