@@ -219,8 +219,13 @@ class PBListViewMixin(object):
         
         try:
             if received_val != None:
-                cache.set(key, json.dumps(received_val), timeout=None)
-                cached_val=received_val
+                if 'cacheEnabled' in received_val:
+                    print(f"Cached NOT saved ==> {received_val}")
+                    None
+                else:
+                    print(f"Cached saved ==> {received_val}")
+                    cache.set(key, json.dumps(received_val), timeout=None)
+                    cached_val=received_val
         except:
             print("Error setting data to cache.")
 
