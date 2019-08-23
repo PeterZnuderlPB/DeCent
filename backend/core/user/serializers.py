@@ -37,6 +37,9 @@ class CustomUserSimpleSerializer(serializers.ModelSerializer):
         organization = Organization(name=orgName, organization_type=organizationType, account=user_obj, is_active=True, is_locked=False, user_last_modified=user_obj, user_created=user_obj)
         organization.save()
 
+        user_obj.active_organization_id = organization.id
+        user_obj.save()
+
         return user_obj
 
     def to_internal_value(self, value):

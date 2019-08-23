@@ -337,7 +337,7 @@ class PBTable extends React.Component {
 
     fetch = () => {
       this.fetchTagData();
-      this.fetchUserPermissions();
+      this.props.user.token !== undefined ? this.fetchUserPermissions() : console.log("No token yet");
         //console.log('params:', params);
         //debugger;
         
