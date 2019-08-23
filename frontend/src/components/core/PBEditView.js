@@ -197,6 +197,13 @@ class PBEditView extends React.Component {
 
     params.visibleFields.push('id', 'name', '_type', `${elName}_type__type`, 'organization__name');
 
+    if (params != null) {
+      params = {
+        ...params,
+        cacheEnabled: false
+      }
+    }
+
     let settings = JSON.stringify(params);
 
     con.get(`api/${elName}/`, {
@@ -251,6 +258,13 @@ class PBEditView extends React.Component {
     };
 
     params.visibleFields.push('id', 'name');
+
+    if (params != null) {
+      params = {
+        ...params,
+        cacheEnabled: false
+      }
+    }
 
     let settings = JSON.stringify(params);
 

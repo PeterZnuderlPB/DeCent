@@ -219,6 +219,13 @@ class UserSettings extends React.Component {
           };
       
           params.visibleFields = params.visibleFields.concat(USER_SETTINGS_SUBJECT_LIST);
+
+          if (params != null) {
+            params = {
+              ...params,
+              cacheEnabled: false
+            }
+          }
       
           let settings = JSON.stringify(params);
       
