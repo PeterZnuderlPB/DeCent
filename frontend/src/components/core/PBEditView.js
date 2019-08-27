@@ -465,11 +465,21 @@ class PBEditView extends React.Component {
       this.state.loaded = true;
       
     if (this.props.match.params.id !== undefined) {
+      if (this.props.user.userInfo.active_type == 1) {
+        message.error("You don't have permission to UPDATE as Worker.");
+        history.push("/");
+      }
+
         if (!this.props.user.userInfo.permissions.permissions.includes("UPDATE")) {
           message.error("You don't have UPDATE permission.");
           history.push("/");
         }
       } else {
+        if (this.props.user.userInfo.active_type == 1) {
+          message.error("You don't have permission to ADD as Worker.");
+          history.push("/");
+        }
+
         if (!this.props.user.userInfo.permissions.permissions.includes("CREATE")) {
           message.error("You don't have CREATE permission.");
           history.push("/");
