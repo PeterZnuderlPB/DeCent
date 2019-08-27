@@ -489,6 +489,40 @@ class UserSettings extends React.Component {
                     <Option value="WORKER">Worker</Option>
                     <Option value="INVESTOR">Investor</Option>
                 </Select>
+                <div>
+                    <span><b>My competencies/skills:</b> </span>
+                    <Select
+                    mode="multiple"
+                    style={{ width: '28%', marginLeft: '0.4%' }}
+                    defaultValue={['C#', 'JS']}
+                    onChange={(e) => console.log(e)}
+                    filterOption={(input, option) => 
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                    >
+                        <Option value="C#">C#</Option>
+                        <Option value="JS">JS</Option>
+                        <Option value="Django">Django</Option>
+                        <Option value="Python">Python</Option>
+                    </Select>
+
+                    <span style={{ marginLeft: '2%' }}><b>Confirmed competencies:</b> </span>
+                    <Select
+                    disabled={true}
+                    mode="multiple"
+                    style={{ width: '28%', marginLeft: '0.4%' }}
+                    defaultValue={"C#"}
+                    onChange={(e) => console.log(e)}
+                    filterOption={(input, option) => 
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                    >
+                        <Option value="C#">C#</Option>
+                        <Option value="JS">JS</Option>
+                        <Option value="Django">Django</Option>
+                        <Option value="Python">Python</Option>
+                    </Select>
+                </div>
             </div>
         );
     }

@@ -140,3 +140,9 @@ class Comment(PBModel):
 
     def __str__(self):
         return f'Comment #{self.id} - {self.account.username} - {self.organization.name} - {self.competency.name}'
+
+class Project(PBModel):
+    name = models.TextField()
+    description = models.TextField()
+    account = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    competency = models.ManyToManyField(Competency, blank=True)
