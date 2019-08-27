@@ -4,15 +4,14 @@ from django.conf import settings
 # Create your models here.
 
 def setPath(self, filename):
-    slug = "%s_%s" % (self.owner.username ,self.owner.id)
-    url = 'files/%s/%s/%s' % (self.category, slug , filename) # TODO: Add category table => Replace 'category'
+    url = 'files/%s/%s' % (self.category, filename) # TODO: Add category table => Replace 'category'
     return url
 
 class File(models.Model):
-    name = models.CharField(max_length = 100)
+    name = models.TextField()
     file = models.FileField(upload_to=setPath)
     upload_date = models.DateField()
-    category = models.CharField(max_length = 100)
+    category = models.TextField()
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="files", on_delete=models.CASCADE)
 
     def __str__(self):

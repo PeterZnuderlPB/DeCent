@@ -1,14 +1,28 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, InputNumber, DatePicker, TimePicker, Checkbox, Input, Spin, Select, message, Modal } from 'antd';
+import {
+  Button,
+  InputNumber,
+  DatePicker,
+  TimePicker,
+  Checkbox,
+  Input,
+  Spin,
+  Select,
+  message,
+  Modal
+} from 'antd';
 import moment from 'moment';
 import history from '../../history';
-import { FetchPost, UpdatePost, AddPost } from '../../actions/PBEditViewActions';
-import axios from 'axios';
 import { 
-  EDIT_VIEW_ANSWERS
-} from '../../constants';
+  FetchPost,
+  UpdatePost,
+  AddPost 
+} from '../../actions/PBEditViewActions';
+import axios from 'axios';
+import { EDIT_VIEW_ANSWERS } from '../../constants';
 import con from '../../apis';
+import PBUpload from './PBUpload';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -47,7 +61,8 @@ class PBEditView extends React.Component {
     tagData: [],
     doneAnswers: [],
     selectedTags: [],
-    selectedCompetencies: []
+    selectedCompetencies: [],
+    imageGUID: null
   };
 
   componentWillMount() {
@@ -456,6 +471,18 @@ class PBEditView extends React.Component {
     .catch(err => console.log("[EditView] CompetencyFromEvaluation fetch error: ", err));
   }
 
+  generateGUID = () => {
+    let guid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+
+    this.setState({
+      imageGUID: guid
+    });
+
+    return guid;
+  }
+
   createUI(){
     // find better solution for this
     if (!this.state.loaded){
@@ -695,6 +722,13 @@ class PBEditView extends React.Component {
               this.state.column_types[i].includes("String")?
               (<Input onChange={this.handleChange.bind(this, el)} />):
               (<TextArea rows={4} onChange={this.handleChange.bind(this, el)} />)}
+
+              {index.length - 1 === i
+              ? this.props.match.params.table_name === 'project'
+                ? <><label>Files: <span style={{ color: 'red' }}>Upload files before submitting post!</span></label><PBUpload maxfiles={2} category={`${this.props.match.params.table_name}_${this.generateGUID()}`} /></>
+                : null
+              : null
+              }
 
               {index.length-1 === i? (<input type="button" value="Submit" onClick={this.handleSubmit}/>):(console.log("-----"))}
             </div>         
