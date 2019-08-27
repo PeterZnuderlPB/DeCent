@@ -323,4 +323,4 @@ class WorkOrderSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSe
     class Meta:
         model = WorkOrder
         fields = '__all__'
-        depth = 1
+        depth = 2

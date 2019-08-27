@@ -468,22 +468,42 @@ class PBEditView extends React.Component {
       if (this.props.user.userInfo.active_type == 1) {
         message.error("You don't have permission to UPDATE as Worker.");
         history.push("/");
+        return;
       }
 
-        if (!this.props.user.userInfo.permissions.permissions.includes("UPDATE")) {
-          message.error("You don't have UPDATE permission.");
+      if (this.props.match.params.table_name === 'project') {
+        if (this.props.edit.data.data.account.id !== this.props.user.userInfo.id) {
+          message.error("This is not your project!");
           history.push("/");
+          return;
         }
+      }
+
+      if (this.props.match.params.table_name === 'workorder') {
+        if (this.props.edit.data.data.project.account.id !== this.props.user.userInfo.id) {
+          message.error("This is not your work order!");
+          history.push("/");
+          return;
+        }
+      }
+
+        // OLD PERMISSIONS
+        // if (!this.props.user.userInfo.permissions.permissions.includes("UPDATE")) {
+        //   message.error("You don't have UPDATE permission.");
+        //   history.push("/");
+        // }
       } else {
         if (this.props.user.userInfo.active_type == 1) {
           message.error("You don't have permission to ADD as Worker.");
           history.push("/");
+          return;
         }
 
-        if (!this.props.user.userInfo.permissions.permissions.includes("CREATE")) {
-          message.error("You don't have CREATE permission.");
-          history.push("/");
-        }
+        // OLD PERMISSIONS
+        // if (!this.props.user.userInfo.permissions.permissions.includes("CREATE")) {
+        //   message.error("You don't have CREATE permission.");
+        //   history.push("/");
+        // }
       }
     }
 
@@ -650,7 +670,7 @@ class PBEditView extends React.Component {
         }else{
           return this.state.values.map((el, i, index) => 
             <div key={i}>
-              {el.includes('user') ? null : <label>{el}:</label>}
+              {el.includes('user') || el.includes('account') ? null : <label>{el}:</label>}
               {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
               this.state.column_types[i].includes("Date (without time)")?
               (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
@@ -660,6 +680,8 @@ class PBEditView extends React.Component {
               //HH:mm:ss
               this.state.column_types[i].includes("Boolean")?
               (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+              el.includes('account')?
+              (<Input style={{ display: 'none' }} value={this.props.user.userInfo.id} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
               el.includes('user')?
               (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
               el.includes('tags')?
@@ -918,7 +940,20 @@ class PBEditView extends React.Component {
       if (this.props.match.params.table_name === 'evaluation') {
           dict['questions'] = this.state.answersSelected;
           dict['tier'] = this.state.tierSelected;
-      } else {
+      } else if (this.props.match.params.table_name === 'project' || this.props.match.params.table_name === 'workorder') {
+          delete dict['competency'];
+
+          let competencyArray = [];
+
+          this.state.selectedCompetencies.forEach(el => {
+            competencyArray.push(el.key)
+          });
+
+          dict['competency'] = competencyArray;
+          dict['account'] = this.props.user.userInfo.id;
+          dict['user_created'] = this.props.user.userInfo.id;
+      }
+      else {
         let tagsArray = [];
 
         this.state.selectedTags.forEach(el => {
@@ -953,6 +988,19 @@ class PBEditView extends React.Component {
       dict['questions'] = this.state.answersSelected;
       dict['tier'] = this.state.tierSelected;
       this.props.AddPost(dict, this.props.match.params.table_name);
+    } else if (this.props.match.params.table_name === 'project' || this.props.match.params.table_name === 'workorder') {
+        delete dict['competency'];
+
+        let competencyArray = [];
+
+        this.state.selectedCompetencies.forEach(el => {
+          competencyArray.push(el.key)
+        });
+
+        dict['competency'] = competencyArray;
+        dict['account'] = this.props.user.userInfo.id;
+        dict['user_created'] = this.props.user.userInfo.id;
+        this.props.AddPost(dict, this.props.match.params.table_name);
     } else {
       delete dict["tags"];
 
