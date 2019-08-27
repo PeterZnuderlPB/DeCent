@@ -13,6 +13,7 @@ import LanguageSelect from '../LanguageSelect'
 //import GoogleLogoutButton from './GoogleLogoutButton'
 import { LogoutStart, ShowModal, HideModal, FetchUserStart} from '../../../actions';
 import { ChangeLangAction } from '../../../actions/langActions';
+import { relativeTimeThreshold } from 'moment';
 
 const { Header, Content, Footer, Sider } = Layout;
 class NavBar extends React.Component {
@@ -150,7 +151,7 @@ class NavBar extends React.Component {
                             <Link to="/"><FormattedMessage id="nav.home" defaultMessage="Home" /></Link>
                         </span>
                     </Menu.Item>
-                    <Menu.Item key="3">
+                    {/* <Menu.Item key="3">
                         <Icon type="database" />
                         <span className="nav-text">
                             <Link to="/evaluations"><FormattedMessage id="nav.evaluations" defaultMessage="Evaluations" /></Link>
@@ -161,8 +162,48 @@ class NavBar extends React.Component {
                         <span className="nav-text">
                             <Link to="/subjects"><FormattedMessage id="nav.subjects" defaultMessage="Subjects" /></Link>
                         </span>
-                    </Menu.Item>
-                    {this.props.user.isAuthenticated? this.renderLogOut():this.renderSignInOptions()}
+                    </Menu.Item> */}
+
+                    {/* Projects */}
+                    {this.props.user.isAuthenticated
+                    ? this.props.user.userInfo.active_type === 1 || this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
+                        ? <Menu.Item key="5">
+                            <Icon type="project" />
+                            <span className="nav-text">
+                                <Link to="/projects"><FormattedMessage id="nav.projects" defaultMessage="Projects" /></Link>
+                            </span>
+                        </Menu.Item>
+                        : null
+                    : null
+                    }
+
+                    {/* Contractors */}
+                    {this.props.user.isAuthenticated
+                    ? this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
+                        ? <Menu.Item key="6">
+                            <Icon type="file-protect" />
+                            <span className="nav-text">
+                                <Link to="/contractors"><FormattedMessage id="nav.contractors" defaultMessage="Contractors" /></Link>
+                            </span>
+                        </Menu.Item>
+                        : null
+                    : null
+                    }
+
+                    {/* Contractors */}
+                    {this.props.user.isAuthenticated
+                    ? this.props.user.userInfo.active_type === 1 || this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
+                        ? <Menu.Item key="7">
+                            <Icon type="apartment" />
+                            <span className="nav-text">
+                                <Link to="/cooperatives"><FormattedMessage id="nav.cooperatives" defaultMessage="Cooperatives" /></Link>
+                            </span>
+                        </Menu.Item>
+                        : null
+                    : null
+                    }
+
+                    {this.props.user.isAuthenticated ? this.renderLogOut() : this.renderSignInOptions()}
                     
                 </Menu>
                 </Sider>
@@ -188,4 +229,10 @@ const mapStateToProps = state =>{
     return { user: state.user.auth, google_user: state.user.google_auth}
 }
 
-export default connect(mapStateToProps,{LogoutStart, ShowModal, HideModal, FetchUserStart, ChangeLangAction})(NavBar)
+export default connect(mapStateToProps, {
+    LogoutStart,
+    ShowModal,
+    HideModal,
+    FetchUserStart,
+    ChangeLangAction
+})(NavBar)

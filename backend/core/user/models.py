@@ -11,4 +11,5 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     biography = models.TextField(default="")
     active_organization_id = models.IntegerField(blank=True, null=True)
+    active_type = models.IntegerField(blank=True, null=True, default=1)
     pass

@@ -163,14 +163,27 @@ class UserSettings extends React.Component {
     updateUserActiveOrganization = () => {
         con.patch(`/api/users/${this.props.user.userInfo.id}/`, {
             active_organization_id: this.state.selectedOrganization
-        },
-        {
-            headers: {
-                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
-        }
-    })
-    .then(res => this.props.FetchUserStart(this.props.user.token))
-    .catch(err => console.log("ERR", err));
+            },
+            {
+                headers: {
+                    Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(res => this.props.FetchUserStart(this.props.user.token))
+        .catch(err => console.log("ERR", err));
+    }
+
+    updateUserActiveType = selectedType => {
+        con.patch(`/api/users/${this.props.user.userInfo.id}/`, {
+            active_type: selectedType === "WORKER" ? 1 : 2
+            },
+            {
+                headers: {
+                    Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(res => this.props.FetchUserStart(this.props.user.token))
+        .catch(err => console.log("ERR", err));
     }
 
     fetchOrganizationManagers = () => {
@@ -464,6 +477,22 @@ class UserSettings extends React.Component {
         }
     }
 
+    renderProfileSettings = () => {
+        return (
+            <div>
+                <h4>User type: </h4>
+                <Select
+                style={{ width: '28%', marginLeft: '0.4%' }}
+                onChange={(e) => this.updateUserActiveType(e)}
+                defaultValue={this.props.user.userInfo.active_type === 1 ? "WORKER" : "INVESTOR"}
+                >
+                    <Option value="WORKER">Worker</Option>
+                    <Option value="INVESTOR">Investor</Option>
+                </Select>
+            </div>
+        );
+    }
+
     render() {
         return (
             <div>
@@ -476,6 +505,9 @@ class UserSettings extends React.Component {
                 <h3 style={{ textAlign: 'center' }}>Manage your organization: </h3>
                 {this.renderOrganizationManagers()}
                 <Button onClick={this.handleAdd} block type="default">Add new manager</Button>
+                <hr />
+                <h3 style={{ textAlign: 'center' }}>Your profile: </h3>
+                {this.renderProfileSettings()}
             </div>
         );
     }
