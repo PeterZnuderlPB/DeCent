@@ -23,5 +23,7 @@ urlpatterns = [
     path('api/userpermission/', views.UserPermissionsList.as_view()),
     path('api/userpermission/<pk>', views.UserPermissionDetails.as_view()),
     path('api/comment/', views.CommnetList.as_view()),
-    path('api/comment/<pk>', views.CommentDetails.as_view())
+    path('api/comment/<pk>', views.CommentDetails.as_view()),
+    path('api/project/', views.ProjectList.as_view()),
+    path('api/project/<pk>', views.ProjectDetails.as_view())
 ]

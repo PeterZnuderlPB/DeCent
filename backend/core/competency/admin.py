@@ -16,7 +16,9 @@ from .models import (
     Answer,
     CompRating,
     UserPermission,
-    Comment
+    Comment,
+    Project,
+    WorkOrder
 )
 
 # Register your models here.
@@ -38,3 +40,5 @@ admin.site.register(Answer)
 admin.site.register(CompRating)
 admin.site.register(UserPermission)
 admin.site.register(Comment)
+admin.site.register(Project)
+admin.site.register(WorkOrder)

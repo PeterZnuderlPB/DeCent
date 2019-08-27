@@ -16,7 +16,9 @@ from .models import (
     Answer,
     CompRating,
     UserPermission,
-    Comment
+    Comment,
+    Project,
+    WorkOrder
 )
 
 from core.serializers import DynamicFieldsModelSerializer
@@ -294,5 +296,18 @@ class CommentSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSeri
 class CommentSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = Comment
+        fields = '__all__'
+        depth = 1
+
+class ProjectSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Project #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class ProjectSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Project
         fields = '__all__'
         depth = 1

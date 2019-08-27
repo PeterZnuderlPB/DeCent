@@ -211,14 +211,18 @@ class PBDetailView extends React.Component {
     renderAnswerData = () => {
         return (
             <div>
-                <h3>{this.state.subTitle}</h3>
+                <h3>{this.props.match.params.table_name === 'competency' || this.props.match.params.table_name === 'evaluation' ? this.state.subTitle : null}</h3>
                 {this.state.data.map((el, i) => {
                     {return Object.keys(el).map(key => {
                         if (key === 'id' || key.includes('competency'))
                             return;
 
                         if (key === 'evaluation__id') {
-                            return <div key={el.id}><Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/evaluation/${el.evaluation__id}`))} type="link">Evaluation - {el.evaluation__id}</Button></div>;
+                            if (this.props.match.params.table_name === 'competency') {
+                                return <div key={el.id}><Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/evaluation/${el.evaluation__id}`))} type="link">Evaluation - {el.evaluation__id}</Button></div>;
+                            } else {
+                                return null;
+                            }
                         }
 
                         return <><p><b>{key}: </b>{this.state.data[i][key]}</p>{key === 'comment' ? <hr /> : null}</>
@@ -419,7 +423,7 @@ class PBDetailView extends React.Component {
         return (
             <div>
                 {this.state.comments.length !== 0 ? <><hr /> <h3>Comments</h3></> : null}
-                {this.state.comments.map(el => {
+                {this.state.comments.length !== 0 ? this.state.comments.map(el => {
                     return (
                         <div key={el.id}>
                             <Comment
@@ -434,7 +438,7 @@ class PBDetailView extends React.Component {
                                 !el.editing ?
                                 <>
                                 {this.props.post.data.data !== undefined 
-                                ? this.props.post.data.data.organization.id === this.props.user.userInfo.active_organization_id
+                                ? this.props.post.data.data.organization !== undefined && this.props.post.data.data.organization.id === this.props.user.userInfo.active_organization_id
                                     ? this.props.user.userInfo.permissions.permissions.includes("DELETE")
                                         ? <Button value={el.id} onClick={this.handleCommentDelete} type="danger"><Icon type="delete" /></Button>
                                         : null
@@ -464,7 +468,7 @@ class PBDetailView extends React.Component {
                             />
                         </div>
                     );
-                })}
+                }) : null }
                 <Comment
                 author={<a onClick={() => this.showModal(this.props.user.userInfo.id)}>{this.props.user.userInfo.username}</a>}
                 avatar={
@@ -501,6 +505,26 @@ class PBDetailView extends React.Component {
         );
     }
 
+    renderCompetencies = () => {
+        if (this.props.match.params.table_name === 'project') {
+            return (
+                <div>
+                    <h1>Needed competencies</h1>
+                    {this.props.post !== undefined && this.props.post.data !== undefined && this.props.post.data.data !== undefined
+                    ? Object.keys(this.props.post.data.data).map(key => {
+                        if (key === 'competency') {
+                            return this.props.post.data.data[key].map(el => {
+                                return <p><b>{el.name}</b> -<Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/competency/${el.id}`))} type="link">Go to Competency</Button></p>;
+                            })
+                        }
+                    })
+                    : null
+                    }
+                </div>
+            );
+        }
+    }
+
     render() {
         return (
             <>
@@ -510,6 +534,7 @@ class PBDetailView extends React.Component {
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.renderAnswerData()}
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.props.match.params.table_name === 'evaluation' ? <Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/competency/${this.state.data[0]['competency__id']}`))} type="link">Go to <b>{this.state.data[0] !== undefined ? this.state.data[0]['competency__name'] : null}</b></Button> : null}
             {this.props.match.params.table_name === 'competency' ? this.renderCommentData() : null}
+            {this.renderCompetencies()}
             </>
         );
     }

@@ -146,3 +146,15 @@ class Project(PBModel):
     description = models.TextField()
     account = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     competency = models.ManyToManyField(Competency, blank=True)
+
+    def __str__(self):
+        return f'Project #{self.id} - {self.name} - {self.account.username}'
+
+class WorkOrder(PBModel):
+    name = models.TextField()
+    description = models.TextField()
+    competency = models.ManyToManyField(Competency, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'WorkOrder #{self.id} - {self.name} - Project #{self.project.id}'
