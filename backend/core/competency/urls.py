@@ -25,5 +25,7 @@ urlpatterns = [
     path('api/comment/', views.CommnetList.as_view()),
     path('api/comment/<pk>', views.CommentDetails.as_view()),
     path('api/project/', views.ProjectList.as_view()),
-    path('api/project/<pk>', views.ProjectDetails.as_view())
+    path('api/project/<pk>', views.ProjectDetails.as_view()),
+    path('api/workorder/', views.WorkOrderList.as_view()),
+    path('api/workorder/<pk>', views.WorkOrderDetails.as_view())
 ]

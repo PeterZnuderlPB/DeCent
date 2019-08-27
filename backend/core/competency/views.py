@@ -59,7 +59,9 @@ from .serializers import (
     CommentSerializerBasic,
     CommentSerializerDepth,
     ProjectSerializerBasic,
-    ProjectSerializerDepth
+    ProjectSerializerDepth,
+    WorkOrderSerializerBasic,
+    WorkOrderSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -590,3 +592,43 @@ class ProjectDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return ProjectSerializerDepth
         return ProjectSerializerBasic
+
+class WorkOrderList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = WorkOrder
+    table_name = "WorkOrders" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return WorkOrderSerializerDepth
+        return WorkOrderSerializerBasic
+
+class WorkOrderDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = WorkOrder
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return WorkOrderSerializerDepth
+        return WorkOrderSerializerBasic

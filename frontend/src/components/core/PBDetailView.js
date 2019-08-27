@@ -506,7 +506,7 @@ class PBDetailView extends React.Component {
     }
 
     renderCompetencies = () => {
-        if (this.props.match.params.table_name === 'project') {
+        if (this.props.match.params.table_name === 'project' || this.props.match.params.table_name === 'workorder') {
             return (
                 <div>
                     <h1>Needed competencies</h1>

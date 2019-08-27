@@ -20,6 +20,7 @@ import PBDetailView from './core/PBDetailView';
 import Subjects from './core/Subjects';
 import UserSettings from './core/UserSettings';
 import Projects from './core/Projects';
+import WorkOrders from './core/WorkOrders';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -51,6 +52,7 @@ class App extends React.Component{
                                 <Route path="/evaluations" exact component={Evaluations} />
                                 <Route path="/subjects" exact component={Subjects} />
                                 <Route path="/projects" exact component={Projects} />
+                                <Route path="/workorders" exact component={WorkOrders} />
                                 <Route path="/BrowseView/:table_name" exact component={PBTable} />
                                 <Route path="/EditView/:table_name/:id" exact component={PBEditView} />
                                 <Route path="/EditView/:table_name/" exact component={PBEditView} />

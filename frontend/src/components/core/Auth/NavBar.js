@@ -177,10 +177,23 @@ class NavBar extends React.Component {
                     : null
                     }
 
+                    {/* WorkOrders */}
+                    {this.props.user.isAuthenticated
+                    ? this.props.user.userInfo.active_type === 1 || this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
+                        ? <Menu.Item key="6">
+                            <Icon type="solution" />
+                            <span className="nav-text">
+                                <Link to="/workorders"><FormattedMessage id="nav.workorders" defaultMessage="Work orders" /></Link>
+                            </span>
+                        </Menu.Item>
+                        : null
+                    : null
+                    }
+
                     {/* Contractors */}
                     {this.props.user.isAuthenticated
                     ? this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
-                        ? <Menu.Item key="6">
+                        ? <Menu.Item key="7">
                             <Icon type="file-protect" />
                             <span className="nav-text">
                                 <Link to="/contractors"><FormattedMessage id="nav.contractors" defaultMessage="Contractors" /></Link>
@@ -193,7 +206,7 @@ class NavBar extends React.Component {
                     {/* Contractors */}
                     {this.props.user.isAuthenticated
                     ? this.props.user.userInfo.active_type === 1 || this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
-                        ? <Menu.Item key="7">
+                        ? <Menu.Item key="8">
                             <Icon type="apartment" />
                             <span className="nav-text">
                                 <Link to="/cooperatives"><FormattedMessage id="nav.cooperatives" defaultMessage="Cooperatives" /></Link>
