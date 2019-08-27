@@ -46,7 +46,8 @@ class PBEditView extends React.Component {
     tierSelected: 0,
     tagData: [],
     doneAnswers: [],
-    selectedTags: []
+    selectedTags: [],
+    selectedCompetencies: []
   };
 
   componentWillMount() {
@@ -539,6 +540,10 @@ class PBEditView extends React.Component {
             (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             el.includes('tags')?
             (<Select onFocus={this.fetchTags} labelInValue={true} defaultValue={this.props.edit.data.data !== undefined ? this.props.edit.data.data.tags.map(t => { return {key: t.id.toString(), label: t.tag}; }) : null} mode="tags" onChange={(e) => this.setState({ selectedTags: e }) } placeholder="Tags" >{this.state.tagData}</Select>):
+            el === 'competency' && this.props.match.params.table_name === 'workorder'?
+            <Select onFocus={this.fetchCompetencies} labelInValue={true} defaultValue={this.props.edit.data.data !== undefined ? this.props.edit.data.data.competency.map(t => { return {key: t.id.toString(), label: t.name}; }) : null} mode="tags" onChange={(e) => this.setState({ selectedCompetencies: e }) } placeholder="Competencies" >{this.state.selectableCompetenciesFull.map(el => {return <Option key={el.id} value={el.id.toString()}>{el.name}</Option>})}</Select>:
+            el === 'competency' && this.props.match.params.table_name === 'project'?
+            <Select onFocus={this.fetchCompetencies} labelInValue={true} defaultValue={this.props.edit.data.data !== undefined ? this.props.edit.data.data.competency.map(t => { return {key: t.id.toString(), label: t.name}; }) : null} mode="tags" onChange={(e) => this.setState({ selectedCompetencies: e }) } placeholder="Competencies" >{this.state.selectableCompetenciesFull.map(el => {return <Option key={el.id} value={el.id.toString()}>{el.name}</Option>})}</Select>:
             this.state.column_types[i].includes("Foreign Key")?
             (<Input value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             this.state.column_types[i].includes("String")?
@@ -649,6 +654,10 @@ class PBEditView extends React.Component {
               (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
               el.includes('tags')?
               (<Select onFocus={this.fetchTags} labelInValue={true} mode="tags" onChange={(e) => this.setState({ selectedTags: e }) } placeholder="Tags" >{this.state.tagData}</Select>):
+              el === 'competency' && this.props.match.params.table_name === 'workorder'?
+              <Select onFocus={this.fetchCompetencies} labelInValue={true}  mode="tags" onChange={(e) => this.setState({ selectedCompetencies: e }) } placeholder="Competencies" >{this.state.selectableCompetenciesFull.map(el => {return <Option key={el.id} value={el.id.toString()}>{el.name}</Option>})}</Select>:
+              el === 'competency' && this.props.match.params.table_name === 'project'?
+              <Select onFocus={this.fetchCompetencies} labelInValue={true}  mode="tags" onChange={(e) => this.setState({ selectedCompetencies: e }) } placeholder="Competencies" >{this.state.selectableCompetenciesFull.map(el => {return <Option key={el.id} value={el.id.toString()}>{el.name}</Option>})}</Select>:
               this.state.column_types[i].includes("Foreign Key")?
               (<Select onChange={(e) => this.handleSelect(e, el)} onFocus={() => this.fetchOptions(el)}>{this.state.fkData[el] !== undefined ? this.renderOptions(el) : <Option disabled={true} value="NULL">No data..</Option>}</Select>):
               this.state.column_types[i].includes("String")?
