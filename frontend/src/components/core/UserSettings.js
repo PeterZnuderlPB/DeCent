@@ -490,11 +490,12 @@ class UserSettings extends React.Component {
                     <Option value="INVESTOR">Investor</Option>
                 </Select>
                 <div>
-                    <span><b>My competencies/skills:</b> </span>
+                    <span onClick={() => console.log(this.props.user.userInfo)}><b>My competencies/skills:</b> </span>
                     <Select
                     mode="multiple"
                     style={{ width: '28%', marginLeft: '0.4%' }}
-                    defaultValue={['C#', 'JS']}
+                    // labelInValue={true}
+                    // defaultValue={this.props.user.userInfo.competencys.map(t => { return {key: t.id.toString(), label: t.name}; })}
                     onChange={(e) => console.log(e)}
                     filterOption={(input, option) => 
                         option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -553,4 +554,9 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps, { FetchUserStart, UpdatePost, DeletePost, AddPost })(UserSettings);
+export default connect(mapStateToProps, {
+    FetchUserStart,
+    UpdatePost,
+    DeletePost,
+    AddPost
+})(UserSettings);
