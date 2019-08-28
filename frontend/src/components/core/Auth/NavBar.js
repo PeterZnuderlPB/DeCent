@@ -203,13 +203,13 @@ class NavBar extends React.Component {
                     : null
                     }
 
-                    {/* Contractors */}
+                    {/* Workers */}
                     {this.props.user.isAuthenticated
                     ? this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
                         ? <Menu.Item key="8">
-                            <Icon type="file-protect" />
+                            <Icon type="team" />
                             <span className="nav-text">
-                                <Link to="/contractors"><FormattedMessage id="nav.contractors" defaultMessage="Contractors" /></Link>
+                                <Link to="/workers"><FormattedMessage id="nav.workers" defaultMessage="Workers" /></Link>
                             </span>
                         </Menu.Item>
                         : null

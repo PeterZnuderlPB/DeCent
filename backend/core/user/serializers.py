@@ -4,6 +4,7 @@ from django.forms.models import model_to_dict
 from competency.serializers import OrganizationSerializerBasic, OrganizationTypeSerializerBasic, CompetencySerializerBasic
 from competency.models import Organization, OrganizationType
 from django.contrib.auth import get_user_model
+from core.serializers import DynamicFieldsModelSerializer
 
 
 from django.conf import settings
@@ -80,3 +81,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user_obj.save()
 
         return validated_data
+
+class CustomUserSerialierDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = '__all__'
+        depth = 1

@@ -5,9 +5,10 @@ from rest_framework.response import Response
 
 from .models import CustomUser
 from core.views import PBListViewMixin, PBDetailsViewMixin
-from .serializers import CustomUserSerializer, CustomUserSimpleSerializer
+from .serializers import CustomUserSerializer, CustomUserSimpleSerializer, CustomUserSerialierDepth
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.oauth import get_user_from_token
+from django.contrib.auth import get_user_model
 
 
 class CustomUserList( generics.ListCreateAPIView):
@@ -57,3 +58,14 @@ class FullUserList(generics.ListCreateAPIView):
     serializer_class = CustomUserSimpleSerializer
 
     permission_classes = (permissions.AllowAny,)
+
+class FullPBUserList(PBListViewMixin, generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+
+    model = get_user_model()
+    table_name = "customusers"
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return CustomUserSerialierDepth
+        return CustomUserSerializer
