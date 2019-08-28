@@ -190,10 +190,23 @@ class NavBar extends React.Component {
                     : null
                     }
 
+                    {/* Cooperatives */}
+                    {this.props.user.isAuthenticated
+                    ? this.props.user.userInfo.active_type === 1 || this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
+                        ? <Menu.Item key="7">
+                            <Icon type="apartment" />
+                            <span className="nav-text">
+                                <Link to="/cooperatives"><FormattedMessage id="nav.cooperatives" defaultMessage="Cooperatives" /></Link>
+                            </span>
+                        </Menu.Item>
+                        : null
+                    : null
+                    }
+
                     {/* Contractors */}
                     {this.props.user.isAuthenticated
                     ? this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
-                        ? <Menu.Item key="7">
+                        ? <Menu.Item key="8">
                             <Icon type="file-protect" />
                             <span className="nav-text">
                                 <Link to="/contractors"><FormattedMessage id="nav.contractors" defaultMessage="Contractors" /></Link>
@@ -203,13 +216,13 @@ class NavBar extends React.Component {
                     : null
                     }
 
-                    {/* Contractors */}
+                    {/* My cooperative */}
                     {this.props.user.isAuthenticated
-                    ? this.props.user.userInfo.active_type === 1 || this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
-                        ? <Menu.Item key="8">
+                    ? this.props.user.userInfo.active_type === 3
+                        ? <Menu.Item key="9">
                             <Icon type="apartment" />
                             <span className="nav-text">
-                                <Link to="/cooperatives"><FormattedMessage id="nav.cooperatives" defaultMessage="Cooperatives" /></Link>
+                                <Link to="/mycooperative"><FormattedMessage id="nav.mycooperative" defaultMessage="My cooperative" /></Link>
                             </span>
                         </Menu.Item>
                         : null

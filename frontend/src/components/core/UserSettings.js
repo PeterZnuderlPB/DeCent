@@ -32,12 +32,14 @@ class UserSettings extends React.Component {
             subjectsLoading: true,
             subjects: [],
             formSet: false,
-            organizationCurrentlyInUse: null
+            organizationCurrentlyInUse: null,
+            competencies: []
         };
     }
 
     componentDidMount = () => {
         this.fetchPrimaryOrganization();
+        this.fetchAllCompetencies();
         this.fetchAllUsers();
     }
 
@@ -45,6 +47,7 @@ class UserSettings extends React.Component {
         if (this.props.user.userInfo.id !== prevProps.user.userInfo.id) {
             this.fetchPrimaryOrganization();
             this.fetchUserOrganizations();
+            this.fetchAllCompetencies();
             this.fetchAllUsers();
         }
 
@@ -175,7 +178,7 @@ class UserSettings extends React.Component {
 
     updateUserActiveType = selectedType => {
         con.patch(`/api/users/${this.props.user.userInfo.id}/`, {
-            active_type: selectedType === "WORKER" ? 1 : 2
+            active_type: this.getUserType(selectedType)
             },
             {
                 headers: {
@@ -257,6 +260,43 @@ class UserSettings extends React.Component {
               });
           })
           .catch(err => console.log("[UserSettings] Subject fetch error: ", err));
+    }
+
+    fetchAllCompetencies = () => {
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {}
+          };
+      
+          params.visibleFields.push('id', 'name');
+
+          if (params != null) {
+            params = {
+              ...params,
+              cacheEnabled: false
+            }
+          }
+      
+          let settings = JSON.stringify(params);
+      
+          con.get('/api/competency/', {
+            params: {
+              settings
+            },
+            headers: {
+              Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+          })
+          .then(res => {
+              this.setState({
+                  competencies: res.data.data
+               });
+          })
+          .catch(err => console.log("[UserSettings] Competency fetch error: ", err));
     }
 
     fetchAllUsers = () => {
@@ -428,7 +468,7 @@ class UserSettings extends React.Component {
                             if(elUser.id === this.props.user.userInfo.id)
                                 return;
 
-                            return <Option value={elUser.id}>{elUser.username}</Option>
+                            return <Option key={elUser.id} value={elUser.id}>{elUser.username}</Option>
                             })
                         }
                     </Select>
@@ -455,7 +495,7 @@ class UserSettings extends React.Component {
                     {this.state.usersLoading
                     ? <Option value="NULL" disabled>Loading...</Option>
                     : this.state.subjects.map(elSubject => {
-                        return <Option value={elSubject.id}>{elSubject.name}</Option>
+                        return <Option key={elSubject.id} value={elSubject.id}>{elSubject.name}</Option>
                         })
                     }
                     </Select>
@@ -477,34 +517,84 @@ class UserSettings extends React.Component {
         }
     }
 
+    handleCompetencyChange = e => {
+        let competencyArray = [];
+
+        e.forEach(el => {
+            competencyArray.push(el.key);
+        });
+
+        con.patch(`/api/users/${this.props.user.userInfo.id}/`, {
+            competencys: competencyArray
+            },
+            {
+                headers: {
+                    Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(res => this.props.FetchUserStart(this.props.user.token))
+        .catch(err => console.log("[DetailView] UserSettings Competency patch error", err));
+    }
+
+    getUserType = userType => {
+            if (typeof(userType) === 'number') {
+                switch (userType) {
+                    case 1:
+                        return "WORKER"
+                    case 2:
+                        return "INVESTOR"
+                    case 3:
+                        return "COOPERATIVE"
+                    default:
+                        return "NULL"
+                }
+            } else {
+                switch (userType) {
+                    case "WORKER":
+                        return 1
+                    case "INVESTOR":
+                        return 2
+                    case "COOPERATIVE":
+                        return 3
+                    default:
+                        return 1
+            }
+        }
+    }
+
     renderProfileSettings = () => {
+
         return (
             <div>
                 <h4>User type: </h4>
                 <Select
                 style={{ width: '28%', marginLeft: '0.4%' }}
                 onChange={(e) => this.updateUserActiveType(e)}
-                defaultValue={this.props.user.userInfo.active_type === 1 ? "WORKER" : "INVESTOR"}
+                defaultValue={this.getUserType(this.props.user.userInfo.active_type)}
                 >
                     <Option value="WORKER">Worker</Option>
                     <Option value="INVESTOR">Investor</Option>
+                    <Option value="COOPERATIVE">Cooperative</Option>
                 </Select>
                 <div>
-                    <span onClick={() => console.log(this.props.user.userInfo)}><b>My competencies/skills:</b> </span>
+                    <span onClick={() => console.log(this.props.user)}><b>My competencies/skills:</b> </span>
                     <Select
                     mode="multiple"
                     style={{ width: '28%', marginLeft: '0.4%' }}
-                    // labelInValue={true}
-                    // defaultValue={this.props.user.userInfo.competencys.map(t => { return {key: t.id.toString(), label: t.name}; })}
-                    onChange={(e) => console.log(e)}
+                    labelInValue={true}
+                    defaultValue={this.props.user.userInfo.competencys !== undefined && this.props.user.userInfo.competencys.length !== 0 ? this.props.user.userInfo.competencys.map(t => { return {key: t.id.toString(), label: t.name}; }) : <Option value="NULL" disabled={true}>Loading..</Option>}
+                    onChange={this.handleCompetencyChange}
+                    onFocus={this.fetchAllCompetencies}
                     filterOption={(input, option) => 
                         option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                     >
-                        <Option value="C#">C#</Option>
-                        <Option value="JS">JS</Option>
-                        <Option value="Django">Django</Option>
-                        <Option value="Python">Python</Option>
+                        {this.state.competencies.length !== 0
+                        ? this.state.competencies.map(el => {
+                            return <Option key={el.id.toString()} value={el.id.toString()}>{el.name}</Option>;
+                        })
+                        : null
+                        }
                     </Select>
 
                     <span style={{ marginLeft: '2%' }}><b>Confirmed competencies:</b> </span>

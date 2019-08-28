@@ -222,6 +222,9 @@ class PBDetailView extends React.Component {
         if (this.props.post.data.data === undefined)
             return;
 
+        if (this.props.post.data.data.file_directory === '')
+            return;
+
             let params = {
                 results: 10,
                 page: 1,

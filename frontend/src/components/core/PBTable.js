@@ -392,6 +392,13 @@ class PBTable extends React.Component {
               }
             }
           }
+
+          if (this.props.tableApi === 'project') {
+            params.filters = {
+              ...params.filters,
+              is_public: 1
+            }
+          }
         }
         console.log("NEW PARAMS: ", params)
         var settings = JSON.stringify(params);
