@@ -171,7 +171,8 @@ class PBListViewMixin(object):
                 filters_with_type[key + "__in"] = val
             else:
                 filters_with_type[key + "__icontains"] = val
-        filters_with_type["is_active"] = True
+        if not 'files' in self.request.path: # Files do not inherit PBModel
+            filters_with_type["is_active"] = True
         qs = self.model.objects.filter(**filters_with_type).order_by(*clean_orderfield)
         return qs
 

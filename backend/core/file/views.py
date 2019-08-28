@@ -5,32 +5,34 @@ from rest_framework import generics, permissions
 from rest_framework import views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
-from core.views import PBDetailsViewMixin
+from core.views import PBDetailsViewMixin, PBListViewMixin
 #from django_weasyprint import WeasyTemplateResponseMixin
 
 from .models import File
-from .serializers import FileSerializerBasic, FileSerializerWithFile
+from .serializers import FileSerializerBasic, FileSerializerDepth
 
-class FileList(generics.ListCreateAPIView):
+class FileList(PBListViewMixin, generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+
+    model = File
+    table_name = "Files" # For search and filter options (Redis key)
 
     parser_class = (FileUploadParser,)
 
     def post(self, request, *args, **kwargs):
-        file_serializer = FileSerializerWithFile(data = request.data)
+        file_serializer = FileSerializerBasic(data = request.data)
         if file_serializer.is_valid():
             file_serializer.save()
             return Response(file_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self):
-        return File.objects.all()
-
     def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return FileSerializerDepth
         return FileSerializerBasic
 
-class FileDetails(generics.RetrieveAPIView):
+class FileDetails(PBDetailsViewMixin, generics.RetrieveAPIView):
     serializer_class = FileSerializerBasic
     permission_classes = (permissions.IsAuthenticated,)
     parser_class = (FileUploadParser,)
@@ -40,7 +42,7 @@ class FileDetails(generics.RetrieveAPIView):
     
 
     def post(self, request, *args, **kwargs):
-        file_serializer = FileSerializerWithFile(data = request.data)
+        file_serializer = FileSerializerBasic(data = request.data)
         if file_serializer.is_valid():
             file_serializer.save()
             return Response(file_serializer.data, status=status.HTTP_201_CREATED)

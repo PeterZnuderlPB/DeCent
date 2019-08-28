@@ -146,6 +146,7 @@ class Project(PBModel):
     description = models.TextField()
     account = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     competency = models.ManyToManyField(Competency, blank=True)
+    file_directory = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'Project #{self.id} - {self.name} - {self.account.username}'

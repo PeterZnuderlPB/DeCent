@@ -125,6 +125,12 @@ class PBEditView extends React.Component {
     }
   }
 
+  componentDidMount = () => {
+    this.setState({
+      imageGUID: this.generateGUID()
+    });
+  }
+
   getCurrentDate = () => {
     let currentDay = new Date().getDate();
     let currentMonth = new Date().getMonth() + 1;
@@ -697,7 +703,7 @@ class PBEditView extends React.Component {
         }else{
           return this.state.values.map((el, i, index) => 
             <div key={i}>
-              {el.includes('user') || el.includes('account') ? null : <label>{el}:</label>}
+              {el.includes('user') || el.includes('account') || el.includes('file_directory') ? null : <label>{el}:</label>}
               {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
               this.state.column_types[i].includes("Date (without time)")?
               (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
@@ -707,6 +713,8 @@ class PBEditView extends React.Component {
               //HH:mm:ss
               this.state.column_types[i].includes("Boolean")?
               (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+              el.includes('file_directory')?
+              (<Input style={{ display: 'none' }} value={null} disabled={true}/>):
               el.includes('account')?
               (<Input style={{ display: 'none' }} value={this.props.user.userInfo.id} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
               el.includes('user')?
@@ -725,7 +733,7 @@ class PBEditView extends React.Component {
 
               {index.length - 1 === i
               ? this.props.match.params.table_name === 'project'
-                ? <><label>Files: <span style={{ color: 'red' }}>Upload files before submitting post!</span></label><PBUpload maxfiles={2} category={`${this.props.match.params.table_name}_${this.generateGUID()}`} /></>
+                ? <><label>Files: <span style={{ color: 'red' }}>Upload files before submitting post!</span></label><PBUpload maxfiles={2} category={`${this.props.match.params.table_name}_${this.state.imageGUID}`} /></>
                 : null
               : null
               }
@@ -1031,6 +1039,7 @@ class PBEditView extends React.Component {
           competencyArray.push(el.key)
         });
 
+        dict['file_directory'] = this.state.imageGUID;
         dict['competency'] = competencyArray;
         dict['account'] = this.props.user.userInfo.id;
         dict['user_created'] = this.props.user.userInfo.id;

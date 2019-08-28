@@ -4,11 +4,12 @@ from .models import File
 class FileSerializerBasic(serializers.ModelSerializer):
     class Meta:
         model = File 
-        fields = ('owner','name','upload_date',) 
+        fields = '__all__' 
         depth = 0 
 
 
-class FileSerializerWithFile(serializers.ModelSerializer):
+class FileSerializerDepth(serializers.ModelSerializer):
     class Meta:
         model = File 
         fields = '__all__'
+        depth = 1

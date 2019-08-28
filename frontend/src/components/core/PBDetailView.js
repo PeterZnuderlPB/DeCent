@@ -52,7 +52,8 @@ class PBDetailView extends React.Component {
             modalVisible: false,
             userData: null,
             editCommentValue: '',
-            editCommentLoading: false
+            editCommentLoading: false,
+            fileData: []
         }
     }
     
@@ -60,6 +61,7 @@ class PBDetailView extends React.Component {
         this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
         this.fetchData(this.props.match.params.table_name);
         this.fetchCommnets(this.props.match.params.id);
+        this.fetchFiles();
 
         this.setState({
             subTitle: this.props.match.params.table_name === 'evaluation' ? 'Answers' : 'Evaluations'
@@ -79,17 +81,22 @@ class PBDetailView extends React.Component {
             this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
             this.fetchData(this.props.match.params.table_name);
             this.fetchCommnets(this.props.match.params.id);
+            this.fetchFiles();
         }
 
-        if (prevProps.user.userInfo.id !== this.props.user.userInfo.id)
-        {
+        if (prevProps.user.userInfo.id !== this.props.user.userInfo.id) {
             this.props.FetchPost(this.props.match.params.id, this.props.match.params.table_name);
             this.fetchData(this.props.match.params.table_name);
             this.fetchCommnets(this.props.match.params.id);
+            this.fetchFiles();
 
             this.setState({
                 subTitle: this.props.match.params.table_name === 'evaluation' ? 'Answers' : 'Evaluations'
             });
+        }
+
+        if (prevProps.post.data !== this.props.post.data) {
+            this.fetchFiles();
         }
     }
 
@@ -206,6 +213,44 @@ class PBDetailView extends React.Component {
             }, () => console.log("STATE AFTER UDATA", this.state));
         })
         .catch(err => console.log("[DetailView] User fetch error: ", err));
+    }
+
+    fetchFiles = () => {
+        if (!this.props.match.params.table_name === 'project')
+            return;
+        
+        if (this.props.post.data.data === undefined)
+            return;
+
+            let params = {
+                results: 10,
+                page: 1,
+                sortOrder: [],
+                sortField: [],
+                visibleFields: [],
+                filters: {
+                    category: `project_${this.props.post.data.data.file_directory}`
+                }
+              };
+          
+              params.visibleFields.push('id', 'category', 'name', 'file');
+          
+              let settings = JSON.stringify(params);
+    
+            con.get(`/api/files/`, {
+                params: {
+                    settings
+                },
+                headers: {
+                    Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+                }
+            })
+            .then(res => {
+                this.setState({
+                    fileData: res.data.data,
+                });
+            })
+            .catch(err => console.log("[DetailView] Files fetch error: ", err));
     }
 
     renderAnswerData = () => {
@@ -525,16 +570,36 @@ class PBDetailView extends React.Component {
         }
     }
 
+    renderProjectFiles = () => {
+        if (this.props.match.params.table_name === 'project') {
+            return (
+                <div>
+                    <hr />
+
+                    {this.state.fileData.length !== 0
+                    ? <div>
+                        {this.state.fileData.map((el, i) => {
+                            return <><span key={el.id}><b><a href={`http://localhost:8000${el.file}`} target="_blank">File #{i}</a></b></span> <br /></>
+                        })}
+                      </div>
+                    : null
+                    }
+                </div>
+            );
+        }
+    }
+
     render() {
         return (
             <>
-            <h1>DetailView {this.props.match.params.table_name} - {this.props.match.params.id}</h1>
+            <h1 onClick={() => console.log(this.state)}>DetailView {this.props.match.params.table_name} - {this.props.match.params.id}</h1>
             {this.props.post.loadingPost ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.renderCompetencyData()}
             <hr />
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.renderAnswerData()}
             {this.state.loading ? <Spin tip={`Loading ${this.props.match.params.table_name}...`} size="large" /> : this.props.match.params.table_name === 'evaluation' ? <Button onClick={() => this.setState({ redirect: true }, () => history.push(`/DetailView/competency/${this.state.data[0]['competency__id']}`))} type="link">Go to <b>{this.state.data[0] !== undefined ? this.state.data[0]['competency__name'] : null}</b></Button> : null}
             {this.props.match.params.table_name === 'competency' ? this.renderCommentData() : null}
             {this.renderCompetencies()}
+            {this.renderProjectFiles()}
             </>
         );
     }
