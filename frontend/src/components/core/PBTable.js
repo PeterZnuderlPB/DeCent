@@ -393,10 +393,26 @@ class PBTable extends React.Component {
             }
           }
 
-          if (this.props.tableApi === 'project') {
+          if (this.props.tableApi === 'project' && !this.props.personal) {
+            console.log("PUBLIC");
             params.filters = {
               ...params.filters,
               is_public: 1
+            }
+          }
+
+          if (this.props.tableApi === 'project' && this.props.personal) {
+            console.log("PERSONAL");
+            params.filters = {
+              ...params.filters,
+              account__id: this.props.user.userInfo.id
+            }
+          }
+
+          if (this.props.tableApi === 'workorder') {
+            params.filters = {
+              ...params.filters,
+              project__is_public: 1
             }
           }
         }

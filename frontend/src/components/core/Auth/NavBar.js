@@ -216,10 +216,23 @@ class NavBar extends React.Component {
                     : null
                     }
 
+                    {/* My projects */}
+                    {this.props.user.isAuthenticated
+                    ? this.props.user.userInfo.active_type === 2 || this.props.user.userInfo.active_type === 3
+                        ? <Menu.Item key="9">
+                            <Icon type="project" />
+                            <span className="nav-text">
+                                <Link to="/myprojects"><FormattedMessage id="nav.myprojects" defaultMessage="My projects" /></Link>
+                            </span>
+                        </Menu.Item>
+                        : null
+                    : null
+                    }
+
                     {/* My cooperative */}
                     {this.props.user.isAuthenticated
                     ? this.props.user.userInfo.active_type === 3
-                        ? <Menu.Item key="9">
+                        ? <Menu.Item key="10">
                             <Icon type="apartment" />
                             <span className="nav-text">
                                 <Link to="/mycooperative"><FormattedMessage id="nav.mycooperative" defaultMessage="My cooperative" /></Link>
