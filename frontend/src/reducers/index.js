@@ -7,6 +7,7 @@ import userReducers from './userReducers';
 import langReducer from './langReducer';
 import PBUploadReducer from './PBUploadReducer';
 import PBEditViewRecuder from './PBEditViewReducer';
+import navbarReducer from './navbarReducer';
 
 export default combineReducers({
     form: formReducer, // Reducer provided by redux-form, has to be named form
@@ -15,5 +16,6 @@ export default combineReducers({
     tables: PBTablesReducer,
     lang: langReducer,
     upload: PBUploadReducer,
-    edit: PBEditViewRecuder
+    edit: PBEditViewRecuder,
+    navbar: navbarReducer
 })

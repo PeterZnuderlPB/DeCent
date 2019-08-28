@@ -69,3 +69,8 @@ export const DELETE_POST_FAIL = "DELETE_POST_FAIL";
 // export const FETCH_FOREING_KEY_START = "FETCH_FOREING_KEY_START";
 // export const FETCH_FOREING_KEY_SUCCESS = "FETCH_FOREING_KEY_SUCCESS";
 // export const FETCH_FOREING_KEY_FAIL = "FETCH_FOREING_KEY_FAIL";
+
+//----------------
+// Navbar actions
+//----------------
+export const TOGGLE_NAVBAR = "TOGGLE_NAVBAR";

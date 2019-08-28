@@ -11,6 +11,7 @@ import RegisterForm from './RegisterForm';
 import GoogleLoginButton from './GoogleLoginButton';
 import LanguageSelect from '../LanguageSelect'
 //import GoogleLogoutButton from './GoogleLogoutButton'
+import { ToggleNavbarAction } from '../../../actions/navbarActions';
 import { LogoutStart, ShowModal, HideModal, FetchUserStart} from '../../../actions';
 import { ChangeLangAction } from '../../../actions/langActions';
 import { relativeTimeThreshold } from 'moment';
@@ -139,6 +140,9 @@ class NavBar extends React.Component {
                     position: 'fixed',
                     left: 20,
                 }}
+                collapsible
+                collapsed={this.props.navbar}
+                onClick={() => { this.props.ToggleNavbarAction(); console.log("NEWPROPS", this.props)}}
                 >
                 <div className="logo" />
                 <Menu theme="light" mode="inline" defaultSelectedKeys={['2']}>
@@ -264,8 +268,12 @@ class NavBar extends React.Component {
     
 }
 
-const mapStateToProps = state =>{
-    return { user: state.user.auth, google_user: state.user.google_auth}
+const mapStateToProps = state => {
+    return {
+        user: state.user.auth,
+        google_user: state.user.google_auth,
+        navbar: state.navbar
+    }
 }
 
 export default connect(mapStateToProps, {
@@ -273,5 +281,6 @@ export default connect(mapStateToProps, {
     ShowModal,
     HideModal,
     FetchUserStart,
-    ChangeLangAction
+    ChangeLangAction,
+    ToggleNavbarAction
 })(NavBar)
