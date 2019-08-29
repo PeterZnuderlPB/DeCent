@@ -7,9 +7,15 @@ import {
     Spin,
     Button,
     Popconfirm,
-    Icon
+    Icon,
+    Modal,
+    Input,
+    Select
 } from 'antd';
 import con from '../../apis';
+
+const { TextArea } = Input;
+const { Option } = Select;
 
 class Cooperatives extends React.Component {
     constructor(props) {
@@ -17,7 +23,8 @@ class Cooperatives extends React.Component {
 
         this.state = {
             cooperativesLoading: true,
-            cooperatives: []
+            cooperatives: [],
+            modalVisible: false
         };
     }
 
@@ -86,8 +93,26 @@ class Cooperatives extends React.Component {
                 Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
             }
         })
-        .then(() => console.log("SUCCESSFULL"))
+        .then(() => this.fetchCooperatives())
         .catch(() => console.log("ERROR"));
+    }
+
+    handleModalShow = () => {
+        this.setState({
+            modalVisible: true
+        });
+    }
+
+    handleModalOk = () => {
+        this.setState({
+            modalVisible: false
+        });
+    }
+
+    handleModalCancel = () => {
+        this.setState({
+            modalVisible: false
+        });
     }
 
     renderCooperatives = () => {
@@ -117,7 +142,7 @@ class Cooperatives extends React.Component {
                                             </ul>
                                             <p>Biography: {`${el.about.substring(0, 50)}...`}</p>
                                             {el.workers.findIndex(el => { return el.id == this.props.user.userInfo.id }) === -1
-                                            ?  <Button block type="primary">Enroll</Button>
+                                            ?  <Button block type="primary" onClick={this.handleModalShow}>Enroll</Button>
                                             : <Popconfirm
                                               placement="top"
                                               icon={<Icon type="warning" style={{ color: 'red' }} />} 
@@ -208,10 +233,37 @@ class Cooperatives extends React.Component {
         }
     }
 
+    renderModal = () => {
+        if (this.props.user.userInfo.id !== undefined) {
+            return (
+                <Modal
+                title="Cooperative signup"
+                visible={this.state.modalVisible}
+                onOk={this.handleModalOk}
+                onCancel={this.handleModalCancel}
+                >
+                    <h4>Username:</h4>
+                    <Input type="text" disabled={true} defaultValue={this.props.user.userInfo.username} />
+                    <h4>Your competencies:</h4>
+                    <Select mode="multiple" labelInValue={true} defaultValue={this.props.user.userInfo.competencys.map(el => { return {key: el.id.toString(), label: el.name }; })} disabled={true}>
+                        {this.props.user.userInfo.competencys.map(el => {
+                            return <Option key={el.id.toString()} value={el.id.toString()}>{el.name}</Option>
+                        })}
+                    </Select>
+                    <h4>Reason you want to join (150 - 200 words): </h4>
+                    <TextArea rows={10} />
+                </Modal>
+            );
+        } else {
+            return null;
+        }
+    }
+
     render(){
         return(
             <>
             {this.renderCooperatives()}
+            {this.renderModal()}
             </>
         );
     }
