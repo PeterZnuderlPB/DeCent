@@ -5,7 +5,9 @@ import {
     Col,
     Card,
     Spin,
-    Button
+    Button,
+    Popconfirm,
+    Icon
 } from 'antd';
 import con from '../../apis';
 
@@ -75,6 +77,19 @@ class Cooperatives extends React.Component {
         return rowArray;
     }
 
+    handleCooperativeLeave = cooperativeId => {
+        con.patch(`api/cooperative/${cooperativeId}`, {
+            workerRemove__id: this.props.user.userInfo.id
+        },
+        {
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(() => console.log("SUCCESSFULL"))
+        .catch(() => console.log("ERROR"));
+    }
+
     renderCooperatives = () => {
         if (this.state.cooperativesLoading) {
             return <Spin tip="Loading workers..." size="large" />
@@ -87,7 +102,7 @@ class Cooperatives extends React.Component {
                             {this.state.cooperatives.map(el => {
                                 return (
                                     <Col xs={24} sm={12} md={6} lg={6}>
-                                        <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: 400 }}>
+                                        <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: '100%' }}>
                                             <p><b>Needed competencies: </b></p>
                                             <ul>
                                                 {el.competencys.map(comp => {
@@ -101,7 +116,19 @@ class Cooperatives extends React.Component {
                                                 })}
                                             </ul>
                                             <p>Biography: {`${el.about.substring(0, 50)}...`}</p>
-                                            {el.workers.findIndex(el => { return el.id == this.props.user.userInfo.id }) === -1 ? <Button block type="primary">Enroll</Button> : <Button block type="danger">Leave</Button>}
+                                            {el.workers.findIndex(el => { return el.id == this.props.user.userInfo.id }) === -1
+                                            ?  <Button block type="primary">Enroll</Button>
+                                            : <Popconfirm
+                                              placement="top"
+                                              icon={<Icon type="warning" style={{ color: 'red' }} />} 
+                                              title="Are you sure you want to leave this cooperative?" 
+                                              onConfirm={() => this.handleCooperativeLeave(el.id)} 
+                                              okText="Yes" 
+                                              cancelText="No"
+                                              >
+                                                <Button block type="danger">Leave</Button>
+                                            </Popconfirm>
+                                            }
                                         </Card>
                                     </Col>
                                 );
@@ -120,7 +147,7 @@ class Cooperatives extends React.Component {
                                     {this.state.cooperatives.map(el => {
                                         return (
                                             <Col xs={24} sm={12} md={6} lg={6}>
-                                                <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: 400 }}>
+                                                <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: '100%' }}>
                                                     <p><b>Needed competencies: </b></p>
                                                     <ul>
                                                         {el.competencys.map(comp => {
@@ -153,7 +180,7 @@ class Cooperatives extends React.Component {
                                         
                                         return (
                                             <Col xs={24} sm={12} md={6} lg={6}>
-                                                <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: 400 }}>
+                                                <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: '100%' }}>
                                                     <p><b>Needed competencies: </b></p>
                                                     <ul>
                                                         {el.competencys.map(comp => {

@@ -333,6 +333,41 @@ class CooperativeSerializerBasic(DynamicFieldsModelSerializer ,serializers.Model
         fields = '__all__' #    A tuple with names of fields to serialize
         depth = 0 # How deep we want to serialize fk connections
 
+    def update(self, instance, validated_data):
+        if 'workerRemove__id' in validated_data:
+            workerId = validated_data.pop('workerRemove__id', None)
+            if workerId != None:
+                print(f'[Cooperative] Worker update')
+                allWorkers = instance.workers.all()
+                allWorkersList = []
+
+                for qs in allWorkers:
+                    workerDict = model_to_dict(qs)
+                    tempWorkerId = workerDict['id']
+                    if tempWorkerId == workerId:
+                        pass
+                    else:
+                        allWorkersList.append(tempWorkerId)
+
+                instance.workers.set(allWorkersList)
+
+                userObj = CustomUser.objects.get(id=workerId)
+                if userObj.active_cooperative == instance.id:
+                    userObj.active_cooperative = 0
+                    userObj.save()
+                
+                instance.save()
+                return instance
+            else:
+                pass
+        else:
+            print(f'[Cooperative] Normal update')
+            instance.save()
+            return instance
+
+    def to_internal_value(self, value):
+        return value
+
 class CooperativeSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = Cooperative

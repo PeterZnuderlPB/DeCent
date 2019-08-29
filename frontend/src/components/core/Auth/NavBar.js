@@ -235,7 +235,7 @@ class NavBar extends React.Component {
 
                     {/* My cooperative */}
                     {this.props.user.isAuthenticated
-                    ? this.props.user.userInfo.active_type === 2 ||  this.props.user.userInfo.active_type === 3
+                    ? this.props.user.userInfo.active_cooperative !== 0
                         ? <Menu.Item key="10">
                             <Icon type="apartment" />
                             <span className="nav-text">

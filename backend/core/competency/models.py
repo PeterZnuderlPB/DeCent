@@ -148,12 +148,21 @@ class Comment(PBModel):
 class Cooperative(PBModel):
     title = models.TextField()
     about = models.TextField()
+    official = models.BooleanField(blank=True, null=True, default=False)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owner")
     workers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="workers")
     competencys = models.ManyToManyField(Competency)
 
     def __str__(self):
         return f'Cooperative #{self.id} - {self.title} - O: {self.owner.username}'
+
+class CooperativeEnrollment(PBModel):
+    enroller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
+    comment = models.TextField()
+
+    def __str__(self):
+        return f'CooperativeEnrollment #{self.id} - U: {self.enroller.username} - C: {self.cooperative.title}'
 
 class Project(PBModel):
     name = models.TextField()
