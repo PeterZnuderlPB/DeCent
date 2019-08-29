@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { Select, Button, Spin, Popconfirm, Icon, message } from 'antd';
 import { FetchUserStart } from '../../actions/index';
 import { UpdatePost, DeletePost, AddPost } from '../../actions/PBEditViewActions';
+import { timingSafeEqual } from 'crypto';
 
 const { Option } = Select;
 
@@ -33,7 +34,9 @@ class UserSettings extends React.Component {
             subjects: [],
             formSet: false,
             organizationCurrentlyInUse: null,
-            competencies: []
+            competencies: [],
+            coopertivesLoading: true,
+            cooperatives: []
         };
     }
 
@@ -41,6 +44,7 @@ class UserSettings extends React.Component {
         this.fetchPrimaryOrganization();
         this.fetchAllCompetencies();
         this.fetchAllUsers();
+        this.fetchUserCooperatives();
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -49,6 +53,7 @@ class UserSettings extends React.Component {
             this.fetchUserOrganizations();
             this.fetchAllCompetencies();
             this.fetchAllUsers();
+            this.fetchUserCooperatives();
         }
 
         if(this.state.primaryOrganization !== prevState.primaryOrganization) {
@@ -330,6 +335,51 @@ class UserSettings extends React.Component {
           .catch(err => console.log("[UserSettings] Users fetch error: ", err));
     }
 
+    fetchUserCooperatives = () => {
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {
+                workers__id: this.props.user.userInfo.id
+            }
+          };
+      
+          params.visibleFields.push('id','title', 'about', 'owner__username', 'workers', 'competencys');
+
+          if (params != null) {
+            params = {
+              ...params,
+              cacheEnabled: false
+            }
+          }
+      
+          let settings = JSON.stringify(params);
+      
+          con.get('/api/cooperative/', {
+            params: {
+              settings
+            },
+            headers: {
+              Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+          })
+          .then(res => {
+              let noDuplicates = [...new Set(res.data.data.map(d => d.id))]
+                                 .map(id => {
+                                     return res.data.data.find(c => c.id === id);
+                                 });
+
+              this.setState({
+                cooperatives: noDuplicates,
+                coopertivesLoading: false
+              });
+          })
+          .catch(err => console.log("[UserSettings] Cooperative fetch error: ", err));
+    }
+
     setUserPermissionIDs = (element) => {
         let userPermissions = [];
 
@@ -536,6 +586,19 @@ class UserSettings extends React.Component {
         .catch(err => console.log("[DetailView] UserSettings Competency patch error", err));
     }
 
+    handleCooperativeChange = e => {
+        con.patch(`/api/users/${this.props.user.userInfo.id}/`, {
+            active_cooperative: e.key
+        },
+        {
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token 
+        }
+        })
+        .then(() => this.props.FetchUserStart(this.props.user.token))
+        .catch(err => console.log("[DetailView] CooperativeChange patch error", err));
+    }
+
     getUserType = userType => {
             if (typeof(userType) === 'number') {
                 switch (userType) {
@@ -618,6 +681,42 @@ class UserSettings extends React.Component {
         );
     }
 
+    renderUserCooperatives = () => {
+        if (this.state.coopertivesLoading) {
+            return <Spin tip="Loading..." size="large" />
+        } else {
+            if (this.state.cooperatives.length === 0) {
+                return (
+                    <>
+                    <hr />
+                    <h3>You are not a part of any cooperative.</h3>
+                    </>
+                );
+            } else {
+                return (
+                    <>
+                    <hr />
+                    <span>Select cooperative(<b>Current: {this.state.cooperatives.map(el => { if(el.id === this.props.user.userInfo.active_cooperative) return el.title})}</b>): </span>
+                    <Select
+                    style={{ width: '28%', marginLeft: '0.4%' }}
+                    labelInValue={true}
+                    //TODO : DefaultValue
+                    onChange={this.handleCooperativeChange}
+                    onFocus={this.fetchUserCooperatives}
+                    >
+                        {!this.state.coopertivesLoading
+                        ? this.state.cooperatives.map(el => {
+                            return <Option key={el.id.toString()} value={el.id.toString()}>{el.title}</Option>;
+                        })
+                        : null
+                        }
+                    </Select>
+                    </>
+                );
+            }
+        }
+    }
+
     render() {
         return (
             <div>
@@ -633,6 +732,7 @@ class UserSettings extends React.Component {
                 <hr />
                 <h3 style={{ textAlign: 'center' }}>Your profile: </h3>
                 {this.renderProfileSettings()}
+                {this.renderUserCooperatives()}
             </div>
         );
     }
