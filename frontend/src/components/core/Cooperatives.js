@@ -12,6 +12,9 @@ import {
     Input,
     Select
 } from 'antd';
+import {
+    AddPost
+} from '../../actions/PBEditViewActions';
 import con from '../../apis';
 
 const { TextArea } = Input;
@@ -24,7 +27,11 @@ class Cooperatives extends React.Component {
         this.state = {
             cooperativesLoading: true,
             cooperatives: [],
-            modalVisible: false
+            applicationsLoading: true,
+            applications: [],
+            modalVisible: false,
+            comment: '',
+            enrollingSelected: 0
         };
     }
 
@@ -66,9 +73,45 @@ class Cooperatives extends React.Component {
                 cooperatives: res.data.data,
                 cooperativesLoading: false
             });
+            this.fetchUserApplications();
         })
         .catch(err => {
             console.log('[Error] Cooperative - cooperatives fetch ', err);
+        });
+    }
+
+    fetchUserApplications = () => {
+        let params = {
+            results: 1000,
+            page: 1,
+            sortOrder: [],
+            sortField: [],
+            visibleFields: [],
+            filters: {
+                enroller__id: this.props.user.userInfo.id
+            }
+          };
+      
+          params.visibleFields.push('id', 'enroller__id', 'cooperative__id');
+      
+          let settings = JSON.stringify(params);
+
+        con.get(`api/cooperativeenrollment/`, {
+            params: {
+                settings
+            },
+            headers: {
+                Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+            }
+        })
+        .then(res => {
+            this.setState({
+                applicationsLoading: false,
+                applications: res.data.data
+            });
+        })
+        .catch(err => {
+            console.log('[Error] Cooperatives - Applications fetch ', err);
         });
     }
 
@@ -97,9 +140,10 @@ class Cooperatives extends React.Component {
         .catch(() => console.log("ERROR"));
     }
 
-    handleModalShow = () => {
+    handleModalShow = e => {
         this.setState({
-            modalVisible: true
+            modalVisible: true,
+            enrollingSelected: e.target.value
         });
     }
 
@@ -107,11 +151,28 @@ class Cooperatives extends React.Component {
         this.setState({
             modalVisible: false
         });
+
+        const cooperativeEnrollmentModel = {
+            enroller: this.props.user.userInfo.id,
+            cooperative: this.state.enrollingSelected,
+            comment: this.state.comment,
+            is_active: true,
+            is_locked: false
+        }
+
+        this.props.AddPost(cooperativeEnrollmentModel, 'cooperativeenrollment')
+        this.fetchCooperatives();
     }
 
     handleModalCancel = () => {
         this.setState({
             modalVisible: false
+        });
+    }
+
+    handleCommentChange = e => {
+        this.setState({
+            comment: e.target.value
         });
     }
 
@@ -141,8 +202,10 @@ class Cooperatives extends React.Component {
                                                 })}
                                             </ul>
                                             <p>Biography: {`${el.about.substring(0, 50)}...`}</p>
-                                            {el.workers.findIndex(el => { return el.id == this.props.user.userInfo.id }) === -1
-                                            ?  <Button block type="primary" onClick={this.handleModalShow}>Enroll</Button>
+                                            {el.workers.findIndex(elW => { return elW.id == this.props.user.userInfo.id }) === -1
+                                                ? this.state.applications.findIndex(a => { return a.cooperative__id == el.id }) === -1 
+                                                    ? <Button block type="primary" value={el.id} onClick={this.handleModalShow}>Enroll</Button>
+                                                    : <Button block type="primary" value={el.id} disabled={true}>Pending...</Button>
                                             : <Popconfirm
                                               placement="top"
                                               icon={<Icon type="warning" style={{ color: 'red' }} />} 
@@ -251,7 +314,7 @@ class Cooperatives extends React.Component {
                         })}
                     </Select>
                     <h4>Reason you want to join (150 - 200 words): </h4>
-                    <TextArea rows={10} />
+                    <TextArea value={this.state.comment} onChange={this.handleCommentChange} rows={10} />
                 </Modal>
             );
         } else {
@@ -274,4 +337,6 @@ const mapStateToProps = state =>{
     return { user: state.user.auth }
 }
 
-export default connect(mapStateToProps)(Cooperatives);
+export default connect(mapStateToProps, {
+    AddPost
+})(Cooperatives);

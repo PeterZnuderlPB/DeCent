@@ -99,7 +99,7 @@ export const AddPost = (postData, table) => (dispatch, getState) => {
     con.post(saveUri, postData, conConfig)
     .then(res => {
         dispatch(AddPostSuccess(postData));
-        if (table !== 'userpermission') { 
+        if (table !== 'userpermission' && table !== 'cooperativeenrollment') { 
             message.success("Successfully added post.");
             history.push(`${history.location.pathname}/${res.data.id}`);
         } else {
