@@ -1,11 +1,14 @@
 import { TOGGLE_NAVBAR } from './types';
 
-export const ToggleNavbarAction = () => (dispatch, getState) => {
+export const ToggleNavbar = () => (dispatch, getState) => {
     const { navbar } = getState();
-    console.log("OK", navbar)
 
+    dispatch(ToggleNavbarAction(!navbar));
+}
+
+export const ToggleNavbarAction = status  => {
     return {
         type: TOGGLE_NAVBAR,
-        payload: true
+        payload: status
     }
 }

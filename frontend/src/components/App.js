@@ -24,6 +24,8 @@ import WorkOrders from './core/WorkOrders';
 import MyProjects from './core/MyProjects';
 import Workers from './core/Workers';
 
+import './core/styles/appstyle.css';
+
 const { Header, Content, Footer, Sider } = Layout;
 
 class App extends React.Component{
@@ -42,7 +44,7 @@ class App extends React.Component{
                 <Router history={history}>
                     <Layout >
                         <Route path="/" component={NavBar}/>
-                        <Layout style={{ marginLeft: 230 }}>
+                        <Layout className="app-container" style={{ marginLeft: !this.props.navbar ? 230 : 130 }}>
                             <Header style={{ background: '#cceeff', padding: 0 }}>
                                 <Route path="/" component={PBModal}/>
                             </Header>
@@ -78,7 +80,10 @@ class App extends React.Component{
 };
 
 const mapStateToProps = state =>{
-    return { lang: state.lang }
+    return {
+        lang: state.lang,
+        navbar: state.navbar
+    }
 }
 
 export default connect(mapStateToProps, { ChangeLangAction })(App);
