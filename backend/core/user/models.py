@@ -13,5 +13,6 @@ class CustomUser(AbstractUser):
     biography = models.TextField(default="")
     active_organization_id = models.IntegerField(blank=True, null=True)
     active_type = models.IntegerField(blank=True, null=True, default=1)
+    active_cooperative = models.IntegerField(blank=True, null=True, default=0)
     competencys = models.ManyToManyField(Competency, blank=True)
     pass
