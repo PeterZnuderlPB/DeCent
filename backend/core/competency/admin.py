@@ -17,6 +17,7 @@ from .models import (
     CompRating,
     UserPermission,
     Comment,
+    Cooperative,
     Project,
     WorkOrder
 )
@@ -40,5 +41,6 @@ admin.site.register(Answer)
 admin.site.register(CompRating)
 admin.site.register(UserPermission)
 admin.site.register(Comment)
+admin.site.register(Cooperative)
 admin.site.register(Project)
 admin.site.register(WorkOrder)

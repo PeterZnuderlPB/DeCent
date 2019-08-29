@@ -27,5 +27,7 @@ urlpatterns = [
     path('api/project/', views.ProjectList.as_view()),
     path('api/project/<pk>', views.ProjectDetails.as_view()),
     path('api/workorder/', views.WorkOrderList.as_view()),
-    path('api/workorder/<pk>', views.WorkOrderDetails.as_view())
+    path('api/workorder/<pk>', views.WorkOrderDetails.as_view()),
+    path('api/cooperative/', views.CooperativeList.as_view()),
+    path('api/cooperative/<pk>', views.CooperativeDetails.as_view())
 ]

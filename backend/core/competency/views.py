@@ -24,6 +24,7 @@ from .models import (
     CompRating,
     UserPermission,
     Comment,
+    Cooperative,
     Project,
     WorkOrder
 )
@@ -61,7 +62,9 @@ from .serializers import (
     ProjectSerializerBasic,
     ProjectSerializerDepth,
     WorkOrderSerializerBasic,
-    WorkOrderSerializerDepth
+    WorkOrderSerializerDepth,
+    CooperativeSerializerBasic,
+    CooperativeSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -632,3 +635,43 @@ class WorkOrderDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return WorkOrderSerializerDepth
         return WorkOrderSerializerBasic
+
+class CooperativeList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = Cooperative
+    table_name = "Cooperatives" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return CooperativeSerializerDepth
+        return CooperativeSerializerBasic
+
+class CooperativeDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = Cooperative
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+            return CooperativeSerializerDepth
+        return CooperativeSerializerBasic

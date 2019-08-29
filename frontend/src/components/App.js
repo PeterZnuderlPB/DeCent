@@ -25,6 +25,7 @@ import MyProjects from './core/MyProjects';
 import Workers from './core/Workers';
 
 import './core/styles/appstyle.css';
+import Cooperatives from './core/Cooperatives';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -59,6 +60,7 @@ class App extends React.Component{
                                 <Route path="/workorders" exact component={WorkOrders} />
                                 <Route path="/workers" exact component={Workers} />
                                 <Route path="/myprojects" exact component={MyProjects} />
+                                <Route path="/cooperatives" exact component={Cooperatives} />
                                 <Route path="/BrowseView/:table_name" exact component={PBTable} />
                                 <Route path="/EditView/:table_name/:id" exact component={PBEditView} />
                                 <Route path="/EditView/:table_name/" exact component={PBEditView} />

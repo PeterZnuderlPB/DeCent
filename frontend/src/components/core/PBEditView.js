@@ -589,7 +589,7 @@ class PBEditView extends React.Component {
         return this.state.values.map((el, i, index) => 
           <div key={i}>
 
-            {el.includes('user') ? null : <label>{el}:</label>}
+            {el.includes('user') || el.includes('file_directory') ? null : <label>{el}:</label>}
             {this.state.column_types[i].includes("Integer")? <InputNumber value={this.state.data[el]||''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
             this.state.column_types[i].includes("Date (without time)")?
             (<DatePicker defaultValue={moment(this.state.data[el], "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} />):
@@ -599,6 +599,8 @@ class PBEditView extends React.Component {
             //HH:mm:ss
             this.state.column_types[i].includes("Boolean")?
             (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
+            el.includes('file_directory')?
+            (<Input style={{ display: 'none' }} value={this.state.data[el]} disabled={true}/>):
             el.includes('user')?
             (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
             el.includes('tags')?

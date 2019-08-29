@@ -141,6 +141,20 @@ class Comment(PBModel):
     def __str__(self):
         return f'Comment #{self.id} - {self.account.username} - {self.organization.name} - {self.competency.name}'
 
+
+#-------------------------------------------------
+# WorkOrder project - includes Competencies model
+#-------------------------------------------------
+class Cooperative(PBModel):
+    title = models.TextField()
+    about = models.TextField()
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owner")
+    workers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="workers")
+    competencys = models.ManyToManyField(Competency)
+
+    def __str__(self):
+        return f'Cooperative #{self.id} - {self.title} - O: {self.owner.username}'
+
 class Project(PBModel):
     name = models.TextField()
     description = models.TextField()
