@@ -1,12 +1,17 @@
 import {
     FETCH_COOPERATIVE_ENROLLMENT_START,
     FETCH_COOPERATIVE_ENROLLMENT_SUCCESS,
-    FETCH_COOPERATIVE_ENROLLMENT_FAIL
+    FETCH_COOPERATIVE_ENROLLMENT_FAIL,
+    SET_SINGLE_COOPERATIVE_ENROLLMENT_START,
+    SET_SINGLE_COOPERATIVE_ENROLLMENT_SUCCESS,
+    SET_SINGLE_COOPERATIVE_ENROLLMENT_FAIL
 } from '../actions/types';
 
 const INITIAL_STATE = {
     data: [],
-    loading: true
+    loading: true,
+    singleData: [],
+    singleLoading: true
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -17,6 +22,12 @@ export default (state = INITIAL_STATE, action) => {
             return action.payload;
         case FETCH_COOPERATIVE_ENROLLMENT_FAIL:
             return { ...state, loading: false };
+        case SET_SINGLE_COOPERATIVE_ENROLLMENT_START:
+            return { ...state, singleLoading: true };
+        case SET_SINGLE_COOPERATIVE_ENROLLMENT_SUCCESS:
+            return { ...state, singleData: action.payload.singleData, singleLoadin: action.payload.singleLoading };
+        case SET_SINGLE_COOPERATIVE_ENROLLMENT_FAIL:
+            return { ...state, singleLoading: false }
         default:
             return state;
     }

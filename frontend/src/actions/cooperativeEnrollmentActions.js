@@ -2,7 +2,10 @@ import { message } from 'antd';
 import {
     FETCH_COOPERATIVE_ENROLLMENT_START,
     FETCH_COOPERATIVE_ENROLLMENT_SUCCESS,
-    FETCH_COOPERATIVE_ENROLLMENT_FAIL
+    FETCH_COOPERATIVE_ENROLLMENT_FAIL,
+    SET_SINGLE_COOPERATIVE_ENROLLMENT_START,
+    SET_SINGLE_COOPERATIVE_ENROLLMENT_SUCCESS,
+    SET_SINGLE_COOPERATIVE_ENROLLMENT_FAIL
 } from './types';
 import { COOPERATIVE_MAMANGMENT_APPLICATION_LIST } from '../constants';
 import con from '../apis';
@@ -64,6 +67,13 @@ export const AcceptCooperativeEnrollmentAction = (enrollerId, accept) => (dispat
     });
 }
 
+export const SetSingleCooperativeEnrollmentAction = enrollmentId => (dispatch, getState) => {
+    const { cooperativeEnrollment } = getState();
+
+    console.log("Index", cooperativeEnrollment.data.data.find(c => c.id === 52));
+}
+
+// Basic actions
 export const FetchCooperativeEnrollmentStartAction = () => {
     return {
         type: FETCH_COOPERATIVE_ENROLLMENT_START,
@@ -86,4 +96,28 @@ export const FetchCooperativeEnrollmentFailAction = () => {
         type: FETCH_COOPERATIVE_ENROLLMENT_FAIL,
         payload: null
     }
+}
+
+export const SetSingleCooperativeEnrollmentStartAction = () => {
+    return {
+        type: SET_SINGLE_COOPERATIVE_ENROLLMENT_START,
+        payload: null
+    }   
+}
+
+export const SetSingleCooperativeEnrollmentSuccesstAction = data => {
+    return {
+        type: SET_SINGLE_COOPERATIVE_ENROLLMENT_SUCCESS,
+        payload: {
+            singleLoading: false,
+            singleData: data
+        }
+    }   
+}
+
+export const SetSingleCooperativeEnrollmentFailAction = () => {
+    return {
+        type: SET_SINGLE_COOPERATIVE_ENROLLMENT_FAIL,
+        payload: null
+    }   
 }

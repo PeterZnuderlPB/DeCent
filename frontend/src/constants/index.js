@@ -22,4 +22,4 @@ export const USER_SETTINGS_USERS_LIST = ['id'];
 //------------------------------------------
 // CooperativeManagment visibleField Consts
 //------------------------------------------
-export const COOPERATIVE_MAMANGMENT_APPLICATION_LIST = ['id', 'enroller__id', 'enroller__username'];
+export const COOPERATIVE_MAMANGMENT_APPLICATION_LIST = ['id', 'enroller__id', 'enroller__username', 'comment', 'enroller__competencys'];

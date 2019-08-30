@@ -88,6 +88,14 @@ class CompotencyList(PBListViewMixin, generics.ListCreateAPIView):
         'POST':['__all__'],
         'PUT':['__all__'],
     }
+    DEFAULT_QUERY_SETTINGS= {
+        'results':10,
+        'page':1,
+        'sortOrder':[],
+        'sortField':[],
+        'visibleFields':['id', 'name', 'description', 'essential_knoweledge'],
+        'filters':{}
+    }
 
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
@@ -525,7 +533,7 @@ class CommnetList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return CommentSerializerDepth
         return CommentSerializerBasic
 
@@ -556,7 +564,7 @@ class CommentDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
 
     
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return CommentSerializerDepth
         return CommentSerializerBasic
 
@@ -574,9 +582,17 @@ class ProjectList(PBListViewMixin, generics.ListCreateAPIView):
         'POST':['__all__'],
         'PUT':['__all__'],
     }
+    DEFAULT_QUERY_SETTINGS= {
+        'results':10,
+        'page':1,
+        'sortOrder':[],
+        'sortField':[],
+        'visibleFields':['id', 'name', 'description'],
+        'filters':{}
+    }
 
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return ProjectSerializerDepth
         return ProjectSerializerBasic
 
@@ -596,7 +612,7 @@ class ProjectDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
 
     
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return ProjectSerializerDepth
         return ProjectSerializerBasic
 
@@ -614,9 +630,17 @@ class WorkOrderList(PBListViewMixin, generics.ListCreateAPIView):
         'POST':['__all__'],
         'PUT':['__all__'],
     }
+    DEFAULT_QUERY_SETTINGS= {
+        'results':10,
+        'page':1,
+        'sortOrder':[],
+        'sortField':[],
+        'visibleFields':['id', 'name', 'description', 'project__name'],
+        'filters':{}
+    }
 
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return WorkOrderSerializerDepth
         return WorkOrderSerializerBasic
 
@@ -636,7 +660,7 @@ class WorkOrderDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView
 
     
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return WorkOrderSerializerDepth
         return WorkOrderSerializerBasic
 
@@ -656,10 +680,9 @@ class CooperativeList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
-        # if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
-        #     return CooperativeSerializerDepth
-        # return CooperativeSerializerBasic
-        return CooperativeSerializerDepth
+        if self.request.method == 'GET':
+            return CooperativeSerializerDepth
+        return CooperativeSerializerBasic
 
 class CooperativeDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Cooperative
@@ -677,7 +700,7 @@ class CooperativeDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIVi
 
     
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return CooperativeSerializerDepth
         return CooperativeSerializerBasic
 
@@ -716,7 +739,7 @@ class CooperativeEnrollmentDetails(PBDetailsViewMixin, generics.RetrieveUpdateDe
     }
     
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return CooperativeEnrollmentSerializerDepth
         return CooperativeEnrollmentSerializerBasic
 

@@ -6,7 +6,8 @@ import {
 } from '../../actions/cooperativeActions';
 import {
     FetchCooperativeEnrollmentAction,
-    AcceptCooperativeEnrollmentAction
+    AcceptCooperativeEnrollmentAction,
+    SetSingleCooperativeEnrollmentAction
 } from '../../actions/cooperativeEnrollmentActions';
 import {
     Spin,
@@ -15,11 +16,21 @@ import {
     Input,
     Button,
     Popconfirm,
-    Icon
+    Icon,
+    Modal
 } from 'antd';
 import { COOPERATIVE_MAMANGMENT_APPLICATION_LIST } from '../../constants';
 
 class CooperativeManagment extends React.Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            modalVisible: false,
+            title: ''
+        }
+    }
+
     componentDidMount = () => {
         this.props.FetchCooperativeAction();
     }
@@ -44,6 +55,39 @@ class CooperativeManagment extends React.Component {
 
     handleRemove = userid => {
         this.props.UpdateCooperativeMembersAction(this.props.cooperative.cooperativeData.data.id, userid);
+    }
+
+    handleModalShow = elId => {
+        this.props.SetSingleCooperativeEnrollmentAction(elId);
+
+        this.setState({
+            modalVisible: true,
+            title: 'Applicant information'
+        });
+    }
+
+    handleModalClose = () => {
+        this.setState({
+            modalVisible: false
+        });
+    }
+
+    renderModal = () => {
+        return (
+            <Modal
+            title={this.state.title}
+            visible={this.state.modalVisible}
+            footer={[
+                <Button onClick={this.handleModalClose} type="primary">
+                    Close
+                </Button>
+            ]}
+            >
+                <p onClick={() => console.log(this.props)}>Some contents...</p>
+                <p>Some contents...</p>
+                <p>Some contents...</p>
+            </Modal>
+        );
     }
 
     renderWorkers = () => {
@@ -97,7 +141,7 @@ class CooperativeManagment extends React.Component {
                         </Col>
 
                         <Col style={{ marginBottom: '1%' }} xs={24} sm={24} md={8} lg={8}>
-                            <Button block type="primary">View</Button>
+                            <Button block type="primary" onClick={() => this.handleModalShow(el.id)}>View</Button>
                         </Col>
 
                         <Col style={{ marginBottom: '1%' }} xs={24} sm={24} md={8} lg={8}>
@@ -129,6 +173,7 @@ class CooperativeManagment extends React.Component {
                         <h3 style={{ textAlign: 'center' }}>Applications</h3>
                         {this.renderApplications()}
                     </Col>
+                    {this.renderModal()}
                 </Row>
             );
         }
@@ -162,5 +207,6 @@ export default connect(mapStateToProps, {
     FetchCooperativeAction,
     FetchCooperativeEnrollmentAction,
     AcceptCooperativeEnrollmentAction,
-    UpdateCooperativeMembersAction
+    UpdateCooperativeMembersAction,
+    SetSingleCooperativeEnrollmentAction
 })(CooperativeManagment);

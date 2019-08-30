@@ -10,7 +10,8 @@ import {
     Icon,
     Modal,
     Input,
-    Select
+    Select,
+    message
 } from 'antd';
 import {
     AddPost
@@ -55,7 +56,7 @@ class Cooperatives extends React.Component {
             filters: {}
           };
       
-          params.visibleFields.push('id','title', 'about', 'owner__username', 'workers', 'competencys');
+          params.visibleFields.push('id','title', 'about', 'owner__username', 'workers', 'competencys', 'owner__id');
       
           let settings = JSON.stringify(params);
 
@@ -127,7 +128,13 @@ class Cooperatives extends React.Component {
         return rowArray;
     }
 
-    handleCooperativeLeave = cooperativeId => {
+    handleCooperativeLeave = (cooperativeId, ownerId) => {
+        if (this.props.user.userInfo.id === ownerId) {
+            message.error("You cannot leave your own cooperative!");
+            return;
+        }
+
+
         con.patch(`api/cooperative/${cooperativeId}`, {
             workerRemove__id: this.props.user.userInfo.id
         },
@@ -210,7 +217,7 @@ class Cooperatives extends React.Component {
                                               placement="top"
                                               icon={<Icon type="warning" style={{ color: 'red' }} />} 
                                               title="Are you sure you want to leave this cooperative?" 
-                                              onConfirm={() => this.handleCooperativeLeave(el.id)} 
+                                              onConfirm={() => this.handleCooperativeLeave(el.id, el.owner__id)} 
                                               okText="Yes" 
                                               cancelText="No"
                                               >
