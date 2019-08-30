@@ -143,7 +143,7 @@ class PBListViewMixin(object):
         'page':1,
         'sortOrder':[],
         'sortField':[],
-        'visibleFields':['id'],
+        'visibleFields':['id'   ],
         'filters':{}
     }
 

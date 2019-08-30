@@ -66,6 +66,4 @@ class FullPBUserList(PBListViewMixin, generics.ListAPIView):
     table_name = "customusers"
 
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
-            return CustomUserSerialierDepth
-        return CustomUserSerializer
+        return CustomUserSerialierDepth

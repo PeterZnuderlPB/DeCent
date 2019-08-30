@@ -4,7 +4,9 @@ import {
     FETCH_COOPERATIVE_ENROLLMENT_SUCCESS,
     FETCH_COOPERATIVE_ENROLLMENT_FAIL
 } from './types';
+import { COOPERATIVE_MAMANGMENT_APPLICATION_LIST } from '../constants';
 import con from '../apis';
+import { FetchCooperativeAction } from './cooperativeActions';
 
 export const FetchCooperativeEnrollmentAction = (cooperativeId, visibleFields) => (dispatch, getState) => {
     dispatch(FetchCooperativeEnrollmentStartAction());
@@ -41,6 +43,25 @@ export const FetchCooperativeEnrollmentAction = (cooperativeId, visibleFields) =
         message.error('[CooperativeEnrollment] Error');
         dispatch(FetchCooperativeEnrollmentFailAction());
     })
+}
+
+export const AcceptCooperativeEnrollmentAction = (enrollerId, accept) => (dispatch, getState) => {
+    const { user } = getState();
+
+    let uri = accept === undefined ? `api/cooperativeenrollment/${enrollerId}` : `api/cooperativeenrollment/${enrollerId}?accept=true`; 
+
+    con.delete(uri, {
+        headers: {
+            Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`
+        }
+    })
+    .then(() => {
+        dispatch(FetchCooperativeEnrollmentAction(user.auth.userInfo.active_cooperative, COOPERATIVE_MAMANGMENT_APPLICATION_LIST));
+        dispatch(FetchCooperativeAction());
+    })
+    .catch(err => {
+        console.log("[CooperativeEnrollment] DELETE Error => ", err);
+    });
 }
 
 export const FetchCooperativeEnrollmentStartAction = () => {

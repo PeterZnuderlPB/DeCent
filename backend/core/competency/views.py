@@ -2,6 +2,7 @@ import json
 from django.views.generic import ListView
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from django.forms.models import model_to_dict
 from django.db.models.query import QuerySet
 from django.db.models import Q
 #from django_weasyprint import WeasyTemplateResponseMixin
@@ -655,9 +656,10 @@ class CooperativeList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
-            return CooperativeSerializerDepth
-        return CooperativeSerializerBasic
+        # if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        #     return CooperativeSerializerDepth
+        # return CooperativeSerializerBasic
+        return CooperativeSerializerDepth
 
 class CooperativeDetails(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = Cooperative
@@ -695,7 +697,7 @@ class CooperativeEnrollmentList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
-        if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
+        if self.request.method == 'GET':
             return CooperativeEnrollmentSerializerDepth
         return CooperativeEnrollmentSerializerBasic
 
@@ -712,9 +714,32 @@ class CooperativeEnrollmentDetails(PBDetailsViewMixin, generics.RetrieveUpdateDe
         'POST':['__all__'],
         'PUT':['__all__'],
     }
-
     
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CooperativeEnrollmentSerializerDepth
         return CooperativeEnrollmentSerializerBasic
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        accepted = dict(request.GET).pop('accept', None)
+        
+        if accepted != None:
+            print(f'[CooperativeEnrollment] Worker update')
+            cooperative_obj = Cooperative.objects.get(id=instance.cooperative_id)
+            worker_id = instance.enroller_id
+
+            allWorkers = cooperative_obj.workers.all()
+            allWorkersList = []
+            for qs in allWorkers:
+                workerDict = model_to_dict(qs)
+                allWorkersList.append(workerDict['id'])
+            allWorkersList.append(worker_id)
+
+            cooperative_obj.workers.set(allWorkersList)
+            cooperative_obj.save()
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)

@@ -62,6 +62,10 @@ class CustomUserSimpleSerializer(serializers.ModelSerializer):
             except KeyError:
                 pass
 
+        del valueDict['groups']
+        del valueDict['user_permissions']
+        # del valueDict['Permission']
+
         valueDict['competencys'] = competencyList
 
         return valueDict

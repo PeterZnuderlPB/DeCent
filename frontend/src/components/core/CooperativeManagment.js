@@ -1,7 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FetchCooperativeAction } from '../../actions/cooperativeActions';
-import { FetchCooperativeEnrollmentAction } from '../../actions/cooperativeEnrollmentActions';
+import {
+    FetchCooperativeAction,
+    UpdateCooperativeMembersAction
+} from '../../actions/cooperativeActions';
+import {
+    FetchCooperativeEnrollmentAction,
+    AcceptCooperativeEnrollmentAction
+} from '../../actions/cooperativeEnrollmentActions';
 import {
     Spin,
     Row,
@@ -28,11 +34,26 @@ class CooperativeManagment extends React.Component {
         console.log(this.props);
     }
 
+    handleAccept = e => {
+        this.props.AcceptCooperativeEnrollmentAction(e.target.value, true);
+    }
+
+    handleDeny = e => {
+        this.props.AcceptCooperativeEnrollmentAction(e.target.value);
+    }
+
+    handleRemove = userid => {
+        this.props.UpdateCooperativeMembersAction(this.props.cooperative.cooperativeData.data.id, userid);
+    }
+
     renderWorkers = () => {
         if (this.props.cooperative.cooperativeData.data === undefined)
             return null;
 
         return this.props.cooperative.cooperativeData.data.workers.map(el => {
+            if (el.id === this.props.user.userInfo.id)
+                return null;
+
             return (
                 <div>
                     <Row gutter={2}>
@@ -49,11 +70,12 @@ class CooperativeManagment extends React.Component {
                             placement="top"
                             icon={<Icon type="warning" style={{ color: 'red' }} />} 
                             title="Are you sure you want to remove this member?" 
-                            onConfirm={() => console.log("Removed member ID => ", el.id)} 
+                            onConfirm={() => this.handleRemove(el.id)} 
                             okText="Yes" 
                             cancelText="No"
+                            value={el.id}
                             >
-                                <Button block type="danger">Remove</Button>
+                                <Button value={el.id} block type="danger">Remove</Button>
                             </Popconfirm>
                         </Col>
                     </Row>
@@ -79,7 +101,10 @@ class CooperativeManagment extends React.Component {
                         </Col>
 
                         <Col style={{ marginBottom: '1%' }} xs={24} sm={24} md={8} lg={8}>
-                            <Button block type="primary" style={{ backgroundColor: 'rgba(92, 184, 92, 1.0)', border: '1px solid rgba(92, 184, 92, 0.6)' }}>Accept</Button>
+                            <Button value={el.id} onClick={this.handleAccept} block type="primary" style={{ backgroundColor: 'rgba(92, 184, 92, 1.0)', border: '1px solid rgba(92, 184, 92, 0.6)' }}>Accept</Button>
+                        </Col>
+                        <Col style={{ marginBottom: '1%' }} xs={24} sm={24} md={8} lg={8}>
+                            <Button value={el.id} onClick={this.handleDeny} block type="primary" style={{ backgroundColor: '#d9534f', border: '1px solid #d9534f' }}>Deny</Button>
                         </Col>
                     </Row>
                 </div>
@@ -135,5 +160,7 @@ const mapStateToProps = state =>{
 
 export default connect(mapStateToProps, {
     FetchCooperativeAction,
-    FetchCooperativeEnrollmentAction
+    FetchCooperativeEnrollmentAction,
+    AcceptCooperativeEnrollmentAction,
+    UpdateCooperativeMembersAction
 })(CooperativeManagment);
