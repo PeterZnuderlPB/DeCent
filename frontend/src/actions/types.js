@@ -74,3 +74,17 @@ export const DELETE_POST_FAIL = "DELETE_POST_FAIL";
 // Navbar actions
 //----------------
 export const TOGGLE_NAVBAR = "TOGGLE_NAVBAR";
+
+//---------------------
+// Cooperative actions
+//---------------------
+export const FETCH_COOPERATIVE_START = "FETCH_COOPERATIVE_START";
+export const FETCH_COOPERATIVE_SUCCESS = "FETCH_COOPERATIVE_SUCCESS";
+export const FETCH_COOPERATIVE_FAIL = "FETCH_COOPERATIVE_FAIL";
+
+//-------------------------------
+// CooperativeEnrollment actions
+//-------------------------------
+export const FETCH_COOPERATIVE_ENROLLMENT_START = "FETCH_COOPERATIVE_ENROLLMENT_START";
+export const FETCH_COOPERATIVE_ENROLLMENT_SUCCESS = "FETCH_COOPERATIVE_ENROLLMENT_SUCCESS";
+export const FETCH_COOPERATIVE_ENROLLMENT_FAIL = "FETCH_COOPERATIVE_ENROLLMENT_FAIL";

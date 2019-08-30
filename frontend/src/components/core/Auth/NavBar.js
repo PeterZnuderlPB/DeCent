@@ -246,6 +246,19 @@ class NavBar extends React.Component {
                     : null
                     }
 
+                    {/* Cooperative managment */}
+                    {this.props.user.isAuthenticated
+                    ? this.props.user.userInfo.active_cooperative !== 0
+                        ? <Menu.Item key="11">
+                            <Icon type="cluster" />
+                            <span className="nav-text">
+                                <Link to="/managecooperative"><FormattedMessage id="nav.managecooperative" defaultMessage="Manage cooperative" /></Link>
+                            </span>
+                        </Menu.Item>
+                        : null
+                    : null
+                    }
+
                     {this.props.user.isAuthenticated ? this.renderLogOut() : this.renderSignInOptions()}
                     
                 </Menu>

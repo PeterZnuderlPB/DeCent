@@ -8,6 +8,8 @@ import langReducer from './langReducer';
 import PBUploadReducer from './PBUploadReducer';
 import PBEditViewRecuder from './PBEditViewReducer';
 import navbarReducer from './navbarReducer';
+import cooperativeReducer from './cooperativeReducer';
+import cooperativeEnrollmentReducer from './cooperativeEnrollmentReducer';
 
 export default combineReducers({
     form: formReducer, // Reducer provided by redux-form, has to be named form
@@ -17,5 +19,7 @@ export default combineReducers({
     lang: langReducer,
     upload: PBUploadReducer,
     edit: PBEditViewRecuder,
-    navbar: navbarReducer
+    navbar: navbarReducer,
+    cooperative: cooperativeReducer,
+    cooperativeEnrollment: cooperativeEnrollmentReducer
 })

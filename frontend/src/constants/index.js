@@ -18,3 +18,8 @@ export const USER_SETTINGS_USERPERMISSIONS_LIST = ['id', 'permissions', 'organiz
 export const USER_SETTINGS_PRIMARY_ORGANIZATION_LIST = ['id', 'name', 'organization_type__id'];
 export const USER_SETTINGS_SUBJECT_LIST = ['id', 'name'];
 export const USER_SETTINGS_USERS_LIST = ['id'];
+
+//------------------------------------------
+// CooperativeManagment visibleField Consts
+//------------------------------------------
+export const COOPERATIVE_MAMANGMENT_APPLICATION_LIST = ['id', 'enroller__id', 'enroller__username'];
