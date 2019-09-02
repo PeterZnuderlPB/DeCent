@@ -189,8 +189,8 @@ AUTHENTICATION_BACKENDS = (
  'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ='314116182076-tha79eil5jamubbfsbcrl4tbu5lfp1d5.apps.googleusercontent.com' # For Google Auth -> Client Key
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'VPOv5lW1Mg-C6GaWfuKpZYLN' # For Google Auth -> Secret Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY") # For Google Auth -> Client Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET") # For Google Auth -> Secret Key
 
 SOCIAL_AUTH_FACEBOOK_KEY = ''
 SOCIAL_AUTH_FACEBOOK_SECRET = ''
