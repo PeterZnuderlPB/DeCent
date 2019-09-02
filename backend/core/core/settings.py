@@ -189,8 +189,8 @@ AUTHENTICATION_BACKENDS = (
  'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ='314116182076-tha79eil5jamubbfsbcrl4tbu5lfp1d5.apps.googleusercontent.com' # For Google Auth -> Client Key
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'VPOv5lW1Mg-C6GaWfuKpZYLN' # For Google Auth -> Secret Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY") # For Google Auth -> Client Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET") # For Google Auth -> Secret Key
 
 SOCIAL_AUTH_FACEBOOK_KEY = ''
 SOCIAL_AUTH_FACEBOOK_SECRET = ''
@@ -236,8 +236,8 @@ SOCIAL_AUTH_PIPELINE = (
 #EMAIL_PORT = 587
 #EMAIL_USE_TLS = True
 
-EMAIL_BACKEND = "sgbackend.SendGridBackend"
-SENDGRID_API_KEY = "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"
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 
 #MJML_BACKEND_MODE = 'cmd'
 #MJML_EXEC_CMD = ['mjml', '--config.minify', 'true', '--config.validationLevel', 'strict']
