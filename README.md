@@ -1,4 +1,4 @@
-# DjangoApp
+# DeCent
 
 ## Dependncies
 * NodeJS (ReactJS) - Frontend
