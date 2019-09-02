@@ -120,7 +120,7 @@ export const FetchUserStart = (token) => async dispatch =>{
            console.log("User permission fetch error: ", err);
         });
 
-        if (permissionResponse.data.data[0] === undefined) {
+        if (!permissionResponse || permissionResponse.data.data[0] === undefined) {
             response.data.user = {
                 ...response.data.user,
                 permissions: {
