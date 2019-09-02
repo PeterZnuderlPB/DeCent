@@ -3,8 +3,8 @@ import {
     FETCH_COOPERATIVE_START,
     FETCH_COOPERATIVE_SUCCESS,
     FETCH_COOPERATIVE_FAIL
-} from './types';
-import con from '../apis';
+} from '../types';
+import con from '../../apis';
 
 export const FetchCooperativeAction = () => (dispatch, getState) => {
     dispatch(FetchCooperativeStartAction());

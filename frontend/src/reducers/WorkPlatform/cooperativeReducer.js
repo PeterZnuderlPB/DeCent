@@ -2,7 +2,7 @@ import {
     FETCH_COOPERATIVE_START,
     FETCH_COOPERATIVE_SUCCESS,
     FETCH_COOPERATIVE_FAIL
-} from '../actions/types';
+} from '../../actions/types';
 
 const INTIAL_STATE = {
     cooperativeData: [],

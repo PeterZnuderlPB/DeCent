@@ -1,20 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
-import PBTable from './PBTable';
+import PBTable from '../core/PBTable';
 
-class Evaluations extends React.Component {
+class Subjects extends React.Component {
 
-    render(){
-
+    render() {
         return(
             <>
            <PBTable 
            table="posts"
            name={"testTable"} 
            title={"Test test"}
-           tableApi="evaluation"
+           tableApi="subject"
            />
            </>
         );
@@ -26,4 +24,4 @@ const mapStateToProps = state =>{
     return { user: state.user.auth}
 }
 
-export default connect(mapStateToProps)(Evaluations);
+export default connect(mapStateToProps)(Subjects);

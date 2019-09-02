@@ -3,12 +3,13 @@ import { connect } from 'react-redux';
 import {
     FetchCooperativeAction,
     UpdateCooperativeMembersAction
-} from '../../actions/cooperativeActions';
+} from '../../actions/WorkPlatform/cooperativeActions';
 import {
     FetchCooperativeEnrollmentAction,
     AcceptCooperativeEnrollmentAction,
     SetSingleCooperativeEnrollmentAction
-} from '../../actions/cooperativeEnrollmentActions';
+} from '../../actions/WorkPlatform/cooperativeEnrollmentActions';
+import { FetchCompetenciesAction } from '../../actions/WorkPlatform/competenciesActions';
 import {
     Spin,
     Row,
@@ -17,9 +18,16 @@ import {
     Button,
     Popconfirm,
     Icon,
-    Modal
+    Modal,
+    Select
 } from 'antd';
-import { COOPERATIVE_MAMANGMENT_APPLICATION_LIST } from '../../constants';
+import {
+    COOPERATIVE_MAMANGMENT_APPLICATION_LIST,
+    COOPERATIVE_MAMANGMENT_COMPETENCIES
+} from '../../constants';
+import { GetUserCompetencies } from '../../utilities/CompotencyUtilities';
+
+const { Option } = Select;
 
 class CooperativeManagment extends React.Component {
     constructor(props) {
@@ -27,17 +35,21 @@ class CooperativeManagment extends React.Component {
         
         this.state = {
             modalVisible: false,
-            title: ''
+            title: '',
+            userCompetencies: []
         }
     }
 
     componentDidMount = () => {
         this.props.FetchCooperativeAction();
+        this.props.FetchCompetenciesAction(COOPERATIVE_MAMANGMENT_COMPETENCIES);
     }
 
     componentDidUpdate = prevProps => {
-        if (prevProps.user.userInfo.id !== this.props.user.userInfo.id)
+        if (prevProps.user.userInfo.id !== this.props.user.userInfo.id) {
             this.props.FetchCooperativeAction();
+            this.props.FetchCompetenciesAction(COOPERATIVE_MAMANGMENT_COMPETENCIES);
+        }
 
         if (prevProps.cooperative.cooperativeData.data !== this.props.cooperative.cooperativeData.data)
             this.props.FetchCooperativeEnrollmentAction(this.props.cooperative.cooperativeData.data.id, COOPERATIVE_MAMANGMENT_APPLICATION_LIST)
@@ -63,6 +75,12 @@ class CooperativeManagment extends React.Component {
         this.setState({
             modalVisible: true,
             title: 'Applicant information'
+        }, () => {
+            if (this.props.cooperativeEnrollment.singleData !== undefined) {
+                this.setState({
+                    userCompetencies: GetUserCompetencies(this.props.competencies.data.data, this.props.cooperativeEnrollment.singleData.enroller__competencys)
+                });
+            }
         });
     }
 
@@ -70,6 +88,27 @@ class CooperativeManagment extends React.Component {
         this.setState({
             modalVisible: false
         });
+    }
+
+    renderCompetencies = confirmed => {
+        return (
+            <Select
+            disabled={true}
+            mode="multiple"
+            style={{ width: '28%', marginLeft: '0.4%' }}
+            labelInValue={true}
+            defaultValue={this.state.userCompetencies}
+            onChange={(e) => console.log(e)}
+            filterOption={(input, option) => 
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            >
+                <Option value="C#">C#</Option>
+                <Option value="JS">JS</Option>
+                <Option value="Django">Django</Option>
+                <Option value="Python">Python</Option>
+            </Select>
+        );
     }
 
     renderModal = () => {
@@ -83,9 +122,16 @@ class CooperativeManagment extends React.Component {
                 </Button>
             ]}
             >
-                <p onClick={() => console.log(this.props)}>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                {this.props.cooperativeEnrollment.singleLoading
+                ? <Spin tip="Loading applicant data..." />
+                : <div>
+                    <p><b>Username:</b> {this.props.cooperativeEnrollment.singleData !== undefined ? this.props.cooperativeEnrollment.singleData.enroller__username : null}</p>
+                    <p><b>Application comment: </b>{this.props.cooperativeEnrollment.singleData !== undefined ? this.props.cooperativeEnrollment.singleData.comment : null}</p>
+                    <p><b>Biography:</b> {this.props.cooperativeEnrollment.singleData !== undefined ? this.props.cooperativeEnrollment.singleData.enroller__biography : null}</p>
+                    <p><b>Competencies:</b> {this.renderCompetencies(false)}</p>
+                    <p><b>Confirmed competencies (Blockchain - <i>Placeholder</i>):</b> {this.renderCompetencies(true)}</p>
+                  </div>
+                }
             </Modal>
         );
     }
@@ -199,7 +245,8 @@ const mapStateToProps = state =>{
     return {
         user: state.user.auth,
         cooperative: state.cooperative,
-        cooperativeEnrollment: state.cooperativeEnrollment
+        cooperativeEnrollment: state.cooperativeEnrollment,
+        competencies: state.competencies
     }
 }
 
@@ -208,5 +255,6 @@ export default connect(mapStateToProps, {
     FetchCooperativeEnrollmentAction,
     AcceptCooperativeEnrollmentAction,
     UpdateCooperativeMembersAction,
-    SetSingleCooperativeEnrollmentAction
+    SetSingleCooperativeEnrollmentAction,
+    FetchCompetenciesAction
 })(CooperativeManagment);

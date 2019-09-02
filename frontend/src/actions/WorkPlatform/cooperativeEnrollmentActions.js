@@ -6,9 +6,9 @@ import {
     SET_SINGLE_COOPERATIVE_ENROLLMENT_START,
     SET_SINGLE_COOPERATIVE_ENROLLMENT_SUCCESS,
     SET_SINGLE_COOPERATIVE_ENROLLMENT_FAIL
-} from './types';
-import { COOPERATIVE_MAMANGMENT_APPLICATION_LIST } from '../constants';
-import con from '../apis';
+} from '../types';
+import { COOPERATIVE_MAMANGMENT_APPLICATION_LIST } from '../../constants';
+import con from '../../apis';
 import { FetchCooperativeAction } from './cooperativeActions';
 
 export const FetchCooperativeEnrollmentAction = (cooperativeId, visibleFields) => (dispatch, getState) => {
@@ -68,9 +68,22 @@ export const AcceptCooperativeEnrollmentAction = (enrollerId, accept) => (dispat
 }
 
 export const SetSingleCooperativeEnrollmentAction = enrollmentId => (dispatch, getState) => {
+    dispatch(SetSingleCooperativeEnrollmentStartAction());
     const { cooperativeEnrollment } = getState();
 
-    console.log("Index", cooperativeEnrollment.data.data.find(c => c.id === 52));
+    let singleData = cooperativeEnrollment.data.data.find(c => c.id === enrollmentId);
+
+    if (singleData === undefined) {
+        dispatch(SetSingleCooperativeEnrollmentFailAction());
+        return;
+    }
+
+    const singleDataPayload = {
+        singleData: singleData,
+        singleLoading: false
+    };
+
+    dispatch(SetSingleCooperativeEnrollmentSuccesstAction(singleDataPayload));
 }
 
 // Basic actions

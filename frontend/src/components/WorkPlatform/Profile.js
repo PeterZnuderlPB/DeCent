@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link} from 'react-router-dom';
 
-import PBTable from './PBTable';
-import PBUpload from './PBUpload';
+import PBTable from '../core/PBTable';
+import PBUpload from '../core/PBUpload';
 
 class Profile extends React.Component {
 

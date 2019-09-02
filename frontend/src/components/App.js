@@ -10,23 +10,23 @@ import translations from '../translations/translations';
 
 import NavBar from './core/Auth/NavBar';
 import PBModal from './core/PBModal';
-import Profile from './core/Profile';
+import Profile from './WorkPlatform/Profile';
 import PBMail from './core/PBMail';
 import PBEditView from './core/PBEditView'
 import PBTable from './core/PBTable'
 import PBUpload from './core/PBUpload'
-import Evaluations from './core/Evaluations';
+import Evaluations from './Competencies/Evaluations';
 import PBDetailView from './core/PBDetailView';
-import Subjects from './core/Subjects';
-import UserSettings from './core/UserSettings';
-import Projects from './core/Projects';
-import WorkOrders from './core/WorkOrders';
-import MyProjects from './core/MyProjects';
-import Workers from './core/Workers';
+import Subjects from './Competencies/Subjects';
+import UserSettings from './WorkPlatform/UserSettings';
+import Projects from './WorkPlatform/Projects';
+import WorkOrders from './WorkPlatform/WorkOrders';
+import MyProjects from './WorkPlatform/MyProjects';
+import Workers from './WorkPlatform/Workers';
 
 import './core/styles/appstyle.css';
-import Cooperatives from './core/Cooperatives';
-import CooperativeManagment from './core/CooperativeManagment';
+import Cooperatives from './WorkPlatform/Cooperatives';
+import CooperativeManagment from './WorkPlatform/CooperativeManagment';
 
 const { Header, Content, Footer, Sider } = Layout;
 
