@@ -27,6 +27,7 @@ import {
     COOPERATIVE_MAMANGMENT_COMPETENCIES
 } from '../../constants';
 import CompetencyUtilities from '../../utilities/CompetencyUtilities';
+import history from '../../history';
 
 const { Option } = Select;
 
@@ -259,6 +260,7 @@ class CooperativeManagment extends React.Component {
         return(
             <div>
                 <h1 style={{ textAlign: 'center', fontSize: '1.3rem' }}>Manage cooperative</h1>
+                <Button type="primary" onClick={() => history.push(`EditView/cooperative/${this.props.cooperative.cooperativeData.data.id}`)} block>Edit cooperative</Button>
                 <hr />
                 {this.props.cooperative.cooperativeData.data !== undefined 
                 ?   this.props.cooperative.cooperativeData.data.owner.id === this.props.user.userInfo.id

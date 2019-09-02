@@ -560,6 +560,14 @@ class PBEditView extends React.Component {
         }
       }
 
+      if (this.props.match.params.table_name === 'cooperative') {
+        if (this.props.edit.data.data.owner.id !== this.props.user.userInfo.id) {
+          message.error("This is not your cooperative!");
+          history.push("/");
+          return;
+        }
+      }
+
         // OLD PERMISSIONS
         // if (!this.props.user.userInfo.permissions.permissions.includes("UPDATE")) {
         //   message.error("You don't have UPDATE permission.");
