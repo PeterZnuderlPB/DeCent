@@ -65,6 +65,7 @@ from .serializers import (
     ProjectSerializerDepth,
     WorkOrderSerializerBasic,
     WorkOrderSerializerDepth,
+    CooperativeSerializerPost,
     CooperativeSerializerBasic,
     CooperativeSerializerDepth,
     CooperativeEnrollmentSerializerBasic,
@@ -680,6 +681,8 @@ class CooperativeList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CooperativeSerializerPost
         if self.request.method == 'GET':
             return CooperativeSerializerDepth
         return CooperativeSerializerBasic

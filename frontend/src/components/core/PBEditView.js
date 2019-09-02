@@ -62,7 +62,8 @@ class PBEditView extends React.Component {
     doneAnswers: [],
     selectedTags: [],
     selectedCompetencies: [],
-    imageGUID: null
+    imageGUID: null,
+    projects: []
   };
 
   componentWillMount() {
@@ -268,6 +269,45 @@ class PBEditView extends React.Component {
   handleCancel = () => {
     this.setState({ modalVisible: false });
   };
+
+  fetchProjects = () => {
+    let params = {
+      results: 10,
+      page: 1,
+      sortOrder: [],
+      sortField: [],
+      visibleFields: [],
+      filters: {
+        account__id: this.props.user.userInfo.id
+      }
+    };
+
+    params.visibleFields.push('id', 'name');
+
+    if (params != null) {
+      params = {
+        ...params,
+        cacheEnabled: false
+      }
+    }
+
+    let settings = JSON.stringify(params);
+
+    con.get('/api/project/', {
+      params:{
+        settings
+      },
+      headers: {
+        Authorization: this.props.user.token.token_type + " " + this.props.user.token.access_token
+      }
+    })
+    .then(res => {
+      this.setState({
+        projects: res.data.data
+      });
+    })
+    .catch(err => console.log("[EditView] Project fetch error: ", err));
+  }
 
   fetchCompetencies = () => {
     let params = {
@@ -705,7 +745,7 @@ class PBEditView extends React.Component {
         }else{
           return this.state.values.map((el, i, index) => 
             <div key={i}>
-              {el.includes('user') || el.includes('account') || el.includes('file_directory') ? null : <label>{el}:</label>}
+              {el.includes('user') || el.includes('account') || el.includes('file_directory') || el.includes('owner') || el.includes('workers') ? null : <label>{el}:</label>}
               {this.state.column_types[i].includes("Integer")? <InputNumber value={''} onChange={this.handleNumberChange.bind(this, el) } disabled={this.state.column_names[i] == 'id'?  true :  false}/>:
               this.state.column_types[i].includes("Date (without time)")?
               (<DatePicker defaultValue={moment(this.getCurrentDate(), "YYYY-MM-DD", true)} onChange={this.handleDateChange.bind(this, el)} disabled />):
@@ -717,12 +757,20 @@ class PBEditView extends React.Component {
               (<Checkbox checked={this.state.data[el]} onChange={this.handleBoxChange.bind(this, el)} />):
               el.includes('file_directory')?
               (<Input style={{ display: 'none' }} value={null} disabled={true}/>):
+              el.includes('workers')?
+              (<Input style={{ display: 'none' }} value={null} disabled={true}/>):
+              el.includes('owner')?
+              (<Input style={{ display: 'none' }} value={this.props.user.userInfo.id} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
               el.includes('account')?
               (<Input style={{ display: 'none' }} value={this.props.user.userInfo.id} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
+              el === 'competencys'?
+              <Select onFocus={this.fetchCompetencies} labelInValue={true}  mode="tags" onChange={(e) => this.setState({ selectedCompetencies: e }) } placeholder="Competencies" >{this.state.selectableCompetenciesFull.map(el => {return <Option key={el.id} value={el.id.toString()}>{el.name}</Option>})}</Select>:
               el.includes('user')?
               (<Input style={{ display: 'none' }} value={this.state.data[el] !== null ? this.state.data[el]['_type'] || this.state.data[el]['name'] || this.state.data[el]['id'] : null} onChange={this.handleChange.bind(this, i)} disabled={true}/>):
               el.includes('tags')?
               (<Select onFocus={this.fetchTags} labelInValue={true} mode="tags" onChange={(e) => this.setState({ selectedTags: e }) } placeholder="Tags" >{this.state.tagData}</Select>):
+              el === 'project'?
+              <Select onFocus={this.fetchProjects} labelInValue={true} onChange={(e) => console.log("E => ", e) } placeholder="Your projects" >{this.state.projects.map(el => {return <Option key={el.id} value={el.id.toString()}>{el.name}</Option>})}</Select>:
               el === 'competency' && this.props.match.params.table_name === 'workorder'?
               <Select onFocus={this.fetchCompetencies} labelInValue={true}  mode="tags" onChange={(e) => this.setState({ selectedCompetencies: e }) } placeholder="Competencies" >{this.state.selectableCompetenciesFull.map(el => {return <Option key={el.id} value={el.id.toString()}>{el.name}</Option>})}</Select>:
               el === 'competency' && this.props.match.params.table_name === 'project'?
@@ -1045,6 +1093,22 @@ class PBEditView extends React.Component {
         dict['competency'] = competencyArray;
         dict['account'] = this.props.user.userInfo.id;
         dict['user_created'] = this.props.user.userInfo.id;
+        this.props.AddPost(dict, this.props.match.params.table_name);
+    } else if (this.props.match.params.table_name === 'cooperative') {
+
+        let competencyArray = [];
+
+        this.state.selectedCompetencies.forEach(el => {
+          competencyArray.push(el.key)
+        });
+
+        dict['competencys'] = competencyArray;
+        dict['workers'] = [this.props.user.userInfo.id];
+
+        dict['owner'] = this.props.user.userInfo.id;
+        dict['user_created'] = this.props.user.userInfo.id;
+        dict['user_last_modified'] = this.props.user.userInfo.id;
+
         this.props.AddPost(dict, this.props.match.params.table_name);
     } else {
       delete dict["tags"];

@@ -17,6 +17,7 @@ import {
     AddPost
 } from '../../actions/PBEditViewActions';
 import con from '../../apis';
+import history from '../../history';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -332,6 +333,7 @@ class Cooperatives extends React.Component {
     render(){
         return(
             <>
+            <Button style={{ marginTop: '1%' }} onClick={() => history.push('/EditView/cooperative')} type="primary" block>Create cooperative</Button>
             {this.renderCooperatives()}
             {this.renderModal()}
             </>

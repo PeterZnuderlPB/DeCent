@@ -327,6 +327,13 @@ class WorkOrderSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSe
         fields = '__all__'
         depth = 2
 
+class CooperativeSerializerPost(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Cooperative #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
 class CooperativeSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
 
     class Meta:
