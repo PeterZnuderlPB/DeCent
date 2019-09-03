@@ -11,9 +11,6 @@ from django.conf import settings
 from post.serializers import PostSerializerDepth
 
 class CustomUserSimpleSerializer(serializers.ModelSerializer):
-    organization_type = serializers.Field()
-    organization_name = serializers.Field()
-
     class Meta:
         model = get_user_model()
         fields = '__all__'
@@ -21,24 +18,12 @@ class CustomUserSimpleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validationData = validated_data
 
-        orgType = validationData['organization_type']
-        orgName = validationData['organization_name']
-
         del validationData['confirm']
         del validationData['agreement']
-        del validationData['organization_name']
-        del validationData['organization_type']
 
         password = validated_data['password']
         user_obj = CustomUser(**validationData)
         user_obj.set_password(password)
-        user_obj.save()
-
-        organizationType = OrganizationType.objects.get(id=orgType)
-        organization = Organization(name=orgName, organization_type=organizationType, account=user_obj, is_active=True, is_locked=False, user_last_modified=user_obj, user_created=user_obj)
-        organization.save()
-
-        user_obj.active_organization_id = organization.id
         user_obj.save()
 
         return user_obj

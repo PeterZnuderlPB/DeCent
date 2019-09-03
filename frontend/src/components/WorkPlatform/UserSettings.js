@@ -727,16 +727,6 @@ class UserSettings extends React.Component {
     render() {
         return (
             <div>
-                <h3 style={{ textAlign: 'center' }}>Choose organization <i>(Current - <b>{this.state.organizationCurrentlyInUse !== null ? this.state.organizationCurrentlyInUse !== undefined ? this.state.organizationCurrentlyInUse.organization__name : 'Loading...' : 'Loading...'}</b>)</i>: </h3>
-                <Select onFocus={this.fetchUserOrganizations} onChange={this.handleChange} style={{ width: '100%'}}>
-                    {this.renderUserOrganizations()}
-                </Select>
-                <Button style={{ marginTop: '1%' }} onClick={this.updateUserActiveOrganization} type="primary" block>Confirm</Button>
-                <hr />
-                <h3 style={{ textAlign: 'center' }}>Manage your organization: </h3>
-                {this.renderOrganizationManagers()}
-                <Button onClick={this.handleAdd} block type="default">Add new manager</Button>
-                <hr />
                 <h3 style={{ textAlign: 'center' }}>Your profile: </h3>
                 {this.renderProfileSettings()}
                 {this.renderUserCooperatives()}

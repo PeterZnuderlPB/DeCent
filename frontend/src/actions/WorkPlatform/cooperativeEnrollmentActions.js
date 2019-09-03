@@ -86,7 +86,7 @@ export const SetSingleCooperativeEnrollmentAction = enrollmentId => (dispatch, g
     dispatch(SetSingleCooperativeEnrollmentSuccesstAction(singleDataPayload));
 }
 
-// Basic actions
+// Static actions
 export const FetchCooperativeEnrollmentStartAction = () => {
     return {
         type: FETCH_COOPERATIVE_ENROLLMENT_START,

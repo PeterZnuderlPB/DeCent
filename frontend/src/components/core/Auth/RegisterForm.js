@@ -21,27 +21,6 @@ import {
       options: [],
       optionsLoading: true
     };
-
-    fetchOptions = () => {
-      fetch(`http://localhost:8000/api/organizationtype/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22_type%22],%22filters%22:%7B%7D%7D`, {
-        method: 'GET'
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log("RETURNEDAT DATA: ", data.data);
-        this.setState({ optionsLoading: false, options: data.data });
-      });
-    }
-
-    renderOptions = () => {
-      if (this.state.optionsLoading) {
-        return <Option disabled={true} value="NULL">Loading data...</Option>;
-      } else {
-          return this.state.options.map(el => 
-            <Option key={el.id} value={el.id}>{el._type}</Option>
-          );
-      }
-    }
   
     handleSubmit = e => {
       e.preventDefault();
@@ -183,35 +162,6 @@ import {
                 },
               ],
             })(<Input.Password onBlur={this.handleConfirmBlur} />)}
-          </Form.Item>
-          <Form.Item
-            label={
-              <span>
-                Organization name&nbsp;
-              </span>
-            }
-            >
-            {getFieldDecorator('organization_name', {
-              rules: [
-                    { 
-                      required: true,
-                       message: "Enter your organization name"
-                    }, 
-                    {
-                        whitespace: false,
-                        message: "Whitespace is allowed"
-                    }],
-            })(<Input />)}
-          </Form.Item>
-
-          <Form.Item label="Organization type" hasFeedback>
-            {getFieldDecorator('organization_type', {
-              rules: [{ required: true, message: 'Please select organization type!' }],
-            })(
-              <Select onFocus={this.fetchOptions} placeholder="Please select organization type">
-                {this.renderOptions()}
-              </Select>,
-            )}
           </Form.Item>
 
           <Form.Item {...tailFormItemLayout}>

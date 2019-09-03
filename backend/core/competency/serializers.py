@@ -327,6 +327,13 @@ class WorkOrderSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSe
         fields = '__all__'
         depth = 2
 
+class CooperativeSerializerPost(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+
+    class Meta:
+        model = Cooperative #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
 class CooperativeSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
 
     class Meta:
@@ -363,6 +370,12 @@ class CooperativeSerializerBasic(DynamicFieldsModelSerializer ,serializers.Model
                 pass
         else:
             print(f'[Cooperative] Normal update')
+            # Fix this to update dinamically
+            instance.title = validated_data.pop('title', None)
+            instance.about = validated_data.pop('about', None)
+            comps = validated_data.pop('competencys', None)
+            print(f'Competencys ==> {comps}')
+            instance.competencys.set(comps)
             instance.save()
             return instance
 
