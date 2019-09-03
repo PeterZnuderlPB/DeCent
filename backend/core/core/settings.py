@@ -151,7 +151,7 @@ ALLOWED_HOSTS = ['*']
 # For rest framework to use OAuth2 authentication backend
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #'rest_framework_jwt.authentication.JSONWebTokSenAuthentication',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication', #If using OAuth2 Authentication
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
@@ -189,8 +189,8 @@ AUTHENTICATION_BACKENDS = (
  'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ='314116182076-tha79eil5jamubbfsbcrl4tbu5lfp1d5.apps.googleusercontent.com' # For Google Auth -> Client Key
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'VPOv5lW1Mg-C6GaWfuKpZYLN' # For Google Auth -> Secret Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY") # For Google Auth -> Client Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET") # For Google Auth -> Secret Key
 
 SOCIAL_AUTH_FACEBOOK_KEY = ''
 SOCIAL_AUTH_FACEBOOK_SECRET = ''
@@ -228,16 +228,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
-
-#   Email settings
-#EMAIL_HOST = 'smtp.sendgrid.net'
-#EMAIL_HOST_USER = 'sendgrid_username'
-#EMAIL_HOST_PASSWORD = 'sendgrid_password'
-#EMAIL_PORT = 587
-#EMAIL_USE_TLS = True
-
-EMAIL_BACKEND = "sgbackend.SendGridBackend"
-SENDGRID_API_KEY = "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"
 
 #MJML_BACKEND_MODE = 'cmd'
 #MJML_EXEC_CMD = ['mjml', '--config.minify', 'true', '--config.validationLevel', 'strict']
