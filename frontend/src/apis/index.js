@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const baseUrlHttp = "http://localhost:8000/";
 export const apiUrlHttp = "http://localhost:8000/api/";
-
+export const googleLoginRedirect = "http://localhost:3000/"
 
 export const django_client_id = "test";
 export const django_client_secret = "test";
@@ -14,6 +14,10 @@ export var apiCall = axios.create(
     {
         baseURL: apiUrlHttp
     })
+    
+export const apiCon = axios.create({
+    baseURL: apiUrlHttp
+})
 
 export default axios.create({
     baseURL: baseUrlHttp

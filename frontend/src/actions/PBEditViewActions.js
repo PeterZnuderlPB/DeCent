@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import con from '../apis';
+import {apiUrlHttp} from '../../apis'
 import history from '../history';
 import {
     FETCH_POST_START,
@@ -20,7 +21,7 @@ export const FetchPost = (postId, table) => (dispatch, getState) => {
     dispatch(FetchPostStart());
     const { user } = getState();
 
-    fetch(`http://localhost:8000/api/${table}/${postId}`, {
+    fetch(`${apiUrlHttp}${table}/${postId}`, {
         method: 'GET',
         headers: {
             'Authorization': `${user.auth.token.token_type} ${user.auth.token.access_token}`

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import { convertGoogleToken } from "../../../actions/googleAuthActions";
 import { GoogleLogin } from "react-google-login";
-import { google_client_id} from "../../..//apis"
+import { google_client_id, googleLoginRedirect} from "../../..//apis"
 
 import { FormattedMessage } from 'react-intl';
 
@@ -30,7 +30,7 @@ const GoogleLoginButton = props => {
       onFailure={onFailure}
       className="loginBtn loginBtn--google"
       prompt="select_account"
-      redirectUri="http://localhost:3000/"
+      redirectUri = {googleLoginRedirect}
     />
   );
 };

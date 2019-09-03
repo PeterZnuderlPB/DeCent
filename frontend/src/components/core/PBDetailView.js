@@ -8,6 +8,7 @@ import {
     DETAIL_VIEW_COMMENTS
 } from '../../constants';
 import history from '../../history';
+import {baseUrlHttp} from '../../apis'
 import con from '../../apis';
 
 const { TextArea } = Input;
@@ -582,7 +583,7 @@ class PBDetailView extends React.Component {
                     {this.state.fileData.length !== 0
                     ? <div>
                         {this.state.fileData.map((el, i) => {
-                            return <><span key={el.id}><b><a href={`http://localhost:8000${el.file}`} target="_blank">File #{i}</a></b></span> <br /></>
+                            return <><span key={el.id}><b><a href={`${baseUrlHttp}${el.file}`} target="_blank">File #{i}</a></b></span> <br /></>
                         })}
                       </div>
                     : null

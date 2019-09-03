@@ -9,7 +9,7 @@ import {
   } from 'antd';
   import { FormattedMessage } from 'react-intl';
   import lang from '../../../translations/translations';
-  
+  import {apiUrlHttp} from '../../apis'
   import { RegistrationStart } from '../../../actions';
 
   const { Option } = Select;
@@ -23,7 +23,7 @@ import {
     };
 
     fetchOptions = () => {
-      fetch(`http://localhost:8000/api/organizationtype/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22_type%22],%22filters%22:%7B%7D%7D`, {
+      fetch(`${apiUrlHttp}organizationtype/?settings=%7B%22results%22:10,%22page%22:1,%22sortOrder%22:[],%22sortField%22:[],%22visibleFields%22:[%22id%22,%22_type%22],%22filters%22:%7B%7D%7D`, {
         method: 'GET'
       })
       .then(res => res.json())
