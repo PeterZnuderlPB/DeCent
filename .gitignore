@@ -114,3 +114,7 @@ backend/core/storage/
 
 backend/Scripts/
 /Scripts
+
+
+#
+**/.env
