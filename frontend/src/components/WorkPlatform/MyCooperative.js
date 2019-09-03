@@ -12,6 +12,7 @@ import {
     Spin
 } from 'antd';
 import { COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS } from '../../constants';
+import history from '../../history';
 
 class MyCooperative extends React.Component {
     componentDidMount = () => {
@@ -58,9 +59,7 @@ class MyCooperative extends React.Component {
     renderContracts = () => {
         return (
             <>
-            <p style={{ cursor: 'pointer', userSelect: 'none', color: 'rgba(35, 129, 252, 0.6)' }} onClick={() => {
-                window.open('https://www.google.com');
-            }}>Contract #1 - Izdelava LetGO aplikacije - Estimate: 12.10.2019</p>
+            <p style={{ cursor: 'pointer', userSelect: 'none', color: 'rgba(35, 129, 252, 0.6)' }} onClick={() => history.push('/contract/1')}>Contract #1 - Izdelava LetGO aplikacije - Estimate: 12.10.2019</p>
             </>
         );
     }

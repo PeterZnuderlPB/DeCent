@@ -195,7 +195,7 @@ class Cooperatives extends React.Component {
                         <Row gutter={8}>
                             {this.state.cooperatives.map(el => {
                                 return (
-                                    <Col xs={24} sm={12} md={6} lg={6}>
+                                    <Col xs={24} sm={24} md={12} lg={6}>
                                         <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: '100%' }}>
                                             <p><b>Needed competencies: </b></p>
                                             <ul>
@@ -242,7 +242,7 @@ class Cooperatives extends React.Component {
                                 <Row gutter={8}>
                                     {this.state.cooperatives.map(el => {
                                         return (
-                                            <Col xs={24} sm={12} md={6} lg={6}>
+                                            <Col xs={24} sm={24} md={12} lg={6}>
                                                 <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: '100%' }}>
                                                     <p><b>Needed competencies: </b></p>
                                                     <ul>
@@ -275,7 +275,7 @@ class Cooperatives extends React.Component {
                                             return;
                                         
                                         return (
-                                            <Col xs={24} sm={12} md={6} lg={6}>
+                                            <Col xs={24} sm={24} md={12} lg={6}>
                                                 <Card title={el.title} extra={<a href="#">More</a>} style={{ width: 300, height: '100%' }}>
                                                     <p><b>Needed competencies: </b></p>
                                                     <ul>
