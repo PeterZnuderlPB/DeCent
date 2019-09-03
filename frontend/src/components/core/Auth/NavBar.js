@@ -155,18 +155,6 @@ class NavBar extends React.Component {
                             <Link to="/"><FormattedMessage id="nav.home" defaultMessage="Home" /></Link>
                         </span>
                     </Menu.Item>
-                    {/* <Menu.Item key="3">
-                        <Icon type="database" />
-                        <span className="nav-text">
-                            <Link to="/evaluations"><FormattedMessage id="nav.evaluations" defaultMessage="Evaluations" /></Link>
-                        </span>
-                    </Menu.Item>
-                    <Menu.Item key="4">
-                        <Icon type="team" />
-                        <span className="nav-text">
-                            <Link to="/subjects"><FormattedMessage id="nav.subjects" defaultMessage="Subjects" /></Link>
-                        </span>
-                    </Menu.Item> */}
 
                     {/* Projects */}
                     {this.props.user.isAuthenticated
@@ -233,13 +221,13 @@ class NavBar extends React.Component {
                     : null
                     }
 
-                    {/* My cooperative */}
+                    {/* Cooperative board */}
                     {this.props.user.isAuthenticated
                     ? this.props.user.userInfo.active_cooperative !== 0
                         ? <Menu.Item key="10">
                             <Icon type="apartment" />
                             <span className="nav-text">
-                                <Link to="/mycooperative"><FormattedMessage id="nav.mycooperative" defaultMessage="My cooperative" /></Link>
+                                <Link to="/mycooperative"><FormattedMessage id="nav.mycooperative" defaultMessage="Cooperative board" /></Link>
                             </span>
                         </Menu.Item>
                         : null
