@@ -1,14 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { FetchCooperativeAction } from '../../actions/WorkPlatform/cooperativeActions';
+import { FetchCooperativeNewsAction } from '../../actions/WorkPlatform/cooperativeNewsActions';
 import {
     Row,
     Col,
     Input,
     Button,
     Icon,
-    Card
+    Card,
+    Spin
 } from 'antd';
+import { COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS } from '../../constants';
 
 class MyCooperative extends React.Component {
     componentDidMount = () => {
@@ -19,33 +22,45 @@ class MyCooperative extends React.Component {
         if (prevProps.user.userInfo.id !== this.props.user.userInfo.id) {
             this.props.FetchCooperativeAction();
         }
+
+        if (prevProps.cooperative.cooperativeData.data !== this.props.cooperative.cooperativeData.data) {
+            this.props.FetchCooperativeNewsAction(COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS, { cooperative__id: this.props.cooperative.cooperativeData.data.id } );
+        }
     }
 
     renderNews = () => {
-        return (
-            <>
-            <Card
-            style={{ width: '80%' }}
-            cover={
-                <img
-                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                alt="image"
-                style={{ height: '200px' }}
-                />
-            }
-            >
-                <h1>Title</h1>
-                <p>Content</p>
-                <p style={{ cursor: 'pointer', fontWeight: 'lighter', float: 'right' }}>More</p>
-            </Card>
-            </>
-        );
+        if (this.props.cooperativeNews.loading) {
+            return <Spin tip="Loding news.." size="large" />;
+        } else {
+            return this.props.cooperativeNews.data.data.map(el => {
+                return (
+                    <>
+                    <Card
+                    style={{ width: '80%' }}
+                    cover={
+                        <img
+                        src={`http://localhost:8000${el.thumbnail}`}
+                        alt="image"
+                        style={{ height: '200px' }}
+                        />
+                    }
+                    >
+                        <h1>{el.title}</h1>
+                        <p>{el.content.substring(0, 80)}...</p>
+                        <p onClick={() => alert("Opened details for news!")} style={{ cursor: 'pointer', fontWeight: 'lighter', float: 'right' }}>More</p>
+                    </Card>
+                    </>
+                );
+            });
+        }
     }
 
     renderContracts = () => {
         return (
             <>
-            <Button type="link">Contract #1 - Izdelava LetGO aplikacije - Estimate: 12.10.2019</Button>
+            <p style={{ cursor: 'pointer', userSelect: 'none', color: 'rgba(35, 129, 252, 0.6)' }} onClick={() => {
+                window.open('https://www.google.com');
+            }}>Contract #1 - Izdelava LetGO aplikacije - Estimate: 12.10.2019</p>
             </>
         );
     }
@@ -78,7 +93,9 @@ class MyCooperative extends React.Component {
                     <Col xs={24} sm={24} md={24} lg={8}>
                         <div style={centerStyle}>
                             <h1 style={submenuTitle}>Contracts</h1>
-                            {this.renderContracts()}
+                            <div style={{ wordBreak: 'break-all' }}>
+                                {this.renderContracts()}
+                            </div>
                         </div>
                     </Col>
                     <Col xs={24} sm={24} md={24} lg={8}>
@@ -96,7 +113,8 @@ class MyCooperative extends React.Component {
 const mapStateToProps = state => {
     return {
         user: state.user.auth,
-        cooperative: state.cooperative
+        cooperative: state.cooperative,
+        cooperativeNews: state.cooperativeNews
     }
 }
 
@@ -112,4 +130,7 @@ const submenuTitle = {
     fontSize: '1.1rem'
 }
 
-export default connect(mapStateToProps, { FetchCooperativeAction })(MyCooperative);
+export default connect(mapStateToProps, {
+    FetchCooperativeAction,
+    FetchCooperativeNewsAction
+})(MyCooperative);

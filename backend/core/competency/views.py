@@ -28,7 +28,8 @@ from .models import (
     Cooperative,
     Project,
     WorkOrder,
-    CooperativeEnrollment
+    CooperativeEnrollment,
+    CooperativeNews
 )
 from .serializers import (
     CompetencySerializerBasic,
@@ -69,7 +70,9 @@ from .serializers import (
     CooperativeSerializerPost,
     CooperativeSerializerDepth,
     CooperativeEnrollmentSerializerBasic,
-    CooperativeEnrollmentSerializerDepth
+    CooperativeEnrollmentSerializerDepth,
+    CooperativeNewsSerializerBasic,
+    CooperativeNewsSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -769,3 +772,43 @@ class CooperativeEnrollmentDetails(PBDetailsViewMixin, generics.RetrieveUpdateDe
         else:
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CooperativeNewsList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = CooperativeNews
+    table_name = "CooperativeNews" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CooperativeNewsSerializerDepth
+        return CooperativeNewsSerializerBasic
+
+class CooperativeNewsDetail(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = CooperativeNews
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CooperativeNewsSerializerDepth
+        return CooperativeNewsSerializerBasic

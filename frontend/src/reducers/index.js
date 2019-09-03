@@ -11,6 +11,7 @@ import navbarReducer from './navbarReducer';
 import cooperativeReducer from './WorkPlatform/cooperativeReducer';
 import cooperativeEnrollmentReducer from './WorkPlatform/cooperativeEnrollmentReducer';
 import competenciesReducer from './WorkPlatform/competenciesReducer';
+import cooperativeNewsReducer from './WorkPlatform/cooperativeNewsReducer';
 
 export default combineReducers({
     form: formReducer, // Reducer provided by redux-form, has to be named form
@@ -23,5 +24,6 @@ export default combineReducers({
     navbar: navbarReducer,
     cooperative: cooperativeReducer,
     cooperativeEnrollment: cooperativeEnrollmentReducer,
-    competencies: competenciesReducer
+    competencies: competenciesReducer,
+    cooperativeNews: cooperativeNewsReducer
 })

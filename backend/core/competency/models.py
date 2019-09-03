@@ -187,6 +187,7 @@ class WorkOrder(PBModel):
 class CooperativeNews(PBModel):
     title = models.TextField()
     content = models.TextField()
+    thumbnail = models.FileField(null=True)
     date_published = models.DateField()
     cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
 

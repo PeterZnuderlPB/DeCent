@@ -24,3 +24,4 @@ export const USER_SETTINGS_USERS_LIST = ['id'];
 //------------------------------------------
 export const COOPERATIVE_MAMANGMENT_APPLICATION_LIST = ['id', 'enroller__id', 'enroller__username', 'comment', 'enroller__competencys', 'enroller__biography'];
 export const COOPERATIVE_MAMANGMENT_COMPETENCIES = ['id', 'name'];
+export const COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS = ['id', 'title', 'content', 'date_published', 'thumbnail'];

@@ -20,7 +20,8 @@ from .models import (
     Cooperative,
     Project,
     WorkOrder,
-    CooperativeEnrollment
+    CooperativeEnrollment,
+    CooperativeNews
 )
 
 from core.serializers import DynamicFieldsModelSerializer
@@ -397,5 +398,17 @@ class CooperativeEnrollmentSerializerBasic(DynamicFieldsModelSerializer ,seriali
 class CooperativeEnrollmentSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = CooperativeEnrollment
+        fields = '__all__'
+        depth = 1
+
+class CooperativeNewsSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+    class Meta:
+        model = CooperativeNews #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class CooperativeNewsSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = CooperativeNews
         fields = '__all__'
         depth = 1
