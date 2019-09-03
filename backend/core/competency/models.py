@@ -183,3 +183,12 @@ class WorkOrder(PBModel):
 
     def __str__(self):
         return f'WorkOrder #{self.id} - {self.name} - Project #{self.project.id}'
+
+class CooperativeNews(PBModel):
+    title = models.TextField()
+    content = models.TextField()
+    date_published = models.DateField()
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'CooperativeNews #{self.id} - {self.title} - "Cooperative #{self.cooperative.id}'
