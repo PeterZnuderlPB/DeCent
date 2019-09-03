@@ -9,12 +9,17 @@ import {
     Button,
     Icon,
     Card,
-    Spin
+    Spin,
+    Modal
 } from 'antd';
 import { COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS } from '../../constants';
 import history from '../../history';
 
 class MyCooperative extends React.Component {
+    state = {
+        modalVisible: false
+    }
+
     componentDidMount = () => {
         this.props.FetchCooperativeAction();
     }
@@ -29,6 +34,24 @@ class MyCooperative extends React.Component {
         }
     }
 
+    handleModalShow = () => {
+        this.setState({
+            modalVisible: true
+        });
+    }
+
+    handleModalOk = () => {
+        this.setState({
+            modalVisible: false
+        });
+    }
+
+    handleModalCancel = () => {
+        this.setState({
+            modalVisible: false
+        });
+    }
+
     renderNews = () => {
         if (this.props.cooperativeNews.loading) {
             return <Spin tip="Loding news.." size="large" />;
@@ -37,7 +60,7 @@ class MyCooperative extends React.Component {
                 return (
                     <>
                     <Card
-                    style={{ width: '80%' }}
+                    style={{ width: '80%', marginTop: '1%' }}
                     cover={
                         <img
                         src={`http://localhost:8000${el.thumbnail}`}
@@ -47,8 +70,8 @@ class MyCooperative extends React.Component {
                     }
                     >
                         <h1>{el.title}</h1>
-                        <p>{el.content.substring(0, 80)}...</p>
-                        <p onClick={() => alert("Opened details for news!")} style={{ cursor: 'pointer', fontWeight: 'lighter', float: 'right' }}>More</p>
+                        <p style={{ wordBreak: 'break-all' }}>{el.content.substring(0, 80)}...</p>
+                        <p onClick={this.handleModalShow} style={{ cursor: 'pointer', fontWeight: 'lighter', float: 'right' }}>More</p>
                     </Card>
                     </>
                 );
@@ -104,6 +127,17 @@ class MyCooperative extends React.Component {
                         </div>
                     </Col>
                 </Row>
+
+                <Modal
+                title="News details"
+                visible={this.state.modalVisible}
+                onOk={this.handleModalOk}
+                onCancel={this.handleModalCancel}
+                >
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                </Modal>
             </>
         );
     }
