@@ -227,3 +227,17 @@ export const ShowModal = (data) => {
 export const HideModal = (data) => {
     return { type: MODAL_HIDE, payload: data}
 }
+
+export const UpdateUserAction = (userID, data) => (dispatch, getState) => {
+    const { user } = getState();
+
+    con.patch(`/api/users/${userID}/`,
+        data,
+        {
+            headers: {
+                Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`
+        }
+    })
+    .then(() => dispatch(FetchUserStart(user.auth.token)))
+    .catch(() => console.log("[Index] UpdateUserAction error"));
+}

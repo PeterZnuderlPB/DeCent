@@ -6,7 +6,7 @@ import {
 } from '../types';
 import con from '../../apis';
 
-export const FetchCompetenciesAction = visibleFields => (dispatch, getState) => {
+export const FetchCompetenciesAction = (visibleFields, filters) => (dispatch, getState) => {
     dispatch(FetchCompetenciesStartAction());
     const { user } = getState();
 
@@ -18,6 +18,17 @@ export const FetchCompetenciesAction = visibleFields => (dispatch, getState) => 
         visibleFields: [],
         filters: {}
     };
+
+    if (filters !== undefined) {
+        if ('cacheEnabled' in filters) {
+            params = {
+                ...params,
+                cacheEnabled: filters['cacheEnabled']
+            }
+        } else {
+            params.filters = filters;
+        }
+    }
 
     params.visibleFields = visibleFields;
 

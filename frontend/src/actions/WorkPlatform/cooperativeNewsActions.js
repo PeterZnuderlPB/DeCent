@@ -20,7 +20,14 @@ export const FetchCooperativeNewsAction = (visibleFields, filters) => (dispatch,
     };
     
     if (filters !== undefined) {
-        params.filters = filters;
+        if ('cacheEnabled' in filters) {
+            params = {
+                ...params,
+                cacheEnabled: filters['cacheEnabled']
+            }
+        } else {
+            params.filters = filters;
+        }
     }
 
     params.visibleFields = visibleFields;
