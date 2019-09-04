@@ -7,7 +7,10 @@ import {
     FETCH_COOPERATIVE_FAIL,
     SET_COOPERATIVE_WORKER_START,
     SET_COOPERATIVE_WORKER_SUCCESS,
-    SET_COOPERATIVE_WORKER_FAIL
+    SET_COOPERATIVE_WORKER_FAIL,
+    SET_COOPERATIVE_CHAT_START,
+    SET_COOEPRATIVE_CHAT_SUCCESS,
+    SET_COOPERATIVE_CHAT_FAIL
 } from '../../actions/types';
 
 const INTIAL_STATE = {
@@ -15,7 +18,9 @@ const INTIAL_STATE = {
     cooperativeAllLoading: true,
     cooperativeData: [],
     cooperativeLoading: true,
-    cooperativeWorker: []
+    cooperativeWorker: [],
+    cooperativeChat: null,
+    cooperativeChatLoading: true
 }
 
 export default (state = INTIAL_STATE, action) => {
@@ -38,6 +43,12 @@ export default (state = INTIAL_STATE, action) => {
             return { ...state, cooperativeWorker: action.payload };
         case SET_COOPERATIVE_WORKER_FAIL:
             return { ...state };
+        case SET_COOPERATIVE_CHAT_START:
+            return { ...state, cooperativeChatLoading: true };
+        case SET_COOEPRATIVE_CHAT_SUCCESS:
+            return { ...state, cooperativeChatLoading: false, cooperativeChat: action.payload };
+        case SET_COOPERATIVE_CHAT_FAIL:
+            return { ...state, cooperativeChatLoading: false };
         default:
             return state;
     }

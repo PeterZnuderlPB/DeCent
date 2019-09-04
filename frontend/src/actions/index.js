@@ -20,6 +20,7 @@ import {
 import {django_client_id, django_client_secret} from '../apis'
 import{ googleLogoutAction} from './googleAuthActions'
 import { USER_SETTINGS_USERPERMISSIONS_LIST } from '../constants';
+import { SetCooperativeChatAction } from './WorkPlatform/cooperativeActions';
 
 //----------------
 //Actions Login
@@ -137,6 +138,7 @@ export const FetchUserStart = (token) => async dispatch =>{
         const send  = {data: response.data, token: token}
         console.log("Fetch user send to reducer", send)
         dispatch(FetchUserSuccess(send));
+        dispatch(SetCooperativeChatAction());
     }
 
 }

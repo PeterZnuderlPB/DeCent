@@ -8,10 +8,14 @@ import {
     FETCH_COOPERATIVE_FAIL,
     SET_COOPERATIVE_WORKER_START,
     SET_COOPERATIVE_WORKER_SUCCESS,
-    SET_COOPERATIVE_WORKER_FAIL
+    SET_COOPERATIVE_WORKER_FAIL,
+    SET_COOPERATIVE_CHAT_START,
+    SET_COOEPRATIVE_CHAT_SUCCESS,
+    SET_COOPERATIVE_CHAT_FAIL
 } from '../types';
 import MiscUtilities from '../../utilities/MiscUtilities';
 import con from '../../apis';
+import Pusher from 'pusher-js';
 
 export const FetchAllCooperativesAction = (visibleFields, filters) => (dispatch, getState) => {
     dispatch(FetchAllCooeprativesStartAction());
@@ -105,6 +109,27 @@ export const SetCooperativeWorkerAction = workerId => (dispatch, getState) => {
     dispatch(SetCooperativeWorkerSuccessAction(worker));
 }
 
+export const SetCooperativeChatAction = () => (dispatch, getState) => {
+    dispatch(SetCooperativeChatStartAction())
+    const { user } = getState();
+
+    if (user.auth.userInfo.active_cooperative === 0) {
+        dispatch(SetCooperativeChatFailAction())
+        return;
+    }
+    
+    const pusher = new Pusher('a9c032941cf5188550e7', {
+        cluster: 'eu',
+        forceTLS: true
+    });
+
+    pusher.subscribe('my-channel').bind('my-event', data => {
+        console.log("RECEIVED DATA => ", data);
+    });
+
+    dispatch(SetCooperativeChatSuccessAction(pusher));
+}
+
 // Static actions
 export const FetchCooperativeStartAction = () => {
     return {
@@ -165,6 +190,27 @@ export const FetchAllCooperativesSuccessAction = data => {
 export const FetchAllCooperativesFailAction = () => {
     return {
         type: FETCH_ALL_COOPERATIVE_FAIL,
+        payload: null
+    }
+}
+
+export const SetCooperativeChatStartAction = () => {
+    return {
+        type: SET_COOPERATIVE_CHAT_START,
+        payload: null
+    }
+}
+
+export const SetCooperativeChatSuccessAction = data => {
+    return {
+        type: SET_COOEPRATIVE_CHAT_SUCCESS,
+        payload: data
+    }
+}
+
+export const SetCooperativeChatFailAction = () => {
+    return {
+        type: SET_COOPERATIVE_CHAT_FAIL,
         payload: null
     }
 }

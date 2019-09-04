@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.forms.models import model_to_dict
 from django.db.models.query import QuerySet
 from django.db.models import Q
+from core.client_pusher import client_pusher
 #from django_weasyprint import WeasyTemplateResponseMixin
 #Redis
 from django.conf import settings
@@ -103,7 +104,7 @@ class CompotencyList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
-        client_pusher.trigger('my-channel', 'my-event', {'message': 'hello world'})
+        client_pusher.trigger(u'my-channel', u'my-event', {u'message': u'hello world'})
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CompetencySerializerDepth
         return CompetencySerializerBasic
