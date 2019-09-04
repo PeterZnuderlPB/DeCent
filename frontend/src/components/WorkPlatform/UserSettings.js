@@ -11,6 +11,7 @@ import {
 import { UpdateUserAction } from '../../actions/index';
 import { FetchCooperativeAction } from '../../actions/WorkPlatform/cooperativeActions';
 import { FetchCompetenciesAction } from '../../actions/WorkPlatform/competenciesActions';
+import UserUtilities from '../../utilities/UserUtilities';
 
 const { Option } = Select;
 
@@ -44,7 +45,7 @@ class UserSettings extends React.Component {
     }
 
     updateUserActiveType = selectedType => {
-        this.props.UpdateUserAction(this.props.user.userInfo.id, { active_type: this.getUserType(selectedType) })
+        this.props.UpdateUserAction(this.props.user.userInfo.id, { active_type: UserUtilities.GetUserType(selectedType) })
     }
 
     fetchAllCompetencies = () => {
@@ -167,32 +168,6 @@ class UserSettings extends React.Component {
         .catch(err => console.log("[DetailView] CooperativeChange patch error", err));
     }
 
-    getUserType = userType => {
-            if (typeof(userType) === 'number') {
-                switch (userType) {
-                    case 1:
-                        return "WORKER"
-                    case 2:
-                        return "INVESTOR"
-                    case 3:
-                        return "COOPERATIVE"
-                    default:
-                        return "NULL"
-                }
-            } else {
-                switch (userType) {
-                    case "WORKER":
-                        return 1
-                    case "INVESTOR":
-                        return 2
-                    case "COOPERATIVE":
-                        return 3
-                    default:
-                        return 1
-            }
-        }
-    }
-
     renderProfileSettings = () => {
 
         return (
@@ -201,7 +176,7 @@ class UserSettings extends React.Component {
                 <Select
                 style={{ width: '28%', marginLeft: '0.4%' }}
                 onChange={(e) => this.updateUserActiveType(e)}
-                defaultValue={this.getUserType(this.props.user.userInfo.active_type)}
+                defaultValue={UserUtilities.GetUserType(this.props.user.userInfo.active_type)}
                 >
                     <Option value="WORKER">Worker</Option>
                     <Option value="INVESTOR">Investor</Option>
