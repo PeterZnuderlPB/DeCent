@@ -18,6 +18,17 @@ import {
 import { COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS } from '../../constants';
 import MiscUtilities from '../../utilities/MiscUtilities';
 import history from '../../history';
+import Pusher from 'pusher-js';
+
+var pusher = new Pusher('ADD', {
+    cluster: 'eu',
+    forceTLS: true
+  });
+  
+  var channel = pusher.subscribe('my-channel');
+  channel.bind('my-event', data => {
+    console.log("PUSHED DATA => ", JSON.stringify(data));
+  });
 
 class MyCooperative extends React.Component {
     state = {

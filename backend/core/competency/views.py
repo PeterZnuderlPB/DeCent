@@ -1,4 +1,5 @@
 import json
+from core.client_pusher import client_pusher # Imports pusher
 from django.views.generic import ListView
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
@@ -102,6 +103,7 @@ class CompotencyList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
+        client_pusher.trigger('my-channel', 'my-event', {'message': 'hello world'})
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CompetencySerializerDepth
         return CompetencySerializerBasic
