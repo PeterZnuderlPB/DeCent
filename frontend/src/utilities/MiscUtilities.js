@@ -7,12 +7,14 @@ export default class MiscUtilities {
                     ...params,
                     cacheEnabled: filters['cacheEnabled']
                 }
-            } else {
-                params.filters = filters;
+
+                delete filters['cacheEnabled'];
             }
+
+            params.filters = filters;
+            return params;
         } else {
             return params;
         }
-        return params;
     }
 }

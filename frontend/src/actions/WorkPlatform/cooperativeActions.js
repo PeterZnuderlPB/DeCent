@@ -1,5 +1,8 @@
 import { message } from 'antd';
 import {
+    FETCH_ALL_COOPERATIVE_START,
+    FETCH_ALL_COOPERATIVE_SUCCESS,
+    FETCH_ALL_COOPERATIVE_FAIL,
     FETCH_COOPERATIVE_START,
     FETCH_COOPERATIVE_SUCCESS,
     FETCH_COOPERATIVE_FAIL,
@@ -7,7 +10,45 @@ import {
     SET_COOPERATIVE_WORKER_SUCCESS,
     SET_COOPERATIVE_WORKER_FAIL
 } from '../types';
+import MiscUtilities from '../../utilities/MiscUtilities';
 import con from '../../apis';
+
+export const FetchAllCooperativesAction = (visibleFields, filters) => (dispatch, getState) => {
+    dispatch(FetchAllCooeprativesStartAction());
+    const { user } = getState();
+
+    let params = {
+        results: 1000,
+        page: 1,
+        sortOrder: [],
+        sortField: [],
+        visibleFields: [],
+        filters: {}
+    };
+
+    params = MiscUtilities.SetRequestFilters(params, filters);
+
+    params.visibleFields = visibleFields;
+
+    let settings = JSON.stringify(params);
+
+    con.get('api/cooperative/', {
+        params: {
+            settings
+        },
+        headers: {
+            Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`
+        }
+    })
+    .then(res => {
+        message.success('[Cooperative] Success');
+        dispatch(FetchAllCooperativesSuccessAction(res.data));
+    })
+    .catch(err => {
+        message.error('[Cooperative] Error');
+        dispatch(FetchAllCooperativesFailAction());
+    })
+}
 
 export const FetchCooperativeAction = () => (dispatch, getState) => {
     dispatch(FetchCooperativeStartAction());
@@ -75,10 +116,7 @@ export const FetchCooperativeStartAction = () => {
 export const FetchCooperativeSuccessAction = data => {
     return {
         type: FETCH_COOPERATIVE_SUCCESS,
-        payload: {
-            cooperativeData: data,
-            loadingCooperative: false
-        }
+        payload: data
     }
 }
 
@@ -106,6 +144,27 @@ export const SetCooperativeWorkerSuccessAction = data => {
 export const SetCooperativeWorkerFailAction = () => {
     return {
         type: SET_COOPERATIVE_WORKER_FAIL,
+        payload: null
+    }
+}
+
+export const FetchAllCooeprativesStartAction = () => {
+    return {
+        type: FETCH_ALL_COOPERATIVE_START,
+        payload: null
+    }
+}
+
+export const FetchAllCooperativesSuccessAction = data => {
+    return {
+        type: FETCH_ALL_COOPERATIVE_SUCCESS,
+        payload: data
+    }
+}
+
+export const FetchAllCooperativesFailAction = () => {
+    return {
+        type: FETCH_ALL_COOPERATIVE_FAIL,
         payload: null
     }
 }
