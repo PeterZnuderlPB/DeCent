@@ -4,6 +4,7 @@ import {
     FETCH_COMPETENCIES_SUCCESS,
     FETCH_COMPETENCIES_FAIL
 } from '../types';
+import MiscUtilities from '../../utilities/MiscUtilities';
 import con from '../../apis';
 
 export const FetchCompetenciesAction = (visibleFields, filters) => (dispatch, getState) => {
@@ -19,16 +20,7 @@ export const FetchCompetenciesAction = (visibleFields, filters) => (dispatch, ge
         filters: {}
     };
 
-    if (filters !== undefined) {
-        if ('cacheEnabled' in filters) {
-            params = {
-                ...params,
-                cacheEnabled: filters['cacheEnabled']
-            }
-        } else {
-            params.filters = filters;
-        }
-    }
+    params = MiscUtilities.SetRequestFilters(params, filters);
 
     params.visibleFields = visibleFields;
 

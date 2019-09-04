@@ -4,6 +4,7 @@ import {
     FETCH_COOPERATIVE_NEWS_SUCCESS,
     FETCH_COOPERATIVE_NEWS_FAIL
 } from '../types';
+import MiscUtilities from '../../utilities/MiscUtilities';
 import con from '../../apis';
 
 export const FetchCooperativeNewsAction = (visibleFields, filters) => (dispatch, getState) => {
@@ -19,16 +20,7 @@ export const FetchCooperativeNewsAction = (visibleFields, filters) => (dispatch,
         filters: {}
     };
     
-    if (filters !== undefined) {
-        if ('cacheEnabled' in filters) {
-            params = {
-                ...params,
-                cacheEnabled: filters['cacheEnabled']
-            }
-        } else {
-            params.filters = filters;
-        }
-    }
+    params = MiscUtilities.SetRequestFilters(params, filters);
 
     params.visibleFields = visibleFields;
 
