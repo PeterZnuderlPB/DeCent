@@ -17,4 +17,10 @@ export default class MiscUtilities {
             return params;
         }
     }
+
+    // Formats date received from backend to frontend
+    static GetFrontendDate = date => {
+        const d = new Date(date).toString();
+        return `${d.substring(0, 3)} ${d.substring(4, 7)} ${d.substring(11, 16)}`;
+    }
 }

@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { FetchCooperativeAction } from '../../actions/WorkPlatform/cooperativeActions';
-import { FetchCooperativeNewsAction } from '../../actions/WorkPlatform/cooperativeNewsActions';
+import {
+    FetchCooperativeNewsAction,
+    SetSignleCooperativeNewsAction
+} from '../../actions/WorkPlatform/cooperativeNewsActions';
 import {
     Row,
     Col,
@@ -13,6 +16,7 @@ import {
     Modal
 } from 'antd';
 import { COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS } from '../../constants';
+import MiscUtilities from '../../utilities/MiscUtilities';
 import history from '../../history';
 
 class MyCooperative extends React.Component {
@@ -32,9 +36,13 @@ class MyCooperative extends React.Component {
         if (prevProps.cooperative.cooperativeData.data !== this.props.cooperative.cooperativeData.data) {
             this.props.FetchCooperativeNewsAction(COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS, { cooperative__id: this.props.cooperative.cooperativeData.data.id } );
         }
+
+        console.log("Props update  => ", this.props);
     }
 
-    handleModalShow = () => {
+    handleModalShow = newsId => {
+        this.props.SetSignleCooperativeNewsAction(newsId);
+
         this.setState({
             modalVisible: true
         });
@@ -71,7 +79,7 @@ class MyCooperative extends React.Component {
                     >
                         <h1>{el.title}</h1>
                         <p style={{ wordBreak: 'break-all' }}>{el.content.substring(0, 80)}...</p>
-                        <p onClick={this.handleModalShow} style={{ cursor: 'pointer', fontWeight: 'lighter', float: 'right' }}>More</p>
+                        <p onClick={() => this.handleModalShow(el.id)} style={{ cursor: 'pointer', fontWeight: 'lighter', float: 'right' }}>More</p>
                     </Card>
                     </>
                 );
@@ -129,14 +137,30 @@ class MyCooperative extends React.Component {
                 </Row>
 
                 <Modal
-                title="News details"
+                title={this.props.cooperativeNews.singleLoading ? 'Loading...' : this.props.cooperativeNews.singleData.title}
                 visible={this.state.modalVisible}
                 onOk={this.handleModalOk}
                 onCancel={this.handleModalCancel}
                 >
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
+                    {this.props.cooperativeNews.singleLoading
+                    ? 'Loading...'
+                    : (
+                        <div style={centerStyle}>
+                            <h1>{this.props.cooperativeNews.singleData.title}</h1>
+                            <span style={{ fontWeight: 'lighter' }}>{`Published on ${MiscUtilities.GetFrontendDate(this.props.cooperativeNews.singleData.date_published)}`}</span>
+                            <div>
+                                <img
+                                src={`http://localhost:8000${this.props.cooperativeNews.singleData.thumbnail}`}
+                                alt={this.props.cooperativeNews.singleData.title}
+                                style={{ height: '200px' }}
+                                />
+                            </div>
+                            <div style={{ marginTop: '1%', wordBreak: 'break-all' }}>
+                                <p>{this.props.cooperativeNews.singleData.content}</p>
+                            </div>
+                        </div>
+                    )
+                    }
                 </Modal>
             </>
         );
@@ -165,5 +189,6 @@ const submenuTitle = {
 
 export default connect(mapStateToProps, {
     FetchCooperativeAction,
-    FetchCooperativeNewsAction
+    FetchCooperativeNewsAction,
+    SetSignleCooperativeNewsAction
 })(MyCooperative);
