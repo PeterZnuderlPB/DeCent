@@ -138,7 +138,6 @@ export const FetchUserStart = (token) => async dispatch =>{
         const send  = {data: response.data, token: token}
         console.log("Fetch user send to reducer", send)
         dispatch(FetchUserSuccess(send));
-        dispatch(SetCooperativeChatAction());
     }
 
 }

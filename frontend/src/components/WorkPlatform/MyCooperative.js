@@ -1,13 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FetchCooperativeAction } from '../../actions/WorkPlatform/cooperativeActions';
+import {
+    FetchCooperativeAction,
+    SetCooperativeChatAction,
+    ResetCooperativeChatAction
+} from '../../actions/WorkPlatform/cooperativeActions';
 import {
     FetchCooperativeNewsAction,
     SetSignleCooperativeNewsAction
 } from '../../actions/WorkPlatform/cooperativeNewsActions';
 import {
     FetchCooperativeChatAction,
-    AddCooperativeChatAction
+    AddCooperativeChatAction,
 } from '../../actions/WorkPlatform/cooperativeChatActions';
 import {
     Row,
@@ -35,10 +39,14 @@ class MyCooperative extends React.Component {
 
     componentDidMount = () => {
         this.props.FetchCooperativeAction();
+
+        if(this.props.user.userInfo.id !== undefined)
+            this.props.SetCooperativeChatAction();
     }
 
     componentDidUpdate = prevProps => {
         if (prevProps.user.userInfo.id !== this.props.user.userInfo.id) {
+            this.props.SetCooperativeChatAction();
             this.props.FetchCooperativeAction();
         }
 
@@ -49,6 +57,8 @@ class MyCooperative extends React.Component {
 
         console.log("Props update  => ", this.props);
     }
+
+    componentWillUnmount = () => this.props.ResetCooperativeChatAction();
 
     handleModalShow = newsId => {
         this.props.SetSignleCooperativeNewsAction(newsId);
@@ -218,6 +228,8 @@ const submenuTitle = {
 
 export default connect(mapStateToProps, {
     FetchCooperativeAction,
+    SetCooperativeChatAction,
+    ResetCooperativeChatAction,
     FetchCooperativeNewsAction,
     SetSignleCooperativeNewsAction,
     FetchCooperativeChatAction,

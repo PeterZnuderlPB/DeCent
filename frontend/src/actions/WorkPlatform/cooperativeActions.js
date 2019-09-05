@@ -11,7 +11,8 @@ import {
     SET_COOPERATIVE_WORKER_FAIL,
     SET_COOPERATIVE_CHAT_START,
     SET_COOEPRATIVE_CHAT_SUCCESS,
-    SET_COOPERATIVE_CHAT_FAIL
+    SET_COOPERATIVE_CHAT_FAIL,
+    RESET_COOPERATIVE_CHAT
 } from '../types';
 import { FetchCooperativeChatAction } from './cooperativeChatActions'
 import { COOPERATIVE_DASHBOARD_COOPERATIVE_CHAT } from '../../constants';
@@ -135,6 +136,13 @@ export const SetCooperativeChatAction = () => (dispatch, getState) => {
     dispatch(SetCooperativeChatSuccessAction(pusher));
 }
 
+export const ResetCooperativeChatAction = () => (dispatch, getState) => {
+    const { cooperative } = getState();
+
+    cooperative.cooperativeChat.unsubscribe('chat_channel');
+    dispatch(ResetCooperativeStaticChatAction());
+}
+
 // Static actions
 export const FetchCooperativeStartAction = () => {
     return {
@@ -216,6 +224,13 @@ export const SetCooperativeChatSuccessAction = data => {
 export const SetCooperativeChatFailAction = () => {
     return {
         type: SET_COOPERATIVE_CHAT_FAIL,
+        payload: null
+    }
+}
+
+export const ResetCooperativeStaticChatAction = () => {
+    return {
+        type: RESET_COOPERATIVE_CHAT,
         payload: null
     }
 }

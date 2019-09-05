@@ -10,7 +10,8 @@ import {
     SET_COOPERATIVE_WORKER_FAIL,
     SET_COOPERATIVE_CHAT_START,
     SET_COOEPRATIVE_CHAT_SUCCESS,
-    SET_COOPERATIVE_CHAT_FAIL
+    SET_COOPERATIVE_CHAT_FAIL,
+    RESET_COOPERATIVE_CHAT
 } from '../../actions/types';
 
 const INTIAL_STATE = {
@@ -49,6 +50,8 @@ export default (state = INTIAL_STATE, action) => {
             return { ...state, cooperativeChatLoading: false, cooperativeChat: action.payload };
         case SET_COOPERATIVE_CHAT_FAIL:
             return { ...state, cooperativeChatLoading: false };
+        case RESET_COOPERATIVE_CHAT:
+            return { ...state, cooperativeChatLoading: true, cooperativeChat: null };
         default:
             return state;
     }
