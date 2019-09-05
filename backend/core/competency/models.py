@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import PBModel
 from django.conf import settings
+import datetime
 
 # Create your models here.
 
@@ -202,3 +203,15 @@ class CooperativeChat(PBModel):
 
     def __str__(self):
         return f'CooperativeChat #{self.id} - Cooperative #{self.cooperative.id}'
+
+class Contract(PBModel):
+    stage = models.IntegerField() # Maybe another table?
+    status = models.IntegerField() # Maybe another table?
+    is_pending = models.BooleanField()
+    date_proposed = models.DateField(default=datetime.date.today)
+    estimate_finish_date = models.DateField()
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Contract #{self.id} - Pending: {self.status} - Cooperative #{self.cooperative.id} - Project #{self.project.id}'

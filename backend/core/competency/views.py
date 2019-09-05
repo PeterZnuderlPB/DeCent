@@ -32,7 +32,8 @@ from .models import (
     WorkOrder,
     CooperativeEnrollment,
     CooperativeNews,
-    CooperativeChat
+    CooperativeChat,
+    Contract
 )
 from .serializers import (
     CompetencySerializerBasic,
@@ -77,7 +78,9 @@ from .serializers import (
     CooperativeNewsSerializerBasic,
     CooperativeNewsSerializerDepth,
     CooperativeChatSerializerBasic,
-    CooperativeChatSerializerDepth
+    CooperativeChatSerializerDepth,
+    ContractSerializerBasic,
+    ContractSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -861,3 +864,43 @@ class CooperativeChatDetail(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAP
         if self.request.method == 'GET':
             return CooperativeChatSerializerDepth
         return CooperativeChatSerializerBasic
+
+class ContractList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = Contract
+    table_name = "Contracts" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ContractSerializerDepth
+        return ContractSerializerBasic
+
+class ContractDetail(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = Contract
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ContractSerializerDepth
+        return ContractSerializerBasic

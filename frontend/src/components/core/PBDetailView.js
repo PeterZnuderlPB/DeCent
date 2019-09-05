@@ -7,6 +7,7 @@ import {
     DETAIL_VIEW_COMPOTENCY,
     DETAIL_VIEW_COMMENTS
 } from '../../constants';
+import { FetchContractsAction } from '../../actions/WorkPlatform/contractActions';
 import history from '../../history';
 import con from '../../apis';
 
@@ -62,6 +63,7 @@ class PBDetailView extends React.Component {
         this.fetchData(this.props.match.params.table_name);
         this.fetchCommnets(this.props.match.params.id);
         this.fetchFiles();
+        this.props.FetchContractsAction(['id', 'cooperative__title'], { cooperative__id: this.props.user.userInfo.active_cooperative, project__id: this.props.match.params.id });
 
         this.setState({
             subTitle: this.props.match.params.table_name === 'evaluation' ? 'Answers' : 'Evaluations'
@@ -89,6 +91,7 @@ class PBDetailView extends React.Component {
             this.fetchData(this.props.match.params.table_name);
             this.fetchCommnets(this.props.match.params.id);
             this.fetchFiles();
+            this.props.FetchContractsAction(['id', 'is_pending'], { cooperative__id: this.props.user.userInfo.active_cooperative, project__id: this.props.match.params.id });
 
             this.setState({
                 subTitle: this.props.match.params.table_name === 'evaluation' ? 'Answers' : 'Evaluations'
@@ -98,6 +101,8 @@ class PBDetailView extends React.Component {
         if (prevProps.post.data !== this.props.post.data) {
             this.fetchFiles();
         }
+
+        console.log("[PBDetailView] ComponentDidUpdate => ", this.props);
     }
 
     fetchData = (tableName) => {
@@ -592,6 +597,26 @@ class PBDetailView extends React.Component {
         }
     }
 
+    renderContractButton = () => {
+        if (this.props.contracts.loading) {
+            return <Spin tip="Loading..." size="default" />;
+        } else {
+            if (this.props.contracts.data.data !== undefined) {
+                if (this.props.contracts.data.data.length === 0) {
+                    return <Button block style={{ marginBottom: '0.3%' }} onClick={() => console.log("Contract proposed => Redux => ", this.props.match.params.id)} type="primary">Propose a contract</Button>;
+                }
+    
+                if (this.props.contracts.data.data.is_pending) {
+                    return <Button block onClick={() => console.log("Contract pending => Redux => ", this.props.match.params.id)} type="default" disabled={true}>Contract proposal pending</Button>;
+                } else {
+                    return <Button block style={{ marginBottom: '0.3%' }} onClick={() => console.log("Contract canceled => Redux => ", this.props.match.params.id)} type="danger">Cancel contract proposal</Button>;                    
+                }
+            }
+
+            return null;
+        }
+    }
+
     render() {
         return (
             <>
@@ -603,6 +628,7 @@ class PBDetailView extends React.Component {
             {this.props.match.params.table_name === 'competency' ? this.renderCommentData() : null}
             {this.renderCompetencies()}
             {this.renderProjectFiles()}
+            {this.props.match.params.table_name === 'project' ? this.renderContractButton() : null}
             </>
         );
     }
@@ -611,8 +637,12 @@ class PBDetailView extends React.Component {
 const mapStateToProps = state => {
     return {
         user: state.user.auth,
-        post: state.edit
+        post: state.edit,
+        contracts: state.contracts
     }
 }
 
-export default connect(mapStateToProps, { FetchPost })(PBDetailView);
+export default connect(mapStateToProps, {
+    FetchPost,
+    FetchContractsAction
+})(PBDetailView);

@@ -35,5 +35,7 @@ urlpatterns = [
     path('api/cooperativenews/', views.CooperativeNewsList.as_view()),
     path('api/cooperativenews/<pk>', views.CooperativeNewsDetail.as_view()),
     path('api/cooperativechat/', views.CooperativeChatList.as_view()),
-    path('api/cooperativechat/<pk>', views.CooperativeChatDetail.as_view())
+    path('api/cooperativechat/<pk>', views.CooperativeChatDetail.as_view()),
+    path('api/contract/', views.ContractList.as_view()),
+    path('api/contract/<pk>', views.ContractDetail.as_view())
 ]

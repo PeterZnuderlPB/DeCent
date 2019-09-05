@@ -22,7 +22,8 @@ from .models import (
     WorkOrder,
     CooperativeEnrollment,
     CooperativeNews,
-    CooperativeChat
+    CooperativeChat,
+    Contract
 )
 
 from core.serializers import DynamicFieldsModelSerializer
@@ -423,5 +424,17 @@ class CooperativeChatSerializerBasic(DynamicFieldsModelSerializer ,serializers.M
 class CooperativeChatSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     class Meta:
         model = CooperativeChat
+        fields = '__all__'
+        depth = 1
+
+class ContractSerializerBasic(DynamicFieldsModelSerializer ,serializers.ModelSerializer):
+    class Meta:
+        model = Contract #  Model to serialize
+        fields = '__all__' #    A tuple with names of fields to serialize
+        depth = 0 # How deep we want to serialize fk connections
+
+class ContractSerializerDepth(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Contract
         fields = '__all__'
         depth = 1

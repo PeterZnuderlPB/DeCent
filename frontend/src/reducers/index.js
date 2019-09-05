@@ -13,6 +13,7 @@ import cooperativeEnrollmentReducer from './WorkPlatform/cooperativeEnrollmentRe
 import competenciesReducer from './WorkPlatform/competenciesReducer';
 import cooperativeNewsReducer from './WorkPlatform/cooperativeNewsReducer';
 import cooperativeChatReducer from './WorkPlatform/cooperativeChatReducer';
+import contractReducer from './WorkPlatform/contractReducer';
 
 export default combineReducers({
     form: formReducer, // Reducer provided by redux-form, has to be named form
@@ -27,5 +28,6 @@ export default combineReducers({
     cooperativeEnrollment: cooperativeEnrollmentReducer,
     competencies: competenciesReducer,
     cooperativeNews: cooperativeNewsReducer,
-    cooperativeChat: cooperativeChatReducer
+    cooperativeChat: cooperativeChatReducer,
+    contracts: contractReducer
 })
