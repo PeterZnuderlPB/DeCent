@@ -193,3 +193,12 @@ class CooperativeNews(PBModel):
 
     def __str__(self):
         return f'CooperativeNews #{self.id} - {self.title} - "Cooperative #{self.cooperative.id}'
+
+class CooperativeChat(PBModel):
+    message = models.TextField()
+    message_sent = models.DateTimeField()
+    account = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'CooperativeChat #{self.id} - Cooperative #{self.cooperative.id}'

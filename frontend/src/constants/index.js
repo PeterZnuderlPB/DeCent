@@ -23,4 +23,9 @@ export const USER_SETTINGS_COOPERATIVE_LIST = ['id', 'title'];
 //------------------------------------------
 export const COOPERATIVE_MAMANGMENT_APPLICATION_LIST = ['id', 'enroller__id', 'enroller__username', 'comment', 'enroller__competencys', 'enroller__biography'];
 export const COOPERATIVE_MAMANGMENT_COMPETENCIES = ['id', 'name'];
+
+//------------------------------------------
+// CooperativeDashboard visibleField Consts
+//------------------------------------------
 export const COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS = ['id', 'title', 'content', 'date_published', 'thumbnail'];
+export const COOPERATIVE_DASHBOARD_COOPERATIVE_CHAT = ['id', 'message', 'message_sent', 'account__id', 'account__username', 'cooperative__id'];

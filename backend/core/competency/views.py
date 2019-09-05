@@ -31,7 +31,8 @@ from .models import (
     Project,
     WorkOrder,
     CooperativeEnrollment,
-    CooperativeNews
+    CooperativeNews,
+    CooperativeChat
 )
 from .serializers import (
     CompetencySerializerBasic,
@@ -74,7 +75,9 @@ from .serializers import (
     CooperativeEnrollmentSerializerBasic,
     CooperativeEnrollmentSerializerDepth,
     CooperativeNewsSerializerBasic,
-    CooperativeNewsSerializerDepth
+    CooperativeNewsSerializerDepth,
+    CooperativeChatSerializerBasic,
+    CooperativeChatSerializerDepth
 )
 from core.permissions import HasGroupPermission, HasObjectPermission
 from core.views import PBListViewMixin, PBDetailsViewMixin
@@ -104,7 +107,7 @@ class CompotencyList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
-        client_pusher.trigger(u'my-channel', u'my-event', {u'message': u'hello world'})
+        client_pusher.trigger(u'chat_channel', f'cooperative_chat_{1}', {u'message': u'hello world'})
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CompetencySerializerDepth
         return CompetencySerializerBasic
@@ -815,3 +818,43 @@ class CooperativeNewsDetail(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAP
         if self.request.method == 'GET':
             return CooperativeNewsSerializerDepth
         return CooperativeNewsSerializerBasic
+
+class CooperativeChatList(PBListViewMixin, generics.ListCreateAPIView): 
+    permission_classes = (permissions.IsAuthenticated, HasGroupPermission, HasObjectPermission,)
+    model = CooperativeChat
+    table_name = "CooperativeChats" # For search and filter options (Redis key)
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CooperativeChatSerializerDepth
+        return CooperativeChatSerializerBasic
+
+class CooperativeChatDetail(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
+    model = CooperativeChat
+
+    required_groups= {
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+    required_permissions={
+        'GET':['__all__'],
+        'POST':['__all__'],
+        'PUT':['__all__'],
+    }
+
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CooperativeChatSerializerDepth
+        return CooperativeChatSerializerBasic

@@ -5,6 +5,7 @@ import {
     FetchCooperativeNewsAction,
     SetSignleCooperativeNewsAction
 } from '../../actions/WorkPlatform/cooperativeNewsActions';
+import { FetchCooperativeChatAction } from '../../actions/WorkPlatform/cooperativeChatActions';
 import {
     Row,
     Col,
@@ -15,7 +16,10 @@ import {
     Spin,
     Modal
 } from 'antd';
-import { COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS } from '../../constants';
+import {
+    COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS,
+    COOPERATIVE_DASHBOARD_COOPERATIVE_CHAT
+} from '../../constants';
 import MiscUtilities from '../../utilities/MiscUtilities';
 import history from '../../history';
 
@@ -34,7 +38,8 @@ class MyCooperative extends React.Component {
         }
 
         if (prevProps.cooperative.cooperativeData.data !== this.props.cooperative.cooperativeData.data) {
-            this.props.FetchCooperativeNewsAction(COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS, { cooperative__id: this.props.cooperative.cooperativeData.data.id } );
+            this.props.FetchCooperativeNewsAction(COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS, { cooperative__id: this.props.cooperative.cooperativeData.data.id });
+            this.props.FetchCooperativeChatAction(COOPERATIVE_DASHBOARD_COOPERATIVE_CHAT, { cooperative__id: this.props.cooperative.cooperativeData.data.id });
         }
 
         console.log("Props update  => ", this.props);
@@ -96,17 +101,21 @@ class MyCooperative extends React.Component {
     }
 
     renderChat = () => {
-        return (
-            <>
-            <div style={{ overflowY: 'auto', padding: '1%', wordBreak: 'break-all', backgroundColor: 'rgba(227, 119, 111, 0.6)', height: '35vh', width: '80%' }}>
-                <p><b>Miha: </b>Ja Python je res dober jezik</p>
-                <p><b>Marko: </b> Lorem ipsom ireuireb</p>
-                <p><b>Nejc: </b> Dolgi message da se chat prepogne eurhuerhuerhuerheurheurhwuireuwrhuerhuwruwehur lorem irneurue</p>
-            </div>
-            <Input style={{ marginTop: '1%', width: '80%' }} type="text" placeholder="Enter your message" />
-            <Button style={{ marginTop: '1%' }} type="primary">Send <Icon style={{ fontSize: '1.5rem' }} type="swap-right" /></Button>
-            </>
-        );
+        if(this.props.cooperativeChat.loading) {
+            return <Spin tip="Loading chat..." size="large" />
+        } else {
+            return (
+                <>
+                <div style={{ overflowY: 'auto', padding: '1%', wordBreak: 'break-all', backgroundColor: 'rgba(227, 119, 111, 0.6)', height: '35vh', width: '80%' }}>
+                    {this.props.cooperativeChat.data.data.map(el => {
+                        return <p><b>{el.account__username}: </b>{el.message}</p>;
+                    })}
+                </div>
+                <Input style={{ marginTop: '1%', width: '80%' }} type="text" placeholder="Enter your message" />
+                <Button style={{ marginTop: '1%' }} type="primary">Send <Icon style={{ fontSize: '1.5rem' }} type="swap-right" /></Button>
+                </>
+            );
+        }
     }
 
     render() {
@@ -171,7 +180,8 @@ const mapStateToProps = state => {
     return {
         user: state.user.auth,
         cooperative: state.cooperative,
-        cooperativeNews: state.cooperativeNews
+        cooperativeNews: state.cooperativeNews,
+        cooperativeChat: state.cooperativeChat
     }
 }
 
@@ -190,5 +200,6 @@ const submenuTitle = {
 export default connect(mapStateToProps, {
     FetchCooperativeAction,
     FetchCooperativeNewsAction,
-    SetSignleCooperativeNewsAction
+    SetSignleCooperativeNewsAction,
+    FetchCooperativeChatAction
 })(MyCooperative);

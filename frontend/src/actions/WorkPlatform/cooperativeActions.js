@@ -123,7 +123,7 @@ export const SetCooperativeChatAction = () => (dispatch, getState) => {
         forceTLS: true
     });
 
-    pusher.subscribe('my-channel').bind('my-event', data => {
+    pusher.subscribe('chat_channel').bind(`cooperative_chat_${user.auth.userInfo.active_cooperative}`, data => {
         console.log("RECEIVED DATA => ", data);
     });
 

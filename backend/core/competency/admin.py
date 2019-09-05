@@ -21,7 +21,8 @@ from .models import (
     CooperativeEnrollment,
     Project,
     WorkOrder,
-    CooperativeNews
+    CooperativeNews,
+    CooperativeChat
 )
 
 # Register your models here.
@@ -48,3 +49,4 @@ admin.site.register(Cooperative)
 admin.site.register(Project)
 admin.site.register(WorkOrder)
 admin.site.register(CooperativeNews)
+admin.site.register(CooperativeChat)
