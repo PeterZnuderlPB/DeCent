@@ -55,6 +55,11 @@ class MyCooperative extends React.Component {
             this.props.FetchCooperativeChatAction(COOPERATIVE_DASHBOARD_COOPERATIVE_CHAT, { cooperative__id: this.props.cooperative.cooperativeData.data.id });
         }
 
+        if (prevProps.cooperativeChat.data.data !== this.props.cooperativeChat.data.data) {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.scrollTop = chatBox.scrollHeight - chatBox.clientHeight;
+        }
+
         console.log("Props update  => ", this.props);
     }
 
@@ -135,7 +140,7 @@ class MyCooperative extends React.Component {
         if(this.props.cooperativeChat.data.data !== undefined) {
             return (
                 <>
-                <div style={{ overflowY: 'auto', padding: '1%', wordBreak: 'break-all', backgroundColor: 'rgba(227, 119, 111, 0.6)', height: '35vh', width: '80%' }}>
+                <div id='chatBox' style={{ overflowY: 'auto', padding: '1%', wordBreak: 'break-all', backgroundColor: 'rgba(227, 119, 111, 0.6)', height: '35vh', width: '80%' }}>
                     {this.props.cooperativeChat.data.data.map(el => {
                         return <Tooltip title={`Posted on ${el.message_sent}`}><p><b>{el.account__username}: </b>{el.message}</p></Tooltip>;
                     })}
