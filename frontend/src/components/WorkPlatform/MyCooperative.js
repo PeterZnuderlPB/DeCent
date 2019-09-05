@@ -71,11 +71,13 @@ class MyCooperative extends React.Component {
     }
 
     handleChatSend = () => {
-        this.props.AddCooperativeChatAction(this.state.chat, this.props.cooperative.cooperativeData.data.id);
+        const currentChat = this.state.chat;
 
         this.setState({
             chat: ''
         });
+
+        this.props.AddCooperativeChatAction(currentChat, this.props.cooperative.cooperativeData.data.id);
     }
 
     handleChatChange = e => {
@@ -128,7 +130,7 @@ class MyCooperative extends React.Component {
                         return <Tooltip title={`Posted on ${el.message_sent}`}><p><b>{el.account__username}: </b>{el.message}</p></Tooltip>;
                     })}
                 </div>
-                <Input style={{ marginTop: '1%', width: '80%' }} type="text" onChange={this.handleChatChange} placeholder="Enter your message" />
+                <Input style={{ marginTop: '1%', width: '80%' }} type="text" value={this.state.chat} onChange={this.handleChatChange} placeholder="Enter your message" />
                 <Button style={{ marginTop: '1%' }} type="primary" onClick={this.handleChatSend}>Send <Icon style={{ fontSize: '1.5rem' }} type="swap-right" /></Button>
                 </>
             );
