@@ -14,3 +14,5 @@ CairoSVG
 sendgrid-django 
 # For HTML in emails
 django-mjml
+# For live chat
+pusher
