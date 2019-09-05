@@ -107,7 +107,6 @@ class CompotencyList(PBListViewMixin, generics.ListCreateAPIView):
     }
 
     def get_serializer_class(self):
-        client_pusher.trigger(u'chat_channel', f'cooperative_chat_{1}', {u'message': u'hello world'})
         if self.request.method == 'GET' and self.request.user.has_perm('user.view_user'):
             return CompetencySerializerDepth
         return CompetencySerializerBasic
@@ -838,6 +837,10 @@ class CooperativeChatList(PBListViewMixin, generics.ListCreateAPIView):
         if self.request.method == 'GET':
             return CooperativeChatSerializerDepth
         return CooperativeChatSerializerBasic
+    
+    def post(self, request, *args, **kwargs):
+        client_pusher.trigger(u'chat_channel', f'cooperative_chat_{request.user.active_cooperative}', {u'UpdateChat': f'{request.user.id}'})
+        return self.create(request, *args, **kwargs)
 
 class CooperativeChatDetail(PBDetailsViewMixin, generics.RetrieveUpdateDestroyAPIView):
     model = CooperativeChat

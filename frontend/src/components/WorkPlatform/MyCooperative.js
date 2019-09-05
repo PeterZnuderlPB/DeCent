@@ -5,7 +5,10 @@ import {
     FetchCooperativeNewsAction,
     SetSignleCooperativeNewsAction
 } from '../../actions/WorkPlatform/cooperativeNewsActions';
-import { FetchCooperativeChatAction } from '../../actions/WorkPlatform/cooperativeChatActions';
+import {
+    FetchCooperativeChatAction,
+    AddCooperativeChatAction
+} from '../../actions/WorkPlatform/cooperativeChatActions';
 import {
     Row,
     Col,
@@ -14,7 +17,8 @@ import {
     Icon,
     Card,
     Spin,
-    Modal
+    Modal,
+    Tooltip
 } from 'antd';
 import {
     COOPERATIVE_MANAGMENT_COOPERATIVE_NEWS,
@@ -25,7 +29,8 @@ import history from '../../history';
 
 class MyCooperative extends React.Component {
     state = {
-        modalVisible: false
+        modalVisible: false,
+        chat: ''
     }
 
     componentDidMount = () => {
@@ -62,6 +67,20 @@ class MyCooperative extends React.Component {
     handleModalCancel = () => {
         this.setState({
             modalVisible: false
+        });
+    }
+
+    handleChatSend = () => {
+        this.props.AddCooperativeChatAction(this.state.chat, this.props.cooperative.cooperativeData.data.id);
+
+        this.setState({
+            chat: ''
+        });
+    }
+
+    handleChatChange = e => {
+        this.setState({
+            chat: e.target.value
         });
     }
 
@@ -108,11 +127,11 @@ class MyCooperative extends React.Component {
                 <>
                 <div style={{ overflowY: 'auto', padding: '1%', wordBreak: 'break-all', backgroundColor: 'rgba(227, 119, 111, 0.6)', height: '35vh', width: '80%' }}>
                     {this.props.cooperativeChat.data.data.map(el => {
-                        return <p><b>{el.account__username}: </b>{el.message}</p>;
+                        return <Tooltip title={`Posted on ${el.message_sent}`}><p><b>{el.account__username}: </b>{el.message}</p></Tooltip>;
                     })}
                 </div>
-                <Input style={{ marginTop: '1%', width: '80%' }} type="text" placeholder="Enter your message" />
-                <Button style={{ marginTop: '1%' }} type="primary">Send <Icon style={{ fontSize: '1.5rem' }} type="swap-right" /></Button>
+                <Input style={{ marginTop: '1%', width: '80%' }} type="text" onChange={this.handleChatChange} placeholder="Enter your message" />
+                <Button style={{ marginTop: '1%' }} type="primary" onClick={this.handleChatSend}>Send <Icon style={{ fontSize: '1.5rem' }} type="swap-right" /></Button>
                 </>
             );
         }
@@ -201,5 +220,6 @@ export default connect(mapStateToProps, {
     FetchCooperativeAction,
     FetchCooperativeNewsAction,
     SetSignleCooperativeNewsAction,
-    FetchCooperativeChatAction
+    FetchCooperativeChatAction,
+    AddCooperativeChatAction
 })(MyCooperative);

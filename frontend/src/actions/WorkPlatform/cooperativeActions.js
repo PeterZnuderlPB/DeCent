@@ -13,6 +13,8 @@ import {
     SET_COOEPRATIVE_CHAT_SUCCESS,
     SET_COOPERATIVE_CHAT_FAIL
 } from '../types';
+import { FetchCooperativeChatAction } from './cooperativeChatActions'
+import { COOPERATIVE_DASHBOARD_COOPERATIVE_CHAT } from '../../constants';
 import MiscUtilities from '../../utilities/MiscUtilities';
 import con from '../../apis';
 import Pusher from 'pusher-js';
@@ -124,7 +126,10 @@ export const SetCooperativeChatAction = () => (dispatch, getState) => {
     });
 
     pusher.subscribe('chat_channel').bind(`cooperative_chat_${user.auth.userInfo.active_cooperative}`, data => {
-        console.log("RECEIVED DATA => ", data);
+        if('UpdateChat' in data) {
+            if (parseInt(data['UpdateChat']) !== user.auth.userInfo.id)
+            dispatch(FetchCooperativeChatAction(COOPERATIVE_DASHBOARD_COOPERATIVE_CHAT, { cooperative__id: user.auth.userInfo.active_cooperative }));
+        }
     });
 
     dispatch(SetCooperativeChatSuccessAction(pusher));
