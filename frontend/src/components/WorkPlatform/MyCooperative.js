@@ -120,9 +120,7 @@ class MyCooperative extends React.Component {
     }
 
     renderChat = () => {
-        if(this.props.cooperativeChat.loading) {
-            return <Spin tip="Loading chat..." size="large" />
-        } else {
+        if(this.props.cooperativeChat.data.data !== undefined) {
             return (
                 <>
                 <div style={{ overflowY: 'auto', padding: '1%', wordBreak: 'break-all', backgroundColor: 'rgba(227, 119, 111, 0.6)', height: '35vh', width: '80%' }}>
