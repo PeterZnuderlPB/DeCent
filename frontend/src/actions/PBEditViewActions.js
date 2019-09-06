@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import con from '../apis';
+import { apiCall } from '../apis';
 import history from '../history';
 import {
     FETCH_POST_START,
@@ -20,33 +21,19 @@ export const FetchPost = (postId, table) => (dispatch, getState) => {
     dispatch(FetchPostStart());
     const { user } = getState();
 
-    fetch(`http://localhost:8000/api/${table}/${postId}`, {
-        method: 'GET',
+    apiCall.get(`${table}/${postId}`, {
         headers: {
-            'Authorization': `${user.auth.token.token_type} ${user.auth.token.access_token}`
+            Authorization: `${user.auth.token.token_type} ${user.auth.token.access_token}`
         }
     })
     .then(res => {
-        if (res.status !== 200) {
-            dispatch(FetchPostFail("Error trying to fetch post"));
-            message.error("Error trying to fetch post.");
-            return;
-        }
-        return res.json();
-    })
-    .then(data => {
-        console.log("PBEditViewActions - Fetch data: ", data);
-        if (data === undefined)
-            return;
-        // let mydata = {
-        //     data: data,
-        //     column_names: ['owner', 'name', 'upload_date'],
-        //     column_types: ['Foreign Key', 'String', 'Date (without time)']
-        // }
-
-        dispatch(FetchPostSuccess(data));
+        dispatch(FetchPostSuccess(res.data));
         message.success("Successfully fetched post data.");
-    });
+    })
+    .catch(err => {
+        dispatch(FetchPostFail("Error trying to fetch post"));
+        message.error("Error trying to fetch post.");
+    })
 }
 
 export const UpdatePost = (postId, postData, table) => (dispatch, getState) => {
