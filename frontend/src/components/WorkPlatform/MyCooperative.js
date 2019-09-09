@@ -101,6 +101,11 @@ class MyCooperative extends React.Component {
         });
     }
 
+    handleKeyDown = e => {
+        if (e.key === 'Enter')
+            this.handleChatSend();
+    }
+
     renderNews = () => {
         if (this.props.cooperativeNews.loading) {
             return <Spin tip="Loding news.." size="large" />;
@@ -145,7 +150,7 @@ class MyCooperative extends React.Component {
                         return <Tooltip title={`Posted on ${el.message_sent}`}><p><b>{el.account__username}: </b>{el.message}</p></Tooltip>;
                     })}
                 </div>
-                <Input style={{ marginTop: '1%', width: '80%' }} type="text" value={this.state.chat} onChange={this.handleChatChange} placeholder="Enter your message" />
+                <Input style={{ marginTop: '1%', width: '80%' }} type="text" onKeyDown={this.handleKeyDown} value={this.state.chat} onChange={this.handleChatChange} placeholder="Enter your message" />
                 <Button style={{ marginTop: '1%' }} type="primary" onClick={this.handleChatSend}>Send <Icon style={{ fontSize: '1.5rem' }} type="swap-right" /></Button>
                 </>
             );
